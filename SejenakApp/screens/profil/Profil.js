@@ -23,6 +23,7 @@ export default function Profil({ navigation }) {
 
   const handleSetting = () => {
     alert("Pengaturan belum tersedia.");
+     navigation.navigate("Setting");
   };
 
   const handleEdit = () => {
@@ -42,51 +43,67 @@ export default function Profil({ navigation }) {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      {/* Header pink */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.settingIcon} onPress={handleSetting}>
-          <Icon name="settings" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Image source={user.profilePic} style={styles.profileImage} />
-        <Text style={styles.hiText}>Hi, {user.name}</Text>
-      </View>
+      <View style={{ flex: 1 }}>
+        {/* Header pink */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.settingIcon} onPress={handleSetting}>
+            <Icon name="settings" size={24} color="#fff" />
+          </TouchableOpacity>
+          <Image source={user.profilePic} style={styles.profileImage} />
+          <Text style={styles.hiText}>Hi, {user.name}</Text>
+        </View>
 
-      {/* Info Box */}
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Nama Lengkap</Text>
-        <TextInput style={styles.input} value={user.name} editable={false} />
+        {/* Info Box */}
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Nama Lengkap</Text>
+          <TextInput style={styles.input} value={user.name} editable={false} />
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput style={styles.input} value={user.email} editable={false} />
+          <Text style={styles.label}>Email</Text>
+          <TextInput style={styles.input} value={user.email} editable={false} />
 
-        <Text style={styles.label}>No Telephone/Hp</Text>
-        <TextInput style={styles.input} value={user.phone} editable={false} />
+          <Text style={styles.label}>No Telephone/Hp</Text>
+          <TextInput style={styles.input} value={user.phone} editable={false} />
 
-        <Text style={styles.label}>Gender</Text>
-        <TextInput style={styles.input} value={user.gender} editable={false} />
-
-        <Text style={styles.label}>Alamat</Text>
-        <TextInput style={styles.input} value={user.address} editable={false} />
-
-        {/* Tombol Edit */}
-        <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
-          <Icon name="edit" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.editText}>Edit Profil</Text>
-        </TouchableOpacity>
-
-        {/* Tombol Logout */}
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Icon
-            name="logout"
-            size={20}
-            color="#D33"
-            style={{ marginRight: 8 }}
+          <Text style={styles.label}>Gender</Text>
+          <TextInput
+            style={styles.input}
+            value={user.gender}
+            editable={false}
           />
-          <Text style={styles.logoutText}>Keluar</Text>
-        </TouchableOpacity>
+
+          <Text style={styles.label}>Alamat</Text>
+          <TextInput
+            style={styles.input}
+            value={user.address}
+            editable={false}
+          />
+
+          {/* Tombol Edit */}
+          <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
+            <Icon
+              name="edit"
+              size={20}
+              color="#fff"
+              style={{ marginRight: 8 }}
+            />
+            <Text style={styles.editText}>Edit Profil</Text>
+          </TouchableOpacity>
+
+          {/* Tombol Logout */}
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Icon
+              name="logout"
+              size={20}
+              color="#D33"
+              style={{ marginRight: 8 }}
+            />
+            <Text style={styles.logoutText}>Keluar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -101,6 +118,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     right: 20,
+    marginTop : -20,
   },
   profileImage: {
     width: 90,
