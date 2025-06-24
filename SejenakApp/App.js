@@ -5,71 +5,20 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Feather";
 
-import CustomTabBar from "./components/CurvedBottomTab";
-import Home from "./screens/home/Home";
-import Jurnalku from "./screens/jurnalku/Jurnalku";
-import Konseling from "./screens/konseling/Konseling";
-import Profil from "./screens/profil/Profil";
+import SplashScreen from "./screens/Start/Splash";
+import MainTabs from "./screens/Start/MainTabs";
+import OnboardingScreen from "./screens/Start/OnBoarding";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
-        <Tab.Screen
-          name="Home"
-          component={Home}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name="home"
-                size={24}
-                color={focused ? "#D84059" : "#aaa"}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Jurnalku"
-          component={Jurnalku}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name="book"
-                size={24}
-                color={focused ? "#D84059" : "#aaa"}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Konseling"
-          component={Konseling}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name="send"
-                size={24}
-                color={focused ? "#D84059" : "#aaa"}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profil"
-          component={Profil}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name="user"
-                size={24}
-                color={focused ? "#D84059" : "#aaa"}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons"; // ✅ Tambahkan ini
 
-export default function TopikJournal({ navigation }) {
+export default function Home({ navigation }) {
   const user = {
     name: "Alfian Ramdhan",
     profilePic: require("../../assets/Home/1.png"),
@@ -83,8 +83,7 @@ export default function TopikJournal({ navigation }) {
               navigation.navigate(item.navigateTo || "DetailTopik", {
                 topik: item,
               })
-            }
-          >
+            }>
             <Image source={item.image} style={styles.image} />
             <Text style={styles.cardTitle}>{item.title}</Text>
           </TouchableOpacity>
@@ -97,7 +96,7 @@ export default function TopikJournal({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#e8e8e8",
+    backgroundColor: "#ffffff",
     flex: 1,
   },
   profileRow: {

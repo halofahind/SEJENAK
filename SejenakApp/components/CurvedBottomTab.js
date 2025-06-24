@@ -29,7 +29,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
     "worklet";
     const x = activeX.value;
     const R = 70; // Lebar lengkung
-    const H = 35; // Tinggi lengkung
+    const H = 60; // Tinggi lengkung
 
     const d = `
       M0,0
@@ -108,7 +108,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
 
                 <Text
                   style={{
-                    top: 10,
+                    top: isFocused ? 25 : 15,
                     fontSize: 12,
                     color: isFocused ? "#D84059" : "#aaa",
                   }}>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 100,
-    backgroundColor: "transparent",
+    backgroundColor: "ffffff",
   },
   container: {
     flexDirection: "row",
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     position: "absolute",
-    top: -70,
+    top: -45,
     zIndex: 10,
     elevation: 5,
     shadowColor: "#000",
@@ -175,12 +175,13 @@ const styles = StyleSheet.create({
 
   placeholderWrapper: {
     position: "absolute",
-    top: 10, // atau kamu bisa adjust ± sesuai selera
+    top: 0, // atau kamu bisa adjust ± sesuai selera
     alignItems: "center",
     justifyContent: "center",
   },
 
   placeholderText: {
+    top: 30,
     fontSize: 12,
     fontWeight: "600",
     color: "#D84059",
