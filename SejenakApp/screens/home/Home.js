@@ -83,8 +83,7 @@ export default function Home({ navigation }) {
               navigation.navigate(item.navigateTo || "DetailTopik", {
                 topik: item,
               })
-            }
-          >
+            }>
             <Image source={item.image} style={styles.image} />
             <Text style={styles.cardTitle}>{item.title}</Text>
           </TouchableOpacity>
@@ -97,7 +96,7 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#e8e8e8",
+    backgroundColor: "#ffffff",
     flex: 1,
   },
   profileRow: {
