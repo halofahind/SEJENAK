@@ -7,7 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons"; // ✅ Tambahkan ini
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function Home({ navigation }) {
   const user = {
@@ -20,6 +20,7 @@ export default function Home({ navigation }) {
       id: "1",
       title: "Kenali Diri Lebih Baik",
       image: require("../../assets/Home/1.png"),
+      navigateTo: "KenaliDiriScreen", 
     },
     {
       id: "2",
@@ -98,6 +99,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#ffffff",
     flex: 1,
+    marginTop: 40,
   },
   profileRow: {
     flexDirection: "row",
