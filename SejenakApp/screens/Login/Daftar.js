@@ -169,17 +169,24 @@ export default function Daftar({ navigation }) {
       const formattedDob = formatDateForBackend(dob);
 
       const userData = {
-        email: email.trim(),
-        username: username.trim(),
-        nama: nama.trim(),
-        password: password,
-        gender: gender,
-        phone: phone.trim(),
-        tanggalLahir: formattedDob,
-        address: address.trim() || null,
+        role: "Mahasiswa",
+        username: username?.trim() || null,
+        password: password || null,
+        nama: nama?.trim() || null,
+        tanggalLahir: formattedDob || null, // format: 'YYYY-MM-DD'
+        gender: gender || null,
+        hobi: null,
+
+        telepon: phone?.trim() || null,
+        email: email?.trim() || null,
+        about: null,
+        createdBy: null,
+        createdDate: null,
+        modifBy: null,
+        modifDate: null,
       };
 
-      const response = await fetch("http://10.1.47.159:8080/Pengguna", {
+      const response = await fetch("http://10.1.47.159:8080/pengguna", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -490,21 +497,6 @@ export default function Daftar({ navigation }) {
                 keyboardType="phone-pad"
                 returnKeyType="done"
                 onFocus={() => scrollToInput(phoneRef)}
-                editable={!isLoading}
-              />
-            </View>
-
-            {/* Alamat (Optional) */}
-            <View style={styles.inputWrapper}>
-              <Icon name="location-on" size={20} color="#333" />
-              <TextInput
-                style={styles.input}
-                placeholder="Alamat (opsional)"
-                value={address}
-                onChangeText={setAddress}
-                multiline
-                numberOfLines={2}
-                returnKeyType="done"
                 editable={!isLoading}
               />
             </View>
