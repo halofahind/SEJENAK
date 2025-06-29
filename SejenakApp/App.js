@@ -17,6 +17,9 @@ import Konseling from "./screens/konseling/Konseling";
 import Profil from "./screens/profil/Profil";
 import KenaliDiriScreen from "./screens/home/KenaliDiri"; 
 import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPikiran";
+import BerdamaiDenganMasaLalu from "./screens/home/DetailTopik/BerdamaiDenganMasaLalu";
+import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
+import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
 
 import CustomTabBar from "./components/CurvedBottomTab";
 
@@ -100,7 +103,16 @@ export default function App() {
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="KenaliDiriScreen" component={KenaliDiriScreen} />
-        <Stack.Screen name="BerdamaiDenganPikiran" component={BerdamaiDenganPikiran} />
+        <Stack.Screen
+          name="BerdamaiDenganPikiran"
+          component={BerdamaiDenganPikiran}
+        />
+        <Stack.Screen
+          name="BerdamaiDenganMasaLalu"
+          component={BerdamaiDenganMasaLalu}
+        />
+        <Stack.Screen name="Pertanyaan1" component={Pertanyaan1} />
+        <Stack.Screen name="Jurnal1" component={Jurnal1} />
       </Stack.Navigator>
     </NavigationContainer>
   );

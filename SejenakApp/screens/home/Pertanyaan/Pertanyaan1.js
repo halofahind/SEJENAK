@@ -13,23 +13,64 @@ import Icon from "react-native-vector-icons/Ionicons";
 const pages = [
   {
     id: 1,
-    image: require("../../assets/home/o.png"),
+    image: require("../../../assets/OnBoarding/o3.png"),
     text: "Terkadang kita menghabiskan waktu untuk menyesali kegagalan, kita abai pada kemajuan yang kita buat",
   },
   {
     id: 2,
-    image: require("../../assets/home/o3.png"),
+    image: require("../../../assets/Home/1.png"),
     text: "Mari fokuskan pikiran untuk menghargai jalan keluar atas masalah yang dihadapi",
   },
-  // Tambahkan halaman lain di sini jika perlu
+  {
+    id: 3,
+    image: require("../../../assets/Home/1.png"),
+    text: "Masalah apa yang menganggu pikiranmu saat ini?",
+  },
+  {
+    id: 4,
+    image: require("../../../assets/Home/1.png"),
+    text: "Ceritakan lebih lanjut penyebab masalah tersebut",
+  },
+  {
+    id: 5,
+    image: require("../../../assets/Home/1.png"),
+    text: "Terus merasa bersalah tidak mengubah segalanya, untuk mewujudkan impian kita perli bangkit dari kegagalan",
+  },
+  {
+    id: 6,
+    image: require("../../../assets/Home/1.png"),
+    text: "Tuliskan apa saja usaha yang sudah kamu lakukan selama ini",
+  },
+  {
+    id: 7,
+    image: require("../../../assets/Home/1.png"),
+    text: "Fokus pada penyelesaian masalah membantu melepas simpul kusut di pikiranmu",
+  },
+  {
+    id: 8,
+    image: require("../../../assets/Home/1.png"),
+    text: "Adapa tips buat kamu untuk bisa menentukan langkah selanjutnya, pilih yang kamu suka ya!",
+  },
+  {
+    id: 9,
+    image: require("../../../assets/Home/1.png"),
+    text: "Terimakasih sudah berusaha tegar dan mau belajar untuk bangkit, kamu hebat dan berhak bahagia",
+  },
+  {
+    id: 10,
+    image: require("../../../assets/Home/1.png"),
+    text: "Teruslah fokus pada apa saja yang bisa dilakukan dan jangan lupa untuk percaya diri sendiri, yaa!",
+  },
 ];
 
-export default function HalamanJournal({ navigation }) {
+export default function Pertanyaan1({ navigation }) {
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
+    } else {
+      navigation.navigate("Jurnal1");
     }
   };
 
@@ -44,7 +85,6 @@ export default function HalamanJournal({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      {/* Header pink */}
       <View style={styles.headerPink}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -54,7 +94,6 @@ export default function HalamanJournal({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Progress Section */}
       <View style={styles.progressContainer}>
         <Text style={styles.judul}>Berdamai dengan Pikiran</Text>
         <Text style={styles.pageCount}>
@@ -62,18 +101,15 @@ export default function HalamanJournal({ navigation }) {
         </Text>
       </View>
 
-      {/* Progress Bar */}
       <View style={styles.progressBarBackground}>
         <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
       </View>
 
-      {/* Gambar dan teks */}
       <View style={styles.content}>
         <Image source={pages[currentPage].image} style={styles.image} />
         <Text style={styles.text}>{pages[currentPage].text}</Text>
       </View>
 
-      {/* Button navigasi */}
       <View style={styles.buttonRow}>
         {currentPage > 0 && (
           <TouchableOpacity style={styles.backBtn} onPress={handleBack}>

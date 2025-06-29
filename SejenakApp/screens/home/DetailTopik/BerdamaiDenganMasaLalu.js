@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-export default function BerdamaiDenganPikiran({ navigation }) {
+export default function BerdamaiDenganMasaLalu({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header Merah Muda dengan Gambar & Tombol Kembali */}
@@ -29,8 +29,8 @@ export default function BerdamaiDenganPikiran({ navigation }) {
       {/* Isi Konten */}
       <View style={styles.body}>
         <View style={styles.content}>
-          <Text style={styles.title}>Berdamai dengan Pikiran</Text>
-          <Text style={styles.subtitle}>Journal – 11 Halaman</Text>
+          <Text style={styles.title}>Berdamai dengan Kesalahan di Masalalu</Text>
+          <Text style={styles.subtitle}>Journal 11 Halaman</Text>
 
           <Text style={styles.sectionTitle}>Apa tujuan journal ini?</Text>
           <Text style={styles.text}>

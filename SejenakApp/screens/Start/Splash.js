@@ -370,7 +370,7 @@ export default function SplashScreen() {
                 },
               ]}
             >
-              Sejenak
+            
             </Animated.Text>
             <Text style={styles.tagline}>✨ Embrace the Moment ✨</Text>
           </Animated.View>
