@@ -50,7 +50,7 @@ export default function OnboardingScreen() {
     if (currentSlide < slides.length - 1) {
       flatListRef.current.scrollToIndex({ index: currentSlide + 1 });
     } else {
-      navigation.replace("Login");
+      navigation.replace("MainTabs");
     }
   };
 

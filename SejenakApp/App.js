@@ -15,9 +15,9 @@ import Home from "./screens/home/Home";
 import Jurnalku from "./screens/jurnalku/Jurnalku";
 import Konseling from "./screens/konseling/Konseling";
 import Profil from "./screens/profil/Profil";
-import KenaliDiriScreen from "./screens/home/KenaliDiri"; 
+import KenaliDiriScreen from "./screens/home/KenaliDiri";
 import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPikiran";
-
+import DetailKonseling from "./screens/konseling/DetailKonseling";
 import CustomTabBar from "./components/CurvedBottomTab";
 
 const Stack = createNativeStackNavigator();
@@ -91,16 +91,19 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Splash"
-        screenOptions={{ headerShown: false }}
-      >
+        screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
-        <Stack.Screen name="Login" component={Login} />
+        {/* <Stack.Screen name="Login" component={Login} /> */}
         <Stack.Screen name="Daftar" component={Daftar} />
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="DetailKonseling" component={DetailKonseling} />
         <Stack.Screen name="KenaliDiriScreen" component={KenaliDiriScreen} />
-        <Stack.Screen name="BerdamaiDenganPikiran" component={BerdamaiDenganPikiran} />
+        <Stack.Screen
+          name="BerdamaiDenganPikiran"
+          component={BerdamaiDenganPikiran}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

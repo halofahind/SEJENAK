@@ -170,7 +170,7 @@ export default function Login({ navigation }) {
           bounces={false}>
           <View style={styles.loginTitleWrap}>
             import FastImage from 'react-native-fast-image';
-            <Video
+            {/* <Video
               source={require("./assets/animasi.mp4")}
               style={{ width: 200, height: 200 }}
               repeat
@@ -178,7 +178,7 @@ export default function Login({ navigation }) {
               controls={false}
               paused={false}
               resizeMode="cover"
-            />
+            /> */}
             <Text style={styles.loginTitle}>Login</Text>
           </View>
 
