@@ -169,7 +169,17 @@ export default function Login({ navigation }) {
           keyboardShouldPersistTaps="handled"
           bounces={false}>
           <View style={styles.loginTitleWrap}>
-            <Text style={styles.loginTitle}>Login!</Text>
+            import FastImage from 'react-native-fast-image';
+            {/* <Video
+              source={require("./assets/animasi.mp4")}
+              style={{ width: 200, height: 200 }}
+              repeat
+              muted
+              controls={false}
+              paused={false}
+              resizeMode="cover"
+            /> */}
+            <Text style={styles.loginTitle}>Login</Text>
           </View>
 
           {errorMsg !== "" && (

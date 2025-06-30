@@ -11,10 +11,13 @@ import OnboardingScreen from "./screens/Start/OnBoarding";
 import Login from "./screens/Login/Login";
 import Daftar from "./screens/Login/Daftar";
 import Setting from "./screens/profil/Setting";
+import Home from "./screens/home/Home";
+import Jurnalku from "./screens/jurnalku/Jurnalku";
+import Konseling from "./screens/konseling/Konseling";
+import Profil from "./screens/profil/Profil";
 import KenaliDiriScreen from "./screens/home/KenaliDiri";
 import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPikiran";
-import MainTabs from "./screens/Start/MainTabs";
-
+import DetailKonseling from "./screens/konseling/DetailKonseling";
 import CustomTabBar from "./components/CurvedBottomTab";
 import DetailKonseling from "./screens/konseling/DetailKonseling";
 
@@ -23,26 +26,24 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Splash"
-          screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="MainTabs" component={MainTabs} />
-          <Stack.Screen name="DetailKonseling" component={DetailKonseling} />
-          <Stack.Screen name="Daftar" component={Daftar} />
-          <Stack.Screen name="Setting" component={Setting} />
-          <Stack.Screen name="KenaliDiriScreen" component={KenaliDiriScreen} />
-          <Stack.Screen
-            name="BerdamaiDenganPikiran"
-            component={BerdamaiDenganPikiran}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Splash"
+        screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
+        {/* <Stack.Screen name="Login" component={Login} /> */}
+        <Stack.Screen name="Daftar" component={Daftar} />
+        <Stack.Screen name="Setting" component={Setting} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="DetailKonseling" component={DetailKonseling} />
+        <Stack.Screen name="KenaliDiriScreen" component={KenaliDiriScreen} />
+        <Stack.Screen
+          name="BerdamaiDenganPikiran"
+          component={BerdamaiDenganPikiran}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 const styles = StyleSheet.create({
