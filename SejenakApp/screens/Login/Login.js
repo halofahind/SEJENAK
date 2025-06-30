@@ -169,17 +169,7 @@ export default function Login({ navigation }) {
           keyboardShouldPersistTaps="handled"
           bounces={false}>
           <View style={styles.loginTitleWrap}>
-            import FastImage from 'react-native-fast-image';
-            <Video
-              source={require("./assets/animasi.mp4")}
-              style={{ width: 200, height: 200 }}
-              repeat
-              muted
-              controls={false}
-              paused={false}
-              resizeMode="cover"
-            />
-            <Text style={styles.loginTitle}>Login</Text>
+            <Text style={styles.loginTitle}>Login!</Text>
           </View>
 
           {errorMsg !== "" && (
@@ -251,7 +241,7 @@ export default function Login({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", bottom: 90 }}>
             <Text style={styles.signupText}>Belum memiliki akun? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
@@ -332,10 +322,11 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: "#D6385E",
     paddingVertical: 12,
-    paddingHorizontal: 160,
+    paddingHorizontal: 50,
     borderRadius: 24,
     marginBottom: 30,
     marginTop: 10,
+    left: 220,
   },
   loginButtonDisabled: {
     backgroundColor: "#ccc",

@@ -186,7 +186,7 @@ export default function OnboardingScreen() {
       {/* Next Button - Fixed */}
       <TouchableOpacity onPress={handleNext} style={styles.nextButton}>
         <Text style={styles.nextText}>
-          {currentSlide === slides.length - 1 ? "GET STARTED" : "Selanjutnya →"}
+          {currentSlide === slides.length - 1 ? "GET STARTED" : "SELANJUTNYA"}
         </Text>
       </TouchableOpacity>
     </View>
@@ -258,17 +258,16 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     position: "absolute",
-    right: 10,
-    bottom: 20,
+    bottom: 40,
     alignSelf: "center",
-    backgroundColor: "#ffff",
-    borderRadius: 25,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: "#D6385E",
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 100,
     zIndex: 999,
   },
   nextText: {
-    color: "#D6385E",
+    color: "#fff",
     fontWeight: "bold",
     fontSize: 14,
   },
