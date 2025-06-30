@@ -20,8 +20,17 @@ import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPiki
 import BerdamaiDenganMasaLalu from "./screens/home/DetailTopik/BerdamaiDenganMasaLalu";
 import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
 import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
+import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
+import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
+import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
+import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
+import DetailAkun from "./screens/profil/Detail/DetailAkun";
+import MoodTracker from "./screens/home/Mood/MoodTracker";
+import NextScreen from "./screens/home/Mood/NextScreen";
+import MoodSummary from "./screens/home/Mood/DetailMood/MoodSummary";
 
 import CustomTabBar from "./components/CurvedBottomTab";
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -113,6 +122,14 @@ export default function App() {
         />
         <Stack.Screen name="Pertanyaan1" component={Pertanyaan1} />
         <Stack.Screen name="Jurnal1" component={Jurnal1} />
+        <Stack.Screen name="AkunPersonal" component={AkunPersonal} />
+        <Stack.Screen name="GantiPassword" component={GantiPassword} />
+        <Stack.Screen name="HapusAkun" component={HapusAkun} />
+        <Stack.Screen name="KelolaAkun" component={KelolaAkun} />
+        <Stack.Screen name="DetailAkun" component={DetailAkun} />
+        <Stack.Screen name="MoodTracker" component={MoodTracker} />
+        <Stack.Screen name="NextScreen" component={NextScreen} />
+        <Stack.Screen name="MoodSummary" component={MoodSummary} />
       </Stack.Navigator>
     </NavigationContainer>
   );

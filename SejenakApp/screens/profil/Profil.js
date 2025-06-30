@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,25 +9,55 @@ import {
   TextInput,
   Alert,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function Profil({ navigation }) {
-  const user = {
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileUri, setProfileUri] = useState(null);
+  const [user, setUser] = useState({
     name: "Alfian Ramdhan",
     email: "alfianramdhan003@gmail.com",
     phone: "082196787525",
     gender: "Laki laki",
     address: "Bandung",
     profilePic: require("../../assets/Home/1.png"),
+  });
+
+  // Request permission
+  useEffect(() => {
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Izin akses galeri diperlukan untuk mengubah foto profil.");
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileUri(result.assets[0].uri);
+    }
   };
 
   const handleSetting = () => {
-    alert("Pengaturan belum tersedia.");
-     navigation.navigate("Setting");
+    navigation.navigate("Setting");
   };
 
   const handleEdit = () => {
-    alert("Fitur Edit Profil belum tersedia.");
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    Alert.alert("Berhasil", "Profil berhasil diperbarui.");
   };
 
   const handleLogout = () => {
@@ -41,69 +71,85 @@ export default function Profil({ navigation }) {
     ]);
   };
 
+  const handleChange = (key, value) => {
+    setUser({ ...user, [key]: value });
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ flex: 1 }}>
-        {/* Header pink */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.settingIcon} onPress={handleSetting}>
-            <Icon name="settings" size={24} color="#fff" />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.settingIcon} onPress={handleSetting}>
+          <Icon name="settings" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <View style={styles.profileWrapper}>
+          <TouchableOpacity onPress={pickImage}>
+            <Image
+              source={profileUri ? { uri: profileUri } : user.profilePic}
+              style={styles.profileImage}
+            />
+            <View style={styles.cameraIcon}>
+              <Icon name="photo-camera" size={16} color="#fff" />
+            </View>
           </TouchableOpacity>
-          <Image source={user.profilePic} style={styles.profileImage} />
-          <Text style={styles.hiText}>Hi, {user.name}</Text>
         </View>
 
-        {/* Info Box */}
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>Nama Lengkap</Text>
-          <TextInput style={styles.input} value={user.name} editable={false} />
+        <Text style={styles.hiText}>Hi, {user.name}</Text>
+      </View>
 
-          <Text style={styles.label}>Email</Text>
-          <TextInput style={styles.input} value={user.email} editable={false} />
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Nama Lengkap</Text>
+        <TextInput
+          style={styles.input}
+          value={user.name}
+          onChangeText={(text) => handleChange("name", text)}
+          editable={isEditing}
+        />
 
-          <Text style={styles.label}>No Telephone/Hp</Text>
-          <TextInput style={styles.input} value={user.phone} editable={false} />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={user.email}
+          onChangeText={(text) => handleChange("email", text)}
+          editable={isEditing}
+        />
 
-          <Text style={styles.label}>Gender</Text>
-          <TextInput
-            style={styles.input}
-            value={user.gender}
-            editable={false}
+        <Text style={styles.label}>No Telephone/Hp</Text>
+        <TextInput
+          style={styles.input}
+          value={user.phone}
+          onChangeText={(text) => handleChange("phone", text)}
+          editable={isEditing}
+        />
+
+        <Text style={styles.label}>Gender</Text>
+        <TextInput
+          style={styles.input}
+          value={user.gender}
+          onChangeText={(text) => handleChange("gender", text)}
+          editable={isEditing}
+        />
+
+        <Text style={styles.label}>Alamat</Text>
+        <TextInput
+          style={styles.input}
+          value={user.address}
+          onChangeText={(text) => handleChange("address", text)}
+          editable={isEditing}
+        />
+
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+          <Icon
+            name="logout"
+            size={20}
+            color="#D33"
+            style={{ marginRight: 8 }}
           />
-
-          <Text style={styles.label}>Alamat</Text>
-          <TextInput
-            style={styles.input}
-            value={user.address}
-            editable={false}
-          />
-
-          {/* Tombol Edit */}
-          <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
-            <Icon
-              name="edit"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 8 }}
-            />
-            <Text style={styles.editText}>Edit Profil</Text>
-          </TouchableOpacity>
-
-          {/* Tombol Logout */}
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Icon
-              name="logout"
-              size={20}
-              color="#D33"
-              style={{ marginRight: 8 }}
-            />
-            <Text style={styles.logoutText}>Keluar</Text>
-          </TouchableOpacity>
-        </View>
+          <Text style={styles.logoutText}>Keluar</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
-
 }
 
 const styles = StyleSheet.create({
@@ -118,18 +164,35 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     right: 20,
-    marginTop : 6,
+    marginTop: 6,
+  },
+  profileWrapper: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
   },
   profileImage: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  cameraIcon: {
+    position: "absolute",
+    bottom: 0,
+    right: -2,
+    backgroundColor: "#EF6A6A",
+    borderRadius: 12,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: "#fff",
   },
   hiText: {
     fontSize: 16,
     color: "#fff",
     fontWeight: "bold",
+    marginTop: 10,
   },
   infoContainer: {
     paddingHorizontal: 20,
@@ -155,6 +218,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#EF6A6A",
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginTop: 10,
+  },
+  saveButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#36B37E",
     borderRadius: 8,
     paddingVertical: 12,
     marginTop: 10,

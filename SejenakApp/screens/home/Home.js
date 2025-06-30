@@ -20,7 +20,7 @@ export default function Home({ navigation }) {
       id: "1",
       title: "Kenali Diri Lebih Baik",
       image: require("../../assets/Home/1.png"),
-      navigateTo: "KenaliDiriScreen", 
+      navigateTo: "KenaliDiriScreen",
     },
     {
       id: "2",
@@ -44,20 +44,46 @@ export default function Home({ navigation }) {
     },
   ];
 
+  const moods = [
+    { emoji: "😢", label: "Sangat Buruk" },
+    { emoji: "😞", label: "Buruk" },
+    { emoji: "😐", label: "Netral" },
+    { emoji: "😊", label: "Baik" },
+    { emoji: "😄", label: "Sangat Baik" },
+  ];
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* === Bagian Profil + Notifikasi === */}
+      {/* === Profil & Notifikasi === */}
       <View style={styles.profileRow}>
         <View style={styles.profileContainer}>
           <Image source={user.profilePic} style={styles.profileImage} />
           <View>
-            <Text style={styles.userName}>{user.name}</Text>
-            <Text style={styles.welcomeText}>Selamat datang di Sejenak</Text>
+            <Text style={styles.userName}>Hai, {user.name}</Text>
+            <Text style={styles.welcomeText}>
+              Bagaimana perasaanmu hari ini?
+            </Text>
           </View>
         </View>
         <TouchableOpacity onPress={() => alert("Notifikasi belum tersedia")}>
           <Icon name="notifications-none" size={28} color="#444" />
         </TouchableOpacity>
+      </View>
+
+      {/* === Mood Pilihan === */}
+      <View style={styles.moodOptions}>
+        {moods.map((mood, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.moodItem}
+            onPress={() =>
+              navigation.navigate("MoodTracker", { selectedMood: mood })
+            }
+          >
+            <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+            <Text style={styles.moodLabel}>{mood.label}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <View style={styles.divider} />
@@ -84,7 +110,8 @@ export default function Home({ navigation }) {
               navigation.navigate(item.navigateTo || "DetailTopik", {
                 topik: item,
               })
-            }>
+            }
+          >
             <Image source={item.image} style={styles.image} />
             <Text style={styles.cardTitle}>{item.title}</Text>
           </TouchableOpacity>
@@ -105,7 +132,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 0,
     marginBottom: 20,
   },
   profileContainer: {
@@ -127,15 +153,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
   },
+  moodOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  moodItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  moodEmoji: {
+    fontSize: 28,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 6,
+    textAlign: "center",
+  },
   divider: {
     borderBottomColor: "#ccc",
     borderBottomWidth: 1,
-    marginVertical: 1,
+    marginVertical: 16,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 20,
     marginBottom: 6,
     color: "#444",
   },

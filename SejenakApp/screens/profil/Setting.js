@@ -4,23 +4,36 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   ScrollView,
+  Alert,
 } from "react-native";
 
 export default function Setting({ navigation }) {
-  const handleOption = (label) => {
-    Alert.alert(label, `Fitur "${label}" belum tersedia.`);
-  };
-
   const settingOptions = [
     "Akun Personal",
-    "Berlangganan",
-    "Bantuan",
-    "Notifikasi",
     "Ganti Password",
     "Hapus Akun",
+    "Kelola Akun"
   ];
+
+  const handleOption = (label) => {
+    switch (label) {
+      case "Akun Personal":
+        navigation.navigate("AkunPersonal");
+        break;
+      case "Ganti Password":
+        navigation.navigate("GantiPassword");
+        break;
+      case "Hapus Akun":
+        navigation.navigate("HapusAkun");
+        break;
+      case "Kelola Akun":
+        navigation.navigate("KelolaAkun");
+        break;
+      default:
+        Alert.alert(label, `Fitur "${label}" belum tersedia.`);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -39,14 +52,11 @@ export default function Setting({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
+  container: { flex: 1, backgroundColor: "#fff", padding: 20 },
   title: {
     fontSize: 22,
     fontWeight: "bold",
+    marginTop: 50,
     marginBottom: 20,
     color: "#D6385E",
   },
@@ -55,8 +65,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
-  optionText: {
-    fontSize: 16,
-    color: "#333",
-  },
+  optionText: { fontSize: 16, color: "#333" },
 });
