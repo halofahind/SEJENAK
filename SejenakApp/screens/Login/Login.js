@@ -15,9 +15,9 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BeritaCarousel from "../../components/BeritaCarousel";
+import { API_BASE_URL } from "../../utils/constants";
 import Video from "react-native-video";
 // Konstanta untuk API
-const API_BASE_URL = "http://10.1.47.159:8080";
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Login({ navigation }) {

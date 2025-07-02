@@ -39,15 +39,45 @@ const Topik = ({ navigation }) => {
   };
 
   const handleTopicSelect = (topic) => {
-    setSelectedTopic(topic); // ✅ hanya set topik yang dipilih
+    setSelectedTopic(topic);
   };
 
-  const handlePilihTopik = () => {
-    if (selectedTopic) {
-      navigation.navigate("DetailKonseling", {
-        topic: selectedTopic,
-        isHistory: false,
+  const handlePilihTopik = async () => {
+    if (!selectedTopic) return;
+
+    const userId = 3;
+    const newKonseling = {
+      topikId: selectedTopic.id,
+      userId: userId,
+      tglMulai: new Date().toISOString(),
+      status: "Sedang Berjalan",
+      createdBy: "user",
+      createdDate: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/konseling`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newKonseling),
       });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        navigation.navigate("DetailKonseling", {
+          topic: selectedTopic.nama,
+          konId: result.konId, // ← pastikan backend return ini
+          isHistory: false,
+        });
+      } else {
+        Alert.alert("Gagal", "Gagal membuat sesi konseling");
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+      Alert.alert("Error", "Terjadi kesalahan saat membuat sesi konseling");
     }
   };
 

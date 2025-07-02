@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,32 +7,50 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  FlatList,
 } from "react-native";
+import { API_BASE_URL } from "../../utils/constants";
+import dayjs from "dayjs";
+import "dayjs/locale/id";
 
 const Konseling = ({ navigation }) => {
-  const historyData = [
-    {
-      id: 1,
-      title: "Pendidikan",
-      subtitle: "pesan",
-      status: "selesai",
-      color: "#667eea",
-    },
-    {
-      id: 2,
-      title: "Diri Sendiri",
-      subtitle: "pesan",
-      status: "selesai",
-      color: "#f093fb",
-    },
-    {
-      id: 3,
-      title: "Pertemanan",
-      subtitle: "pesan",
-      status: "selesai",
-      color: "#4facfe",
-    },
-  ];
+  dayjs.locale("id");
+  const [konselings, setKonselings] = useState([]);
+  const scrollViewRef = useRef();
+
+  useEffect(() => {
+    fetchKonselings();
+  }, []);
+
+  const fetchKonselings = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/konselings`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Data topik:", response);
+
+      const data = await response.json();
+      setKonselings(data);
+    } catch (error) {
+      console.error("Error fetching topiks:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+  // di useEffect atau saat mapping data
+  const fetchTopikById = async (topikId) => {
+    const res = await fetch(`${API_BASE_URL}/topik/${topikId}`);
+    return await res.json();
+  };
+
+  const fetchUserById = async (userId) => {
+    const res = await fetch(`${API_BASE_URL}/pengguna/${userId}`);
+    return await res.json();
+  };
 
   const handleStartCounseling = () => {
     navigation.navigate("Topik");
@@ -48,45 +67,55 @@ const Konseling = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Topik Konseling</Text>
-          <Text style={styles.sectionSubtitle}>
-            Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan
-            nyaman
-          </Text>
-          <TouchableOpacity style={styles.startButton} onPress={handleAddTopik}>
-            <Text style={styles.startButtonText}>Kelola Topik</Text>
-          </TouchableOpacity>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Topik Konseling</Text>
+        <Text style={styles.sectionSubtitle}>
+          Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan
+          nyaman
+        </Text>
+        <TouchableOpacity style={styles.startButton} onPress={handleAddTopik}>
+          <Text style={styles.startButtonText}>Kelola Topik</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.startButton}
-            onPress={handleStartCounseling}>
-            <Text style={styles.startButtonText}>Mulai Konseling</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={handleStartCounseling}>
+          <Text style={styles.startButtonText}>Mulai Konseling</Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Riwayat Konseling</Text>
-          {historyData.map((item) => (
+      <View style={[styles.section]}>
+        <Text style={styles.sectionTitle}>Riwayat Konseling</Text>
+
+        <FlatList
+          data={konselings}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
             <TouchableOpacity
-              key={item.id}
               style={styles.historyItem}
               onPress={() => handleHistoryPress(item)}>
               <View style={[styles.avatar, { backgroundColor: item.color }]}>
                 <Text style={styles.avatarText}>👤</Text>
               </View>
               <View style={styles.historyContent}>
-                <Text style={styles.historyTitle}>{item.title}</Text>
-                <Text style={styles.historySubtitle}>{item.subtitle}</Text>
+                <Text style={styles.historyTitle}>{item.id}</Text>
+                <Text style={styles.historySubtitle}>
+                  Mulai : {dayjs(item.tanggalMulai).format("D MMMM YYYY")}
+                </Text>
+                <Text style={styles.historySubtitle}>Selesai :</Text>
               </View>
               <View style={styles.statusBadge}>
                 <Text style={styles.statusText}>{item.status}</Text>
+                <Text style={styles.statusText}>
+                  {dayjs(item.tanggalSelesai).format("HH :mm")}
+                </Text>
               </View>
             </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+          )}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -108,7 +137,13 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   section: {
-    marginBottom: 32,
+    flex: 1,
+    padding: 20,
+    paddingBottom: 80,
+  },
+  riwayatSection: {
+    flex: 1,
+    padding: 20,
   },
   sectionTitle: {
     fontSize: 16,
@@ -181,7 +216,7 @@ const styles = StyleSheet.create({
   historyTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
+    color: "#e91e63",
   },
   historySubtitle: {
     fontSize: 14,

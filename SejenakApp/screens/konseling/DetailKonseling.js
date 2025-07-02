@@ -11,9 +11,10 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import { API_BASE_URL } from "../../utils/constants";
 
 const DetailKonseling = ({ navigation, route }) => {
-  const { topic, isHistory } = route.params;
+  const { topic, isHistory, konId } = route.params;
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -52,8 +53,11 @@ const DetailKonseling = ({ navigation, route }) => {
     });
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message.trim()) {
+      const currentDateTime = new Date();
+      const waktuISO = currentDateTime.toISOString();
+
       const newMessage = {
         id: messages.length + 1,
         text: message.trim(),
@@ -62,11 +66,29 @@ const DetailKonseling = ({ navigation, route }) => {
         date: getCurrentDate(),
       };
 
+      // ⬇️ Simpan ke database lewat API
+      try {
+        await fetch(`${API_BASE_URL}/detailKonseling`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            konId: konId,
+            pengirim: "user",
+            pesan: message.trim(),
+            waktu: waktuISO,
+          }),
+        });
+      } catch (error) {
+        console.error("Gagal simpan pesan ke DB:", error.message);
+      }
+
       setMessages((prev) => [...prev, newMessage]);
       setMessage("");
 
-      // Simulate admin response after 1-2 seconds
-      setTimeout(() => {
+      // Simulasi balasan admin
+      setTimeout(async () => {
         const responses = [
           "Terima kasih sudah berbagi. Saya memahami perasaan Anda. Bisakah Anda ceritakan lebih detail?",
           "Itu adalah hal yang wajar untuk dirasakan. Bagaimana Anda biasanya mengatasi situasi seperti ini?",
@@ -78,7 +100,7 @@ const DetailKonseling = ({ navigation, route }) => {
         const randomResponse =
           responses[Math.floor(Math.random() * responses.length)];
 
-        const adminResponse = {
+        const adminMessage = {
           id: messages.length + 2,
           text: randomResponse,
           isAdmin: true,
@@ -86,8 +108,26 @@ const DetailKonseling = ({ navigation, route }) => {
           date: getCurrentDate(),
         };
 
-        setMessages((prev) => [...prev, adminResponse]);
-      }, Math.random() * 1000 + 1000); // Random delay between 1-2 seconds
+        // ⬇️ Simpan balasan admin ke DB juga
+        try {
+          await fetch(`${API_BASE_URL}/detailKonseling`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              konId: konId,
+              pengirim: "admin",
+              pesan: randomResponse,
+              waktu: new Date().toISOString(),
+            }),
+          });
+        } catch (error) {
+          console.error("Gagal simpan balasan admin ke DB:", error.message);
+        }
+
+        setMessages((prev) => [...prev, adminMessage]);
+      }, Math.random() * 1000 + 1000);
     }
   };
 
@@ -285,7 +325,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    paddingTop: 30,
+    paddingTop: 40,
   },
   backButton: {
     marginRight: 16,

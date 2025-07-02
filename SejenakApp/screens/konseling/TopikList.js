@@ -16,15 +16,13 @@ import {
   State,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
-
+import { API_BASE_URL } from "../../utils/constants";
 import axios from "axios";
 
 export default function TopikList({ navigation }) {
   const [topiks, setTopiks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const API_BASE_URL = "http://10.1.47.159:8080"; // Ganti dengan URL API Anda
 
   useEffect(() => {
     fetchTopiks();
