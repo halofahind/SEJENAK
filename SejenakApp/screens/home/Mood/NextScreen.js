@@ -30,7 +30,7 @@ const sumberEmosi = [
   "Refleksi Diri",
 ];
 
-export default function EmosiScreen({ route, navigation }) {
+export default function NextScreen({ route, navigation }) {
   const { emosi } = route.params;
   const [selectedSources, setSelectedSources] = useState([]);
 

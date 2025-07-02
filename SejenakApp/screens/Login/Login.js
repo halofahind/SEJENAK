@@ -17,7 +17,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BeritaCarousel from "../../components/BeritaCarousel";
 import Video from "react-native-video";
 // Konstanta untuk API
-const API_BASE_URL = "http://10.1.47.159:8080";
+const API_BASE_URL = "http://192.168.43.40:8080";
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
@@ -98,7 +98,7 @@ export default function Login({ navigation }) {
           "Tidak dapat terhubung ke server. Pastikan:\n" +
             "• Koneksi internet stabil\n" +
             "• Server sedang berjalan\n" +
-            "• IP address benar (10.1.47.159:8080)"
+            "• IP address benar (192.168.43.40:8080)"
         );
       } else if (error.name === "AbortError") {
         Alert.alert("Timeout", "Koneksi ke server terlalu lama. Coba lagi.");

@@ -308,7 +308,8 @@ export default function SplashScreen() {
                   { rotate: logoRotateInterpolate },
                 ],
               },
-            ]}>
+            ]}
+          >
             {/* Multiple Glow Layers */}
             <Animated.View
               style={[
@@ -345,7 +346,8 @@ export default function SplashScreen() {
                 {
                   transform: [{ rotate: `${waveTransform * 0.1}deg` }],
                 },
-              ]}>
+              ]}
+            >
               <Image source={SPLASH_LOGO} style={styles.logo} />
             </Animated.View>
           </Animated.View>
@@ -358,17 +360,8 @@ export default function SplashScreen() {
                 opacity: textFadeAnim,
                 transform: [{ translateY: textSlideAnim }],
               },
-            ]}>
-            <Animated.Text
-              style={[
-                styles.appName,
-                {
-                  transform: [{ scale: pulseAnim }],
-                },
-              ]}>
-              Sejenak
-            </Animated.Text>
-          </Animated.View>
+            ]}
+          ></Animated.View>
         </View>
 
         {/* Elegant Bottom Indicator */}
@@ -378,7 +371,8 @@ export default function SplashScreen() {
             {
               opacity: logoOpacity,
             },
-          ]}>
+          ]}
+        >
           {[...Array(3)].map((_, index) => (
             <Animated.View
               key={index}
