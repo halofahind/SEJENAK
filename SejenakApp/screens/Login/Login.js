@@ -15,9 +15,9 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BeritaCarousel from "../../components/BeritaCarousel";
+import { API_BASE_URL } from "../../utils/constants";
 import Video from "react-native-video";
 // Konstanta untuk API
-const API_BASE_URL = "http://192.168.43.40:8080";
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
@@ -169,16 +169,6 @@ export default function Login({ navigation }) {
           keyboardShouldPersistTaps="handled"
           bounces={false}>
           <View style={styles.loginTitleWrap}>
-            import FastImage from 'react-native-fast-image';
-            {/* <Video
-              source={require("./assets/animasi.mp4")}
-              style={{ width: 200, height: 200 }}
-              repeat
-              muted
-              controls={false}
-              paused={false}
-              resizeMode="cover"
-            /> */}
             <Text style={styles.loginTitle}>Login</Text>
           </View>
 

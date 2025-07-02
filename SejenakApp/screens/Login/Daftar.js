@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
+import { API_BASE_URL } from "../../utils/constants";
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Daftar({ navigation }) {
@@ -186,7 +186,7 @@ export default function Daftar({ navigation }) {
         modifDate: null,
       };
 
-      const response = await fetch("http://10.1.47.159:8080/pengguna", {
+      const response = await fetch(`${API_BASE_URL}/pengguna`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

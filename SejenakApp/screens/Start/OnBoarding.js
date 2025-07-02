@@ -54,7 +54,7 @@ export default function OnboardingScreen() {
     }
   };
 
-  const handleSkip = () => navigation.replace("Login");
+  const handleSkip = () => navigation.replace("MainTabs");
 
   const renderItem = ({ item, index }) => {
     const inputRange = [
