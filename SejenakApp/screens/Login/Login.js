@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -33,8 +34,7 @@ export default function Login({ navigation }) {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const handleLogin = async () => {
-    // Validasi input
-    if (!email.trim()) {
+    if (!username.trim()) {
       Alert.alert("Error", "Username tidak boleh kosong!");
       return;
     }
@@ -47,9 +47,8 @@ export default function Login({ navigation }) {
     setIsLoading(true);
 
     try {
-      // Buat request body sesuai dengan API Spring Boot
       const loginData = {
-        username: email.trim(),
+        username: username.trim(),
         password: password.trim(),
       };
 
@@ -62,33 +61,28 @@ export default function Login({ navigation }) {
           Accept: "application/json",
         },
         body: JSON.stringify(loginData),
-        // Tambahkan timeout untuk menghindari hanging
-        timeout: 10000,
       });
 
       console.log("Response status:", response.status);
 
       if (response.ok) {
-        // Login berhasil
         const userData = await response.json();
         console.log("Login berhasil:", userData);
 
-        // Simpan data user jika diperlukan (bisa pakai AsyncStorage)
-        // await AsyncStorage.setItem('userData', JSON.stringify(userData));
+        // Simpan userData ke AsyncStorage
+        await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
-        navigation.navigate("MainTabs");
+        // Navigasi ke halaman utama
+        navigation.replace("MainTabs");
       } else if (response.status === 401) {
-        // Unauthorized - Username atau password salah
         setErrorMsg("Username atau password salah!");
         setIsPasswordInvalid(true);
       } else {
-        // Error lainnya
         Alert.alert("Error", `Terjadi kesalahan server (${response.status})`);
       }
     } catch (error) {
       console.error("Error login:", error);
 
-      // Handle berbagai jenis error
       if (
         error.name === "TypeError" &&
         error.message.includes("Network request failed")
@@ -98,15 +92,10 @@ export default function Login({ navigation }) {
           "Tidak dapat terhubung ke server. Pastikan:\n" +
             "• Koneksi internet stabil\n" +
             "• Server sedang berjalan\n" +
-            "• IP address benar (192.168.43.40:8080)"
+            "• IP address benar"
         );
-      } else if (error.name === "AbortError") {
-        Alert.alert("Timeout", "Koneksi ke server terlalu lama. Coba lagi.");
       } else {
-        Alert.alert(
-          "Error",
-          "Terjadi kesalahan tidak terduga: " + error.message
-        );
+        Alert.alert("Error", "Terjadi kesalahan: " + error.message);
       }
     } finally {
       setIsLoading(false);

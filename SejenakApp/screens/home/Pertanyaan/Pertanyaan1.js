@@ -88,8 +88,7 @@ export default function Pertanyaan1({ navigation }) {
       <View style={styles.headerPink}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+          style={styles.backButton}>
           <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
       </View>

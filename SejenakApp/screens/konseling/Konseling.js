@@ -16,7 +16,6 @@ import "dayjs/locale/id";
 const Konseling = ({ navigation }) => {
   dayjs.locale("id");
   const [konselings, setKonselings] = useState([]);
-  const scrollViewRef = useRef();
 
   useEffect(() => {
     fetchKonselings();
@@ -40,16 +39,6 @@ const Konseling = ({ navigation }) => {
       setLoading(false);
       setRefreshing(false);
     }
-  };
-  // di useEffect atau saat mapping data
-  const fetchTopikById = async (topikId) => {
-    const res = await fetch(`${API_BASE_URL}/topik/${topikId}`);
-    return await res.json();
-  };
-
-  const fetchUserById = async (userId) => {
-    const res = await fetch(`${API_BASE_URL}/pengguna/${userId}`);
-    return await res.json();
   };
 
   const handleStartCounseling = () => {
@@ -82,39 +71,41 @@ const Konseling = ({ navigation }) => {
           onPress={handleStartCounseling}>
           <Text style={styles.startButtonText}>Mulai Konseling</Text>
         </TouchableOpacity>
-      </View>
 
-      <View style={[styles.section]}>
-        <Text style={styles.sectionTitle}>Riwayat Konseling</Text>
+        <View style={[styles.section]}>
+          <Text style={styles.sectionTitle}>Riwayat Konseling</Text>
 
-        <FlatList
-          data={konselings}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.historyItem}
-              onPress={() => handleHistoryPress(item)}>
-              <View style={[styles.avatar, { backgroundColor: item.color }]}>
-                <Text style={styles.avatarText}>👤</Text>
-              </View>
-              <View style={styles.historyContent}>
-                <Text style={styles.historyTitle}>{item.id}</Text>
-                <Text style={styles.historySubtitle}>
-                  Mulai : {dayjs(item.tanggalMulai).format("D MMMM YYYY")}
-                </Text>
-                <Text style={styles.historySubtitle}>Selesai :</Text>
-              </View>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>{item.status}</Text>
-                <Text style={styles.statusText}>
-                  {dayjs(item.tanggalSelesai).format("HH :mm")}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        />
+          <FlatList
+            data={konselings}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.historyItem}
+                onPress={() => handleHistoryPress(item)}>
+                <View style={[styles.avatar, { backgroundColor: item.color }]}>
+                  <Text style={styles.avatarText}>👤</Text>
+                </View>
+                <View style={styles.historyContent}>
+                  <Text style={styles.historyTitle}>
+                    {item.topik.nama || "Tidak Ada Topik"}
+                  </Text>
+                  <Text style={styles.historySubtitle}>
+                    Mulai : {dayjs(item.tanggalMulai).format("D MMMM YYYY")}
+                  </Text>
+                  <Text style={styles.historySubtitle}>Selesai :</Text>
+                </View>
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusText}>{item.status}</Text>
+                  <Text style={styles.statusText}>
+                    {dayjs(item.tanggalSelesai).format("HH :mm")}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 0 }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -124,9 +115,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8f9fa",
-  },
-  scrollContent: {
-    padding: 20,
   },
   header: {
     fontSize: 24,
@@ -138,12 +126,11 @@ const styles = StyleSheet.create({
   },
   section: {
     flex: 1,
-    padding: 20,
-    paddingBottom: 80,
+    padding: 15,
+    paddingBottom: 50,
   },
   riwayatSection: {
     flex: 1,
-    padding: 20,
   },
   sectionTitle: {
     fontSize: 16,
