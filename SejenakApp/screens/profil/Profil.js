@@ -7,262 +7,212 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Alert,
+  ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import SessionManager from "../../utils/SessionManager"; // pastikan path-nya benar
 
 export default function Profil({ navigation }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileUri, setProfileUri] = useState(null);
   const [user, setUser] = useState({
-    name: "Alfian Ramdhan",
-    email: "alfianramdhan003@gmail.com",
-    phone: "082196787525",
-    gender: "Laki laki",
-    address: "Bandung",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    address: "",
     profilePic: require("../../assets/Home/1.png"),
   });
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Request permission
   useEffect(() => {
+    const fetchUserData = async () => {
+      setIsLoading(true);
+      try {
+        const userData = await AsyncStorage.getItem("userData");
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          setUser({
+            name: parsedData.nama || "",
+            email: parsedData.email || "",
+            phone: parsedData.telepon || "",
+            gender: parsedData.gender || "",
+            address: parsedData.alamat || "",
+            profilePic: parsedData.profilePic
+              ? { uri: parsedData.profilePic }
+              : require("../../assets/Home/1.png"),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+
     (async () => {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        alert("Izin akses galeri diperlukan untuk mengubah foto profil.");
+        console.log("Gallery permission denied");
       }
     })();
   }, []);
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setProfileUri(result.assets[0].uri);
-    }
-  };
 
   const handleSetting = () => {
     navigation.navigate("Setting");
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
-    Alert.alert("Berhasil", "Profil berhasil diperbarui.");
-  };
-
-  const handleLogout = () => {
-    Alert.alert("Keluar", "Yakin ingin keluar dari aplikasi?", [
-      { text: "Batal", style: "cancel" },
-      {
-        text: "Keluar",
-        style: "destructive",
-        onPress: async () => {
-          console.log("Keluar ditekan");
-          try {
-            await AsyncStorage.removeItem("userData");
-            console.log("UserData dihapus");
-
-            SessionManager.stop?.();
-            console.log("Session stop");
-
-            navigation.replace("Login");
-          } catch (e) {
-            console.log("Logout error:", e);
-          }
-        },
-      },
-    ]);
-  };
-
-  const handleChange = (key, value) => {
-    setUser({ ...user, [key]: value });
-  };
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#e91e63" />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <ScrollView style={styles.container}>
+      {/* Header Section */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.settingIcon} onPress={handleSetting}>
-          <Icon name="settings" size={24} color="#fff" />
+        <TouchableOpacity
+          style={styles.settingIcon}
+          onPress={handleSetting}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+          <Icon name="settings" size={26} color="#fff" />
         </TouchableOpacity>
 
         <View style={styles.profileWrapper}>
-          <TouchableOpacity onPress={pickImage}>
-            <Image
-              source={profileUri ? { uri: profileUri } : user.profilePic}
-              style={styles.profileImage}
-            />
-            <View style={styles.cameraIcon}>
-              <Icon name="photo-camera" size={16} color="#fff" />
-            </View>
-          </TouchableOpacity>
+          <Image source={user.profilePic} style={styles.profileImage} />
         </View>
 
-        <Text style={styles.hiText}>Hi, {user.name}</Text>
+        <Text style={styles.hiText}>Hai, {user.name || "-"}</Text>
       </View>
 
+      {/* Profile Info Section */}
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>Nama Lengkap</Text>
-        <TextInput
-          style={styles.input}
-          value={user.name}
-          onChangeText={(text) => handleChange("name", text)}
-          editable={isEditing}
-        />
+        {/* Name Field */}
+        <View style={styles.infoItem}>
+          <Icon name="person" size={22} color="#e91e63" style={styles.icon} />
+          <View style={styles.textContainer}>
+            <Text style={styles.label}>Nama Lengkap</Text>
+            <Text style={styles.value}>{user.name}</Text>
+          </View>
+        </View>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={user.email}
-          onChangeText={(text) => handleChange("email", text)}
-          editable={isEditing}
-        />
+        {/* Email Field */}
+        <View style={styles.infoItem}>
+          <Icon name="email" size={22} color="#e91e63" style={styles.icon} />
+          <View style={styles.textContainer}>
+            <Text style={styles.label}>Email</Text>
+            <Text style={styles.value}>{user.email}</Text>
+          </View>
+        </View>
 
-        <Text style={styles.label}>No Telephone/Hp</Text>
-        <TextInput
-          style={styles.input}
-          value={user.phone}
-          onChangeText={(text) => handleChange("phone", text)}
-          editable={isEditing}
-        />
+        {/* Phone Field */}
+        <View style={styles.infoItem}>
+          <Icon name="phone" size={22} color="#e91e63" style={styles.icon} />
+          <View style={styles.textContainer}>
+            <Text style={styles.label}>No. Telepon</Text>
+            <Text style={styles.value}>{user.phone}</Text>
+          </View>
+        </View>
 
-        <Text style={styles.label}>Gender</Text>
-        <TextInput
-          style={styles.input}
-          value={user.gender}
-          onChangeText={(text) => handleChange("gender", text)}
-          editable={isEditing}
-        />
+        {/* Gender Field */}
+        <View style={styles.infoItem}>
+          <Icon name="people" size={22} color="#e91e63" style={styles.icon} />
+          <View style={styles.textContainer}>
+            <Text style={styles.label}>Jenis Kelamin</Text>
+            <Text style={styles.value}>{user.gender || "-"}</Text>
+          </View>
+        </View>
 
-        <Text style={styles.label}>Alamat</Text>
-        <TextInput
-          style={styles.input}
-          value={user.address}
-          onChangeText={(text) => handleChange("address", text)}
-          editable={isEditing}
-        />
-
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        {/* Address Field */}
+        <View style={styles.infoItem}>
           <Icon
-            name="logout"
-            size={20}
-            color="#D33"
-            style={{ marginRight: 8 }}
+            name="location-on"
+            size={22}
+            color="#e91e63"
+            style={styles.icon}
           />
-          <Text style={styles.logoutText}>Keluar</Text>
-        </TouchableOpacity>
+          <View style={styles.textContainer}>
+            <Text style={styles.label}>Alamat</Text>
+            <Text style={styles.value}>{user.address || "-"}</Text>
+          </View>
+        </View>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: "#e91e63",
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 40,
-    paddingTop: 60,
+  },
+  header: {
+    backgroundColor: "#D6385E",
+    alignItems: "center",
+    paddingVertical: 30,
+    paddingTop: 50,
     position: "relative",
   },
   settingIcon: {
     position: "absolute",
     top: 40,
     right: 20,
-    marginTop: 6,
   },
   profileWrapper: {
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
+    marginBottom: 15,
+    left: -130,
   },
   profileImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-  cameraIcon: {
-    position: "absolute",
-    bottom: 0,
-    right: -2,
-    backgroundColor: "#EF6A6A",
-    borderRadius: 12,
-    padding: 4,
-    borderWidth: 1,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
     borderColor: "#fff",
   },
   hiText: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#fff",
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 5,
   },
   infoContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 30,
-    backgroundColor: "#fff",
+    paddingVertical: 25,
+  },
+  infoItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  icon: {
+    marginRight: 15,
+    width: 24,
+    textAlign: "center",
+  },
+  textContainer: {
+    flex: 1,
   },
   label: {
-    fontSize: 14,
-    color: "#333",
-    marginBottom: 4,
+    fontSize: 13,
+    color: "#888",
+    marginBottom: 3,
     fontWeight: "500",
   },
-  input: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 14,
+  value: {
+    fontSize: 16,
     color: "#333",
-  },
-  editButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#EF6A6A",
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginTop: 10,
-  },
-  saveButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#36B37E",
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginTop: 10,
-  },
-  editText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "bold",
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFE5E5",
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginTop: 12,
-  },
-  logoutText: {
-    color: "#D33",
-    fontSize: 15,
-    fontWeight: "bold",
+    fontWeight: "500",
   },
 });

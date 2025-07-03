@@ -73,6 +73,8 @@ export default function Login({ navigation }) {
 
         navigation.replace("MainTabs");
         SessionManager.start(navigation); // mulai session timer
+
+        console.log("Data", userData);
       } else if (response.status === 401) {
         Alert.alert("Login Gagal", "Username atau password salah.");
       } else {
