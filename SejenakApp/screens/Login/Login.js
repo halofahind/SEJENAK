@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,8 +17,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BeritaCarousel from "../../components/BeritaCarousel";
 import { API_BASE_URL } from "../../utils/constants";
-import Video from "react-native-video";
-// Konstanta untuk API
+import SessionManager from "../../utils/SessionManager";
+
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
@@ -33,14 +33,20 @@ export default function Login({ navigation }) {
   const scrollViewRef = useRef(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-  const handleLogin = async () => {
-    if (!username.trim()) {
-      Alert.alert("Error", "Username tidak boleh kosong!");
-      return;
-    }
+  useEffect(() => {
+    const checkSession = async () => {
+      const savedUser = await AsyncStorage.getItem("userData");
+      if (savedUser) {
+        navigation.replace("MainTabs");
+        SessionManager.start(navigation); // mulai session saat auto login
+      }
+    };
+    checkSession();
+  }, []);
 
-    if (!password.trim()) {
-      Alert.alert("Error", "Password tidak boleh kosong!");
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Username dan password wajib diisi.");
       return;
     }
 
@@ -48,11 +54,9 @@ export default function Login({ navigation }) {
 
     try {
       const loginData = {
-        username: username.trim(),
+        username: email.trim(),
         password: password.trim(),
       };
-
-      console.log("Mengirim data login:", loginData);
 
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
@@ -63,46 +67,24 @@ export default function Login({ navigation }) {
         body: JSON.stringify(loginData),
       });
 
-      console.log("Response status:", response.status);
-
       if (response.ok) {
         const userData = await response.json();
-        console.log("Login berhasil:", userData);
-
-        // Simpan userData ke AsyncStorage
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
-        // Navigasi ke halaman utama
         navigation.replace("MainTabs");
+        SessionManager.start(navigation); // mulai session timer
       } else if (response.status === 401) {
-        setErrorMsg("Username atau password salah!");
-        setIsPasswordInvalid(true);
+        Alert.alert("Login Gagal", "Username atau password salah.");
       } else {
-        Alert.alert("Error", `Terjadi kesalahan server (${response.status})`);
+        Alert.alert("Error", `Server error (${response.status})`);
       }
     } catch (error) {
-      console.error("Error login:", error);
-
-      if (
-        error.name === "TypeError" &&
-        error.message.includes("Network request failed")
-      ) {
-        Alert.alert(
-          "Koneksi Gagal",
-          "Tidak dapat terhubung ke server. Pastikan:\n" +
-            "• Koneksi internet stabil\n" +
-            "• Server sedang berjalan\n" +
-            "• IP address benar"
-        );
-      } else {
-        Alert.alert("Error", "Terjadi kesalahan: " + error.message);
-      }
+      Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fungsi untuk scroll ke input yang sedang fokus
   const scrollToInput = (inputRef) => {
     setTimeout(() => {
       inputRef.current?.measureLayout(

@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import SessionManager from "../../utils/SessionManager"; // pastikan path-nya benar
 
 export default function Profil({ navigation }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -66,7 +68,20 @@ export default function Profil({ navigation }) {
       {
         text: "Keluar",
         style: "destructive",
-        onPress: () => navigation.replace("Login"),
+        onPress: async () => {
+          console.log("Keluar ditekan");
+          try {
+            await AsyncStorage.removeItem("userData");
+            console.log("UserData dihapus");
+
+            SessionManager.stop?.();
+            console.log("Session stop");
+
+            navigation.replace("Login");
+          } catch (e) {
+            console.log("Logout error:", e);
+          }
+        },
       },
     ]);
   };
@@ -154,7 +169,7 @@ export default function Profil({ navigation }) {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#F28B8B",
+    backgroundColor: "#e91e63",
     alignItems: "center",
     paddingVertical: 40,
     paddingTop: 60,
