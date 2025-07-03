@@ -7,13 +7,20 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-export default function TopikJournal({ navigation }) {
+export default function Home({ navigation }) {
+  const user = {
+    name: "Alfian Ramdhan",
+    profilePic: require("../../assets/Home/1.png"),
+  };
+
   const topiks = [
     {
       id: "1",
       title: "Kenali Diri Lebih Baik",
       image: require("../../assets/Home/1.png"),
+      navigateTo: "KenaliDiriScreen",
     },
     {
       id: "2",
@@ -37,8 +44,51 @@ export default function TopikJournal({ navigation }) {
     },
   ];
 
+  const moods = [
+    { emoji: "😢", label: "Sangat Buruk" },
+    { emoji: "😞", label: "Buruk" },
+    { emoji: "😐", label: "Netral" },
+    { emoji: "😊", label: "Baik" },
+    { emoji: "😄", label: "Sangat Baik" },
+  ];
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* === Profil & Notifikasi === */}
+      <View style={styles.profileRow}>
+        <View style={styles.profileContainer}>
+          <Image source={user.profilePic} style={styles.profileImage} />
+          <View>
+            <Text style={styles.userName}>Hai, {user.name}</Text>
+            <Text style={styles.welcomeText}>
+              Bagaimana perasaanmu hari ini?
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={() => alert("Notifikasi belum tersedia")}>
+          <Icon name="notifications-none" size={28} color="#444" />
+        </TouchableOpacity>
+      </View>
+
+      {/* === Mood Pilihan === */}
+      <View style={styles.moodOptions}>
+        {moods.map((mood, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.moodItem}
+            onPress={() =>
+              navigation.navigate("MoodTracker", { selectedMood: mood })
+            }
+          >
+            <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+            <Text style={styles.moodLabel}>{mood.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.divider} />
+
+      {/* === Quotes === */}
       <Text style={styles.sectionTitle}>Quotes hari ini</Text>
       <View style={styles.quoteBox}>
         <Text style={styles.quoteText}>
@@ -47,6 +97,7 @@ export default function TopikJournal({ navigation }) {
         </Text>
       </View>
 
+      {/* === Topik === */}
       <Text style={styles.sectionTitle}>Topik Journal</Text>
       <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
 
@@ -54,16 +105,13 @@ export default function TopikJournal({ navigation }) {
         {topiks.map((item) => (
           <TouchableOpacity
             key={item.id}
-            style={[
-              styles.card,
-              {
-                backgroundColor: "#EF6A6A",
-                width: item.fullWidth ? "100%" : "48%",
-              },
-            ]}
+            style={[styles.card, { backgroundColor: "#EF6A6A" }]}
             onPress={() =>
-              navigation.navigate(item.navigateTo, { topik: item })
-            }>
+              navigation.navigate(item.navigateTo || "DetailTopik", {
+                topik: item,
+              })
+            }
+          >
             <Image source={item.image} style={styles.image} />
             <Text style={styles.cardTitle}>{item.title}</Text>
           </TouchableOpacity>
@@ -76,13 +124,62 @@ export default function TopikJournal({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#e8e8e8",
+    backgroundColor: "#ffffff",
     flex: 1,
+    marginTop: 40,
+  },
+  profileRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 15,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  welcomeText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  moodOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  moodItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  moodEmoji: {
+    fontSize: 28,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 6,
+    textAlign: "center",
+  },
+  divider: {
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+    marginVertical: 16,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 20,
     marginBottom: 6,
     color: "#444",
   },
@@ -102,30 +199,6 @@ const styles = StyleSheet.create({
     color: "#444",
     fontStyle: "italic",
   },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-  card: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    alignItems: "center",
-  },
-  image: {
-    width: 80,
-    height: 80,
-    resizeMode: "contain",
-    marginBottom: 10,
-  },
-  cardTitle: {
-    fontSize: 13,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#333",
-  },
   topikWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -138,6 +211,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 10,
     alignItems: "center",
+    marginBottom: 16,
   },
   image: {
     width: 80,
@@ -145,9 +219,10 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     marginBottom: 10,
   },
-  cardText: {
-    color: "white",
+  cardTitle: {
+    fontSize: 13,
     fontWeight: "bold",
     textAlign: "center",
+    color: "#fff",
   },
 });
