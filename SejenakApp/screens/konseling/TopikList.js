@@ -73,8 +73,18 @@ export default function TopikList({ navigation }) {
   };
 
   const handleEditTopik = (topik) => {
+    console.log("Data yang dikirim:", topik); // Debugging
+
+    // Pastikan struktur data sesuai dengan yang diharapkan TopikForm
+    const topikData = {
+      tpk_nama: topik.nama,
+      tpk_pesan_pertama: topik.pesanPertama,
+      tpk_pesan_terakhir: topik.pesanTerakhir,
+      tpk_id: topik.id,
+    };
+
     navigation.navigate("TopikForm", {
-      topik: topik,
+      topik: topikData, // Gunakan key 'topik' bukan 'topiks'
       mode: "edit",
       title: "Edit Topik",
     });
@@ -174,15 +184,11 @@ export default function TopikList({ navigation }) {
   };
 
   const renderTopikItem = ({ item }) => (
-    <SwipeableRow item={item} onDelete={handleDelete} onEdit={handleEditTopik}>
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => navigation.navigate("TopikForm", { topiks: item })}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.nama}>{item.nama}</Text>
-        </View>
-      </TouchableOpacity>
-    </SwipeableRow>
+    <SwipeableRow
+      item={item}
+      onDelete={handleDelete}
+      onEdit={handleEditTopik}
+    />
   );
 
   if (loading) {

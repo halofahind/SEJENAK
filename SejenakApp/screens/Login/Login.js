@@ -70,9 +70,16 @@ export default function Login({ navigation }) {
       if (response.ok) {
         const userData = await response.json();
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
-
         navigation.replace("MainTabs");
         SessionManager.start(navigation); // mulai session timer
+
+        await AsyncStorage.setItem(
+          "lastLogin",
+          JSON.stringify({
+            username: email,
+            password: password, // ⚠️ hati-hati nyimpan password ya, ini cuma contoh
+          })
+        );
 
         console.log("Data", userData);
       } else if (response.status === 401) {
@@ -81,11 +88,28 @@ export default function Login({ navigation }) {
         Alert.alert("Error", `Server error (${response.status})`);
       }
     } catch (error) {
-      Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
+      Alert.alert(
+        "Koneksi Gagal",
+        "Periksa koneksi dan coba lagi.",
+        ` (${response.status})`
+      );
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadLastLogin = async () => {
+      const saved = await AsyncStorage.getItem("lastLogin");
+      if (saved) {
+        const data = JSON.parse(saved);
+        setEmail(data.username);
+        setPassword(data.password);
+      }
+    };
+
+    loadLastLogin();
+  }, []);
 
   const scrollToInput = (inputRef) => {
     setTimeout(() => {
@@ -140,8 +164,7 @@ export default function Login({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}
-        >
+          bounces={false}>
           <View style={styles.loginTitleWrap}>
             <Text style={styles.loginTitle}>Masuk</Text>
           </View>
@@ -187,8 +210,7 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               <Icon
                 name={showPassword ? "visibility" : "visibility-off"}
                 size={20}
@@ -204,8 +226,7 @@ export default function Login({ navigation }) {
                 isLoading && styles.loginButtonDisabled,
               ]}
               onPress={handleLogin}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
@@ -221,14 +242,12 @@ export default function Login({ navigation }) {
             <Text style={styles.signupText}>Belum memiliki akun? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               <Text
                 style={{
                   color: isLoading ? "#ccc" : "#EF6A6A",
                   fontWeight: "bold",
-                }}
-              >
+                }}>
                 Daftar
               </Text>
             </TouchableOpacity>

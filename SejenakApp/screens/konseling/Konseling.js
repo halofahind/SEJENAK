@@ -12,18 +12,25 @@ import {
 import { API_BASE_URL } from "../../utils/constants";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Konseling = ({ navigation }) => {
   dayjs.locale("id");
   const [konselings, setKonselings] = useState([]);
-
+  const [id, setId] = useState();
   useEffect(() => {
     fetchKonselings();
   }, []);
 
   const fetchKonselings = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/konselings`, {
+      const userData = await AsyncStorage.getItem("userData");
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        setId({ id: parsedData.id || "" });
+        return;
+      }
+      const response = await fetch(`${API_BASE_URL}/konseling?userId=${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
