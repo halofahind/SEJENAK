@@ -111,7 +111,7 @@ export default function Login({ navigation }) {
     {
       id: "2",
       title: "Jangan Takut Sendiri",
-      desc: "Sekarang kamu bisa konsultasi dengan Admin Secara Real Time",
+      desc: "Sekarang kamu bisa konsultasi dengan Admin dengan nyaman secara anonim",
       image: require("../../assets/LoginCarousel/Konsultasi.png"),
     },
     {
@@ -138,9 +138,10 @@ export default function Login({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}>
+          bounces={false}
+        >
           <View style={styles.loginTitleWrap}>
-            <Text style={styles.loginTitle}>Login</Text>
+            <Text style={styles.loginTitle}>Masuk</Text>
           </View>
 
           {errorMsg !== "" && (
@@ -184,7 +185,8 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Icon
                 name={showPassword ? "visibility" : "visibility-off"}
                 size={20}
@@ -200,7 +202,8 @@ export default function Login({ navigation }) {
                 isLoading && styles.loginButtonDisabled,
               ]}
               onPress={handleLogin}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
@@ -216,12 +219,14 @@ export default function Login({ navigation }) {
             <Text style={styles.signupText}>Belum memiliki akun? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Text
                 style={{
                   color: isLoading ? "#ccc" : "#EF6A6A",
                   fontWeight: "bold",
-                }}>
+                }}
+              >
                 Daftar
               </Text>
             </TouchableOpacity>
@@ -297,10 +302,11 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     marginBottom: 30,
     marginTop: 10,
-    left: 220,
+    left: 200,
   },
   loginButtonDisabled: {
     backgroundColor: "#ccc",
+    left: 200,
   },
   loginButtonText: {
     color: "#fff",
@@ -350,18 +356,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 18,
   },
-  card: {
-    width: -40,
-    marginHorizontal: 20,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-  },
+
   image: {
     width: "100%",
     height: 100,
