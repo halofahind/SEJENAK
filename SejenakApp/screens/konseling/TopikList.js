@@ -73,8 +73,18 @@ export default function TopikList({ navigation }) {
   };
 
   const handleEditTopik = (topik) => {
+    console.log("Data yang dikirim:", topik); // Debugging
+
+    // Pastikan struktur data sesuai dengan yang diharapkan TopikForm
+    const topikData = {
+      tpk_nama: topik.nama,
+      tpk_pesan_pertama: topik.pesanPertama,
+      tpk_pesan_terakhir: topik.pesanTerakhir,
+      tpk_id: topik.id,
+    };
+
     navigation.navigate("TopikForm", {
-      topik: topik,
+      topik: topikData, // Gunakan key 'topik' bukan 'topiks'
       mode: "edit",
       title: "Edit Topik",
     });

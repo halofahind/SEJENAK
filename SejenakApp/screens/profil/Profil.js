@@ -6,16 +6,17 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profil({ navigation }) {
   const [user, setUser] = useState({
     name: "",
+    username: "",
     email: "",
     phone: "",
     gender: "",
@@ -33,6 +34,7 @@ export default function Profil({ navigation }) {
           const parsedData = JSON.parse(userData);
           setUser({
             name: parsedData.nama || "",
+            username: parsedData.username || "",
             email: parsedData.email || "",
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
@@ -63,6 +65,58 @@ export default function Profil({ navigation }) {
   const handleSetting = () => {
     navigation.navigate("Setting");
   };
+  const handleLogout = async () => {
+    Alert.alert(
+      "Konfirmasi Keluar",
+      "Apakah Anda yakin ingin keluar dari aplikasi?",
+      [
+        {
+          text: "Batal",
+          style: "cancel",
+        },
+        {
+          text: "Keluar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem("userToken");
+              await AsyncStorage.removeItem("userData");
+              navigation.replace("Login");
+            } catch (error) {
+              console.error("Logout error:", error);
+              Alert.alert(
+                "Error",
+                "Terjadi kesalahan saat keluar. Silakan coba lagi.",
+                [{ text: "OK" }]
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+  const menuItems = [
+    {
+      title: "Kelola Akun Pengguna",
+      icon: "user",
+      type: "font-awesome",
+      onPress: () => {
+        navigation.replace("KelolaAkun");
+      },
+    },
+    {
+      title: "Ganti Password",
+      icon: "key",
+      type: "font-awesome",
+      onPress: () => {},
+    },
+    {
+      title: "Hapus Akun",
+      icon: "trash",
+      type: "font-awesome",
+      onPress: () => {},
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -76,71 +130,58 @@ export default function Profil({ navigation }) {
     <ScrollView style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.settingIcon}
-          onPress={handleSetting}
-          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
-          <Icon name="settings" size={26} color="#fff" />
-        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <View style={styles.profileSection}>
+            <Image source={user.profilePic} style={styles.profileImage} />
+            <View style={styles.userInfo}>
+              <Text style={styles.nameText}>Hi, {user.name || "User"}</Text>
+              <View style={styles.infoRow}>
+                <Icon name="id-card" type="font-awesome" color="#fff" />
+                <Text style={styles.infoText}>{user.username}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon name="phone" type="font-awesome" color="#fff" />
+                <Text style={styles.infoText}>{user.phone || "-"}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon
+                  name="envelope"
+                  type="font-awesome"
+                  size={16}
+                  color="#fff"
+                />
+                <Text style={styles.infoText}>{user.email || "-"}</Text>
+              </View>
+            </View>
+          </View>
 
-        <View style={styles.profileWrapper}>
-          <Image source={user.profilePic} style={styles.profileImage} />
+          <TouchableOpacity style={styles.editButton} onPress={handleSetting}>
+            <Icon name="edit" size={16} color="#e91e63" />
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
         </View>
-
-        <Text style={styles.hiText}>Hai, {user.name || "-"}</Text>
       </View>
 
-      {/* Profile Info Section */}
-      <View style={styles.infoContainer}>
-        {/* Name Field */}
-        <View style={styles.infoItem}>
-          <Icon name="person" size={22} color="#e91e63" style={styles.icon} />
-          <View style={styles.textContainer}>
-            <Text style={styles.label}>Nama Lengkap</Text>
-            <Text style={styles.value}>{user.name}</Text>
-          </View>
-        </View>
+      {/* Menu Section */}
+      <View style={styles.menuContainer}>
+        {menuItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.menuItem}
+            onPress={item.onPress}>
+            <Icon name={item.icon} type={item.type} color="#e91e63" />
+            <Text style={styles.menuText}>{item.title}</Text>
+            <Icon name="chevron-right" size={24} color="#ccc" />
+          </TouchableOpacity>
+        ))}
+      </View>
 
-        {/* Email Field */}
-        <View style={styles.infoItem}>
-          <Icon name="email" size={22} color="#e91e63" style={styles.icon} />
-          <View style={styles.textContainer}>
-            <Text style={styles.label}>Email</Text>
-            <Text style={styles.value}>{user.email}</Text>
-          </View>
-        </View>
-
-        {/* Phone Field */}
-        <View style={styles.infoItem}>
-          <Icon name="phone" size={22} color="#e91e63" style={styles.icon} />
-          <View style={styles.textContainer}>
-            <Text style={styles.label}>No. Telepon</Text>
-            <Text style={styles.value}>{user.phone}</Text>
-          </View>
-        </View>
-
-        {/* Gender Field */}
-        <View style={styles.infoItem}>
-          <Icon name="people" size={22} color="#e91e63" style={styles.icon} />
-          <View style={styles.textContainer}>
-            <Text style={styles.label}>Jenis Kelamin</Text>
-            <Text style={styles.value}>{user.gender || "-"}</Text>
-          </View>
-        </View>
-
-        {/* Address Field */}
-        <View style={styles.infoItem}>
-          <Icon
-            name="location-on"
-            size={22}
-            color="#e91e63"
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.label}>Alamat</Text>
-            <Text style={styles.value}>{user.address || "-"}</Text>
-          </View>
-        </View>
+      {/* Logout Button */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Icon name="logout" size={20} color="#fff" />
+          <Text style={styles.logoutText}>Keluar</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -149,7 +190,7 @@ export default function Profil({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
   },
   loadingContainer: {
     flex: 1,
@@ -157,62 +198,103 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    backgroundColor: "#D6385E",
-    alignItems: "center",
-    paddingVertical: 30,
+    backgroundColor: "#e91e63",
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
     paddingTop: 50,
+    paddingBottom: 25,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     position: "relative",
   },
-  settingIcon: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-  },
-  profileWrapper: {
-    marginBottom: 15,
-    left: -130,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 3,
-    borderColor: "#fff",
-  },
-  hiText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-    marginTop: 5,
-  },
-  infoContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 25,
-  },
-  infoItem: {
+  profileSection: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
+    marginBottom: 10,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: "#fff",
+    marginRight: 15,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  infoText: {
+    fontSize: 14,
+    color: "#fff",
+    marginLeft: 8,
+    opacity: 0.9,
+  },
+  editButton: {
+    position: "static",
+    top: 10,
+    right: 10,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    width: 90,
+  },
+  editButtonText: {
+    color: "#e91e63",
+    marginLeft: 5,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  menuContainer: {
+    backgroundColor: "#fff",
+    marginTop: 20,
+    marginHorizontal: 20,
+    borderRadius: 12,
+    paddingVertical: 5,
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 18,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
-  icon: {
-    marginRight: 15,
-    width: 24,
-    textAlign: "center",
-  },
-  textContainer: {
-    flex: 1,
-  },
-  label: {
-    fontSize: 13,
-    color: "#888",
-    marginBottom: 3,
-    fontWeight: "500",
-  },
-  value: {
+  menuText: {
     fontSize: 16,
     color: "#333",
     fontWeight: "500",
+  },
+  logoutContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+  },
+  logoutButton: {
+    backgroundColor: "#e91e63",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 15,
+    borderRadius: 25,
+  },
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 8,
   },
 });

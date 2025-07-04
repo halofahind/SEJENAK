@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -13,10 +14,49 @@ import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 
 export default function Home({ navigation }) {
-  const user = {
-    name: "Alfian Ramdhan",
+  const [user, setUser] = useState({
+    name: "",
+    username: "",
+    email: "",
+    phone: "",
+    gender: "",
+    address: "",
     profilePic: require("../../assets/Home/1.png"),
-  };
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("userData");
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          setUser({
+            name: parsedData.nama || "",
+            username: parsedData.username || "",
+            email: parsedData.email || "",
+            phone: parsedData.telepon || "",
+            gender: parsedData.gender || "",
+            address: parsedData.alamat || "",
+            profilePic: parsedData.profilePic
+              ? { uri: parsedData.profilePic }
+              : require("../../assets/Home/1.png"),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Gallery permission denied");
+      }
+    })();
+    fetchUserData();
+  }, []);
 
   const topiks = [
     {
@@ -162,6 +202,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileContainer: {
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowRadius: 20,
     flexDirection: "row",
     alignItems: "center",
   },

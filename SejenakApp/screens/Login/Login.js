@@ -97,6 +97,19 @@ export default function Login({ navigation }) {
     }
   };
 
+  useEffect(() => {
+    const loadLastLogin = async () => {
+      const saved = await AsyncStorage.getItem("lastLogin");
+      if (saved) {
+        const data = JSON.parse(saved);
+        setEmail(data.username);
+        setPassword(data.password);
+      }
+    };
+
+    loadLastLogin();
+  }, []);
+
   const scrollToInput = (inputRef) => {
     setTimeout(() => {
       inputRef.current?.measureLayout(
