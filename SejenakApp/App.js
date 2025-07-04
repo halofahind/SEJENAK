@@ -21,6 +21,15 @@ import Topik from "./screens/konseling/Topik";
 import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
 import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
 import Konseling from "./screens/konseling/Konseling";
+import MoodSummary from "./screens/home/Mood/DetailMood/MoodSummary";
+import MoodTracker from "./screens/home/Mood/MoodTracker";
+import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
+import NextScreen from "./screens/home/Mood/NextScreen";
+import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
+import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
+import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
+import DetailAkun from "./screens/profil/Detail/DetailAkun";
+import TambahAkun from "./screens/profil/TambahAkun";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -29,7 +38,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Splash"
-        screenOptions={{ headerShown: false }}>
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
         <Stack.Screen name="Login" component={Login} />
@@ -50,7 +60,7 @@ export default function App() {
         />
         <Stack.Screen name="Pertanyaan1" component={Pertanyaan1} />
         <Stack.Screen name="KelolaAkun" component={KelolaAkun} />
-        {/* <Stack.Screen name="GantiPassword" component={GantiPassword} />
+        <Stack.Screen name="GantiPassword" component={GantiPassword} />
         <Stack.Screen name="HapusAkun" component={HapusAkun} />
         <Stack.Screen name="AkunPersonal" component={AkunPersonal} />
         <Stack.Screen name="MoodSummary" component={MoodSummary} />
@@ -58,7 +68,7 @@ export default function App() {
         <Stack.Screen name="NextScreen" component={NextScreen} />
         <Stack.Screen name="Jurnal1" component={Jurnal1} />
         <Stack.Screen name="DetailAkun" component={DetailAkun} />
-        <Stack.Screen name="TambahAkun" component={TambahAkun} /> */}
+        <Stack.Screen name="TambahAkun" component={TambahAkun} />
 
         {/* ✅ Ini yang penting */}
       </Stack.Navigator>

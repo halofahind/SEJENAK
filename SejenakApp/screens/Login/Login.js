@@ -57,30 +57,40 @@ export default function Login({ navigation }) {
         username: email.trim(),
         password: password.trim(),
       };
+      console.log("Login data sent:", loginData);
 
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify(loginData),
       });
 
+      console.log("Login data sent:", loginData);
+      console.log("Response status:", response.status);
+
+      // return;
       if (response.ok) {
         const userData = await response.json();
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
-        navigation.replace("MainTabs");
         SessionManager.start(navigation); // mulai session timer
+        navigation.replace("MainTabs");
 
-        console.log("Data", userData);
+        console.log("Login success:", userData);
       } else if (response.status === 401) {
-        Alert.alert("Login Gagal", "Username atau password salah.");
+        const errorText = await response.text();
+        Alert.alert(
+          "Login Gagal",
+          errorText || "Username atau password salah."
+        );
       } else {
-        Alert.alert("Error", `Server error (${response.status})`);
+        const errorText = await response.text();
+        Alert.alert("Server Error", errorText || `Kode: ${response.status}`);
       }
     } catch (error) {
+      console.error("Login error:", error);
       Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
     } finally {
       setIsLoading(false);

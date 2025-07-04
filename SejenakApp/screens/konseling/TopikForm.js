@@ -13,6 +13,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { API_BASE_URL } from "../../utils/constants";
 
 const TopikForm = ({ navigation, route }) => {
   const { topik, mode, title } = route.params;
@@ -28,8 +29,6 @@ const TopikForm = ({ navigation, route }) => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const API_BASE_URL = "http://10.1.47.159:8080"; // Ganti dengan URL API Anda
 
   useEffect(() => {
     setFormData({
@@ -156,10 +155,12 @@ const TopikForm = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.header}>
             <Text style={styles.title}>
               {isEditMode ? "Edit Topik" : "Tambah Topik Baru"}
@@ -255,7 +256,8 @@ const TopikForm = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={handleCancel}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             <Text style={styles.cancelButtonText}>Batal</Text>
           </TouchableOpacity>
 
@@ -267,7 +269,8 @@ const TopikForm = ({ navigation, route }) => {
             ]}
             onPress={handleSubmit}
             disabled={loading}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
