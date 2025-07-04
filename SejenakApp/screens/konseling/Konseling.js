@@ -23,6 +23,7 @@ const Konseling = ({ navigation }) => {
   const [id, setId] = useState();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -33,38 +34,52 @@ const Konseling = ({ navigation }) => {
   const fetchKonselings = async () => {
     try {
       const userData = await AsyncStorage.getItem("userData");
+      let resKonseling, resDetail;
+
       if (userData) {
-        console.log("User data:", userData);
+        const parsedUserData = JSON.parse(userData);
+        setUserData(parsedUserData);
+
+        let promises;
+
+        if (parsedUserData.role === "admin") {
+          promises = [
+            fetch(`${API_BASE_URL}/konselings`),
+            fetch(`${API_BASE_URL}/detailKonselings`),
+          ];
+        } else {
+          setId(parsedUserData.id);
+          promises = [
+            fetch(`${API_BASE_URL}/konselingbyuser?id=${parsedUserData.id}`),
+            fetch(`${API_BASE_URL}/detailKonselings`),
+          ];
+        }
+
+        [resKonseling, resDetail] = await Promise.all(promises);
+
+        const konselingData = await resKonseling.json();
+        const detailData = await resDetail.json();
+
+        const mergedData = konselingData.map((item) => {
+          const detail = detailData
+            .filter((d) => d.konId === item.id)
+            .sort((a, b) => new Date(a.waktu) - new Date(b.waktu));
+
+          const last = detail[detail.length - 1];
+          return {
+            ...item,
+            lastMessage: last?.pesan || "Belum ada pesan",
+            lastSender: last?.pengirim || "-",
+            lastTime: last?.waktu || null,
+          };
+        });
+
+        const sortedData = mergedData.sort(
+          (a, b) => new Date(b.lastTime) - new Date(a.lastTime)
+        );
+
+        setKonselings(sortedData);
       }
-
-      const [resKonseling, resDetail] = await Promise.all([
-        fetch(`${API_BASE_URL}/konselings`),
-        fetch(`${API_BASE_URL}/detailKonselings`),
-      ]);
-
-      const konselingData = await resKonseling.json();
-      const detailData = await resDetail.json();
-
-      const mergedData = konselingData.map((item) => {
-        const detail = detailData
-          .filter((d) => d.konId === item.id)
-          .sort((a, b) => new Date(a.waktu) - new Date(b.waktu)); // sort detail by time ASC
-
-        const last = detail[detail.length - 1];
-        return {
-          ...item,
-          lastMessage: last?.pesan || "Belum ada pesan",
-          lastSender: last?.pengirim || "-",
-          lastTime: last?.waktu || null, // simpan waktu terakhir
-        };
-      });
-
-      // urutkan mergedData berdasarkan waktu terakhir DESC
-      const sortedData = mergedData.sort(
-        (a, b) => new Date(b.lastTime) - new Date(a.lastTime)
-      );
-
-      setKonselings(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     } finally {
@@ -84,6 +99,9 @@ const Konseling = ({ navigation }) => {
   const handleHistoryPress = (item) => {
     navigation.navigate("DetailKonseling", {
       topic: item.topik.nama,
+      msg1: item.topik.pesanPertama,
+      msg2: item.topik.pesanTerakhir,
+      status: item.status,
       konId: item.id,
       isHistory: false,
     });
@@ -123,9 +141,9 @@ const Konseling = ({ navigation }) => {
           <Text style={styles.timeText}>
             {dayjs(item.lastTime).format("HH:mm")}
           </Text>
-          <View style={styles.notificationBadge}>
+          {/* <View style={styles.notificationBadge}>
             <Text style={styles.notificationText}>2</Text>
-          </View>
+          </View> */}
         </View>
       </TouchableOpacity>
     );
@@ -150,19 +168,23 @@ const Konseling = ({ navigation }) => {
               dan nyaman
             </Text>
 
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={handleAddTopik}
-            >
-              <Text style={styles.primaryButtonText}>Kelola Topik</Text>
-            </TouchableOpacity>
+            {userData?.role === "admin" && (
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={handleAddTopik}
+              >
+                <Text style={styles.primaryButtonText}>Kelola Topik</Text>
+              </TouchableOpacity>
+            )}
 
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={handleStartCounseling}
-            >
-              <Text style={styles.primaryButtonText}>Mulai Konseling</Text>
-            </TouchableOpacity>
+            {userData?.role === "user" && (
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={handleStartCounseling}
+              >
+                <Text style={styles.primaryButtonText}>Mulai Konseling</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 

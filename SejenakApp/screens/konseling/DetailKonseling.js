@@ -14,6 +14,8 @@ import {
 import { API_BASE_URL } from "../../utils/constants";
 import dayjs from "dayjs";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const formatDateToReadable = (dateStr) => {
   const date = dayjs(dateStr, "DD/MM/YY");
   const today = dayjs();
@@ -25,12 +27,13 @@ const formatDateToReadable = (dateStr) => {
 };
 
 const DetailKonseling = ({ navigation, route }) => {
-  const { topic, isHistory, konId } = route.params;
+  const { topic, msg1, msg2, isHistory, status, konId } = route.params;
+  const [currentRole, setCurrentRole] = useState("user");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: `Halo! Saya siap membantu Anda dengan topik ${topic}. Silakan ceritakan apa yang ingin Anda diskusikan.`,
+      text: msg1,
       isAdmin: true,
       time: "05:44",
       date: "24/06/22",
@@ -40,12 +43,21 @@ const DetailKonseling = ({ navigation, route }) => {
   const scrollViewRef = useRef();
 
   useEffect(() => {
+    let intervalId;
+
     const fetchMessages = async () => {
+      const userData = await AsyncStorage.getItem("userData");
+      const parsedUserData = JSON.parse(userData);
+      setCurrentRole(parsedUserData.role);
+
+      console.log("refresh");
+
       try {
-        const res = await fetch(`${API_BASE_URL}/detailKonselings`);
+        const res = await fetch(`${API_BASE_URL}/konselingbykonid?id=${konId}`);
         const data = await res.json();
 
-        // Filter berdasarkan konId dari route.params
+        console.log("data:", data);
+
         const filtered = data
           .filter((msg) => msg.konId === konId)
           .map((msg, index) => ({
@@ -56,27 +68,50 @@ const DetailKonseling = ({ navigation, route }) => {
             date: dayjs(msg.waktu).format("DD/MM/YY"),
           }));
 
-        // Tambahkan default welcome message jika tidak ada pesan
-        setMessages(
-          filtered.length > 0
-            ? filtered
-            : [
-                {
-                  id: 1,
-                  text: `Halo! Saya siap membantu Anda dengan topik ${topic}. Silakan ceritakan apa yang ingin Anda diskusikan.`,
-                  isAdmin: true,
-                  time: getCurrentTime(),
-                  date: getCurrentDate(),
-                },
-              ]
-        );
+        if (status === "Selesai") {
+          setMessages([
+            {
+              id: 0,
+              text: msg1,
+              isAdmin: true,
+              time: getCurrentTime(),
+              date: getCurrentDate(),
+            },
+            ...filtered,
+            {
+              id: -1,
+              text: msg2,
+              isAdmin: true,
+              time: getCurrentTime(),
+              date: getCurrentDate(),
+            },
+          ]);
+        } else {
+          setMessages([
+            {
+              id: 0,
+              text: msg1,
+              isAdmin: true,
+              time: getCurrentTime(),
+              date: getCurrentDate(),
+            },
+            ...filtered,
+          ]);
+        }
       } catch (error) {
         console.error("Gagal mengambil pesan:", error.message);
       }
     };
 
+    // ⏱ Panggil pertama kali
     fetchMessages();
-  }, []);
+
+    // ⏱ Lalu buat polling setiap 3 detik
+    intervalId = setInterval(fetchMessages, 3000); // 3 detik
+
+    // 🧹 Bersihkan interval saat unmount
+    return () => clearInterval(intervalId);
+  }, [konId]);
 
   const groupMessagesByDate = (messages) => {
     const grouped = {};
@@ -120,12 +155,11 @@ const DetailKonseling = ({ navigation, route }) => {
       const newMessage = {
         id: messages.length + 1,
         text: message.trim(),
-        isAdmin: false,
+        isAdmin: currentRole === "admin",
         time: getCurrentTime(),
         date: getCurrentDate(),
       };
 
-      // ⬇️ Simpan ke database lewat API
       try {
         await fetch(`${API_BASE_URL}/detailKonseling`, {
           method: "POST",
@@ -134,7 +168,7 @@ const DetailKonseling = ({ navigation, route }) => {
           },
           body: JSON.stringify({
             konId: konId,
-            pengirim: "user",
+            pengirim: currentRole,
             pesan: message.trim(),
             waktu: waktuISO,
           }),
@@ -145,57 +179,25 @@ const DetailKonseling = ({ navigation, route }) => {
 
       setMessages((prev) => [...prev, newMessage]);
       setMessage("");
-
-      // Simulasi balasan admin
-      setTimeout(async () => {
-        const responses = [
-          "Terima kasih sudah berbagi. Saya memahami perasaan Anda. Bisakah Anda ceritakan lebih detail?",
-          "Itu adalah hal yang wajar untuk dirasakan. Bagaimana Anda biasanya mengatasi situasi seperti ini?",
-          "Saya mendengarkan Anda. Apakah ada hal spesifik yang membuat Anda merasa seperti itu?",
-          "Pengalaman yang Anda ceritakan pasti tidak mudah. Apa yang paling mengganggu pikiran Anda saat ini?",
-          "Terima kasih telah mempercayai saya. Mari kita coba eksplorasi lebih dalam tentang hal ini.",
-        ];
-
-        const randomResponse =
-          responses[Math.floor(Math.random() * responses.length)];
-
-        const adminMessage = {
-          id: messages.length + 2,
-          text: randomResponse,
-          isAdmin: true,
-          time: getCurrentTime(),
-          date: getCurrentDate(),
-        };
-
-        // ⬇️ Simpan balasan admin ke DB juga
-        try {
-          await fetch(`${API_BASE_URL}/detailKonseling`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              konId: konId,
-              pengirim: "admin",
-              pesan: randomResponse,
-              waktu: new Date().toISOString(),
-            }),
-          });
-        } catch (error) {
-          console.error("Gagal simpan balasan admin ke DB:", error.message);
-        }
-
-        setMessages((prev) => [...prev, adminMessage]);
-      }, Math.random() * 1000 + 1000);
     }
   };
 
   const handleBack = () => {
-    navigation.goBack();
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: "MainTabs",
+          state: {
+            routes: [{ name: "Konseling" }],
+          },
+        },
+      ],
+    });
   };
 
   const showMenu = () => {
-    Alert.alert("Menu", "Pilih opsi:", [
+    Alert.alert("Akhiri Sesi?", "", [
       {
         text: "Akhiri Sesi",
         onPress: () => {
@@ -206,24 +208,42 @@ const DetailKonseling = ({ navigation, route }) => {
               { text: "Batal", style: "cancel" },
               {
                 text: "Ya",
-                onPress: () => navigation.navigate("Konseling"),
+                onPress: async () => {
+                  try {
+                    const response = await fetch(
+                      `${API_BASE_URL}/finishKonseling?id=${konId}`,
+                      {
+                        method: "DELETE",
+                      }
+                    );
+
+                    if (response.ok) {
+                      Alert.alert("Berhasil", "Sesi konseling telah diakhiri.");
+                      navigation.reset({
+                        index: 0,
+                        routes: [
+                          {
+                            name: "MainTabs",
+                            state: {
+                              routes: [{ name: "Konseling" }],
+                            },
+                          },
+                        ],
+                      });
+                    } else {
+                      Alert.alert("Gagal", "Gagal mengakhiri sesi konseling.");
+                    }
+                  } catch (error) {
+                    console.error("Error:", error);
+                    Alert.alert(
+                      "Error",
+                      "Terjadi kesalahan saat mengakhiri sesi."
+                    );
+                  }
+                },
               },
             ]
           );
-        },
-      },
-      {
-        text: "Hapus Chat",
-        style: "destructive",
-        onPress: () => {
-          Alert.alert("Hapus Chat", "Semua pesan akan dihapus. Lanjutkan?", [
-            { text: "Batal", style: "cancel" },
-            {
-              text: "Hapus",
-              style: "destructive",
-              onPress: () => setMessages([messages[0]]), // Keep only first message
-            },
-          ]);
         },
       },
       {
@@ -250,13 +270,14 @@ const DetailKonseling = ({ navigation, route }) => {
                 <Text style={styles.adminAvatarText}>👤</Text>
               </View>
               <View style={styles.adminDetails}>
-                <Text style={styles.adminName}>Admin Konseling</Text>
-                <Text style={styles.adminStatus}>Online</Text>
+                <Text style={styles.adminName}>Topik : {topic}</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.menuButton} onPress={showMenu}>
-              <Text style={styles.menuButtonText}>⋮</Text>
-            </TouchableOpacity>
+            {status != "Selesai" && (
+              <TouchableOpacity style={styles.menuButton} onPress={showMenu}>
+                <Text style={styles.menuButtonText}>⋮</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Messages with grouped date headers */}
@@ -276,78 +297,80 @@ const DetailKonseling = ({ navigation, route }) => {
                 </View>
 
                 {/* Semua pesan di tanggal ini */}
-                {group.messages.map((msg) => (
-                  <View
-                    key={msg.id}
-                    style={[
-                      styles.messageWrapper,
-                      msg.isAdmin
-                        ? styles.adminMessageWrapper
-                        : styles.userMessageWrapper,
-                    ]}
-                  >
-                    <View style={styles.messageContainer}>
-                      <View
-                        style={[
-                          styles.messageBubble,
-                          msg.isAdmin
-                            ? styles.adminMessage
-                            : styles.userMessage,
-                        ]}
-                      >
-                        <Text
+                {group.messages.map((msg) => {
+                  const isSender = msg.isAdmin === (currentRole === "admin"); // ⬅️ true jika pengirim = yang login
+                  return (
+                    <View
+                      key={msg.id}
+                      style={[
+                        styles.messageWrapper,
+                        isSender
+                          ? styles.userMessageWrapper // ⬅️ di kanan (yang sedang login)
+                          : styles.adminMessageWrapper, // ⬅️ di kiri (lawan bicara)
+                      ]}
+                    >
+                      <View style={styles.messageContainer}>
+                        <View
                           style={[
-                            styles.messageText,
-                            msg.isAdmin
-                              ? styles.adminMessageText
-                              : styles.userMessageText,
+                            styles.messageBubble,
+                            isSender ? styles.userMessage : styles.adminMessage,
                           ]}
                         >
-                          {msg.text}
+                          <Text
+                            style={[
+                              styles.messageText,
+                              isSender
+                                ? styles.userMessageText
+                                : styles.adminMessageText,
+                            ]}
+                          >
+                            {msg.text}
+                          </Text>
+                        </View>
+                        <Text
+                          style={[
+                            styles.messageTime,
+                            isSender
+                              ? styles.userMessageTime
+                              : styles.adminMessageTime,
+                          ]}
+                        >
+                          {msg.time}
                         </Text>
                       </View>
-
-                      <Text
-                        style={[
-                          styles.messageTime,
-                          msg.isAdmin
-                            ? styles.adminMessageTime
-                            : styles.userMessageTime,
-                        ]}
-                      >
-                        {msg.time}
-                      </Text>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
             ))}
           </ScrollView>
 
           {/* Input Area */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Type here"
-              placeholderTextColor="#999"
-              value={message}
-              onChangeText={setMessage}
-              multiline
-              maxLength={1000}
-              onSubmitEditing={sendMessage}
-              blurOnSubmit={false}
-            />
-            <TouchableOpacity
-              style={[
-                styles.sendButton,
-                !message.trim() && styles.sendButtonDisabled,
-              ]}
-              onPress={sendMessage}
-              disabled={!message.trim()}
-            >
-              <Text style={styles.sendButtonText}>→</Text>
-            </TouchableOpacity>
-          </View>
+          {status != "Selesai" && (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Type here"
+                placeholderTextColor="#999"
+                value={message}
+                onChangeText={setMessage}
+                multiline
+                maxLength={1000}
+                onSubmitEditing={sendMessage}
+                blurOnSubmit={false}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  !message.trim() && styles.sendButtonDisabled,
+                ]}
+                onPress={sendMessage}
+                disabled={!message.trim()}
+              >
+                <Text style={styles.sendButtonText}>→</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

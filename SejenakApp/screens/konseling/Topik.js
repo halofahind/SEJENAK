@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Topik = ({ navigation }) => {
   const [topiks, setTopiks] = useState([]);
@@ -46,46 +47,56 @@ const Topik = ({ navigation }) => {
   const handlePilihTopik = async () => {
     if (!selectedTopic) return;
 
-    const userId = 3;
-    const newKonseling = {
-      topik: {
-        id: selectedTopic.id,
-      },
-      userId: userId,
-      tglMulai: new Date().toISOString(),
-      tglSelesai: null, // opsional kalau belum selesai
-      status: "Sedang Berjalan",
-      createdBy: "user",
-      createdDate: new Date().toISOString(),
-      modifBy: null,
-      modifDate: null,
-    };
+    const userData = await AsyncStorage.getItem("userData");
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/konseling`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+
+      const userId = parsedUserData.id;
+
+      const newKonseling = {
+        topik: {
+          id: selectedTopic.id,
         },
-        body: JSON.stringify(newKonseling),
-      });
+        userId: userId,
+        tglMulai: new Date().toISOString(),
+        tglSelesai: null, // opsional kalau belum selesai
+        status: "Sedang Berjalan",
+        createdBy: "user",
+        createdDate: new Date().toISOString(),
+        modifBy: null,
+        modifDate: null,
+      };
 
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log(result);
-
-        navigation.navigate("DetailKonseling", {
-          topic: selectedTopic.id,
-          konId: result.konId, // ← pastikan backend return ini
-          isHistory: false,
+      try {
+        const response = await fetch(`${API_BASE_URL}/konseling`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newKonseling),
         });
-      } else {
-        Alert.alert("Gagal", "Gagal membuat sesi konseling");
+
+        const result = await response.json();
+
+        if (response.ok) {
+          console.log(result);
+
+          navigation.navigate("DetailKonseling", {
+            topic: selectedTopic.nama,
+            msg1: selectedTopic.pesanPertama,
+            msg2: selectedTopic.pesanTerakhir,
+            status: result.status,
+            konId: result.konId,
+            isHistory: false,
+          });
+        } else {
+          Alert.alert("Gagal", "Gagal membuat sesi konseling");
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+        Alert.alert("Error", "Terjadi kesalahan saat membuat sesi konseling");
       }
-    } catch (error) {
-      console.error("Error:", error.message);
-      Alert.alert("Error", "Terjadi kesalahan saat membuat sesi konseling");
     }
   };
 
