@@ -18,6 +18,17 @@ import TopikList from "./screens/konseling/TopikList";
 import MainTabs from "./screens/Start/MainTabs";
 import TopikForm from "./screens/konseling/TopikForm";
 import Topik from "./screens/konseling/Topik";
+import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
+import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
+import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
+import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
+import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
+import MoodSummary from "./screens/home/Mood/DetailMood/MoodSummary";
+import MoodTracker from "./screens/home/Mood/MoodTracker";
+import NextScreen from "./screens/home/Mood/NextScreen";
+import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
+import DetailAkun from "./screens/profil/Detail/DetailAkun";
+import TambahAkun from "./screens/profil/TambahAkun";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 

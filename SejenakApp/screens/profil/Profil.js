@@ -142,7 +142,7 @@ export default function Profil({ navigation }) {
           <Icon
             name="logout"
             size={20}
-            color="#D33"
+            color="#FFFF"
             style={{ marginRight: 8 }}
           />
           <Text style={styles.logoutText}>Keluar</Text>
@@ -154,7 +154,7 @@ export default function Profil({ navigation }) {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#F28B8B",
+    backgroundColor: "#D6385E",
     alignItems: "center",
     paddingVertical: 40,
     paddingTop: 60,
@@ -240,13 +240,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFE5E5",
+    backgroundColor: "#D6385E",
     borderRadius: 8,
     paddingVertical: 12,
     marginTop: 12,
   },
   logoutText: {
-    color: "#D33",
+    color: "#FFFF",
     fontSize: 15,
     fontWeight: "bold",
   },

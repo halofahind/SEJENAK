@@ -7,8 +7,10 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const API_BASE_URL = "http://192.168.43.40:8080";
 
@@ -29,6 +31,8 @@ const formatToYYYYMMDD = (dateString) => {
 export default function DetailAkun({ route, navigation }) {
   const { data } = route.params;
   const [editMode, setEditMode] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const [form, setForm] = useState({
     id: data.id,
     nama: data.nama,
@@ -143,7 +147,49 @@ export default function DetailAkun({ route, navigation }) {
         {renderField("Role", "role")}
         {renderField("Status", "usrStatus")}
         {renderField("Email", "email")}
-        {renderField("Tanggal Lahir", "tanggalLahir")}
+
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>Tanggal Lahir</Text>
+          {editMode ? (
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
+              style={[styles.input, { justifyContent: "center" }]}
+            >
+              <Text style={{ fontSize: 16, color: "#333" }}>
+                {form.tanggalLahir || "Tanggal Lahir (DD/MM/YYYY)"}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={styles.value}>{form.tanggalLahir || "-"}</Text>
+          )}
+        </View>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={
+              form.tanggalLahir && form.tanggalLahir.includes("/")
+                ? new Date(formatToYYYYMMDD(form.tanggalLahir))
+                : new Date()
+            }
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            maximumDate={new Date()}
+            onChange={(e, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) {
+                const day = String(selectedDate.getDate()).padStart(2, "0");
+                const month = String(selectedDate.getMonth() + 1).padStart(
+                  2,
+                  "0"
+                );
+                const year = selectedDate.getFullYear();
+                const formatted = `${day}/${month}/${year}`;
+                handleChange("tanggalLahir", formatted);
+              }
+            }}
+          />
+        )}
+
         {renderField("Hobi", "hobi")}
         {renderField("Telepon", "telepon")}
 
@@ -223,9 +269,7 @@ export default function DetailAkun({ route, navigation }) {
                 <Text
                   style={[
                     styles.buttonText,
-                    {
-                      color: form.usrStatus === "Aktif" ? "#000" : "#fff",
-                    },
+                    { color: form.usrStatus === "Aktif" ? "#000" : "#fff" },
                   ]}
                 >
                   {form.usrStatus === "Aktif" ? "Nonaktifkan" : "Aktifkan"}
