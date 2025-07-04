@@ -50,11 +50,11 @@ export default function OnboardingScreen() {
     if (currentSlide < slides.length - 1) {
       flatListRef.current.scrollToIndex({ index: currentSlide + 1 });
     } else {
-      navigation.replace("MainTabs");
+      navigation.replace("Login");
     }
   };
 
-  const handleSkip = () => navigation.replace("MainTabs");
+  const handleSkip = () => navigation.replace("Login");
 
   const renderItem = ({ item, index }) => {
     const inputRange = [
@@ -81,16 +81,18 @@ export default function OnboardingScreen() {
       extrapolate: "clamp",
     });
 
+    const isEven = index % 2 === 0;
+
+    const titleColor =
+      currentSlide === 3 ? "#fff" : isEven ? "#fff" : "#D6385E";
+    const descColor = isEven ? "#D6385E" : "#fff"; // bisa bedakan lagi kalau mau
+
     return (
-      <View style={styles.slide}>
+      <View style={[styles.slide]}>
         {/* Title dengan animasi */}
         <Animated.Text
-          style={[
-            styles.title,
-            {
-              opacity: titleOpacity,
-            },
-          ]}>
+          style={[styles.title, { color: titleColor, opacity: titleOpacity }]}
+        >
           {item.title}
         </Animated.Text>
 
@@ -107,26 +109,31 @@ export default function OnboardingScreen() {
 
         {/* Deskripsi dengan animasi */}
         <Animated.Text
-          style={[
-            styles.desc,
-            {
-              opacity: descOpacity,
-            },
-          ]}>
+          style={[styles.desc, { color: descColor, opacity: descOpacity }]}
+        >
           {item.desc}
         </Animated.Text>
       </View>
     );
   };
 
+  const isEven = currentSlide % 2 === 0;
+  const circleColor = isEven ? "#fff" : "#D6385E";
+  const buttonColor =
+    currentSlide === 3 ? "#D6385E" : isEven ? "#fff" : "#D6385E";
+  const buttonBgColor =
+    currentSlide === 3 ? "#fff" : isEven ? "#D6385E" : "#fff";
+  const backgroundColor =
+    currentSlide === 3 ? "#D6385E" : isEven ? "#D6385E" : "#fff";
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor }]}>
       {/* Background Circle - Fixed */}
-      <View style={styles.circle} />
+      <View style={[styles.circle, { backgroundColor: circleColor }]} />
 
       {/* Skip Button - Fixed */}
       <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
-        <Text style={styles.skipText}>Lewati</Text>
+        <Text style={[styles.skipText, , { color: buttonColor }]}>Lewati</Text>
       </TouchableOpacity>
 
       {/* FlatList */}
@@ -176,6 +183,7 @@ export default function OnboardingScreen() {
                 {
                   width: dotWidth,
                   opacity: dotOpacity,
+                  backgroundColor: buttonBgColor,
                 },
               ]}
             />
@@ -184,9 +192,12 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Next Button - Fixed */}
-      <TouchableOpacity onPress={handleNext} style={styles.nextButton}>
-        <Text style={styles.nextText}>
-          {currentSlide === slides.length - 1 ? "GET STARTED" : "SELANJUTNYA"}
+      <TouchableOpacity
+        onPress={handleNext}
+        style={[styles.nextButton, { backgroundColor: buttonBgColor }]}
+      >
+        <Text style={[styles.nextText, { color: buttonColor }]}>
+          {currentSlide === slides.length - 1 ? "AYO MULAI" : "SELANJUTNYA"}
         </Text>
       </TouchableOpacity>
     </View>
@@ -210,7 +221,7 @@ const styles = StyleSheet.create({
     width: 350,
     height: 350,
     resizeMode: "contain",
-    marginBottom: 30,
+    marginBottom: 10,
     marginTop: 300,
     zIndex: 999,
   },
@@ -226,10 +237,11 @@ const styles = StyleSheet.create({
   },
   desc: {
     fontSize: 15,
-    color: "#D6385E",
+    color: "#5E5E5D",
     textAlign: "center",
-    marginHorizontal: 20,
-    marginBottom: 40,
+    marginHorizontal: 30,
+    marginBottom: 80,
+    fontWeight: "600",
   },
   circle: {
     position: "absolute",

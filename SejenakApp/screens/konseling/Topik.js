@@ -8,8 +8,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-
-const API_BASE_URL = "http://10.1.47.159:8080";
+import { API_BASE_URL } from "../../utils/constants";
 
 const Topik = ({ navigation }) => {
   const [topiks, setTopiks] = useState([]);
@@ -30,6 +29,8 @@ const Topik = ({ navigation }) => {
       });
 
       const data = await response.json();
+
+      console.log(data);
       setTopiks(data);
     } catch (error) {
       console.error("Error fetching topiks:", error.message);
@@ -47,12 +48,17 @@ const Topik = ({ navigation }) => {
 
     const userId = 3;
     const newKonseling = {
-      topikId: selectedTopic.id,
+      topik: {
+        id: selectedTopic.id,
+      },
       userId: userId,
       tglMulai: new Date().toISOString(),
+      tglSelesai: null, // opsional kalau belum selesai
       status: "Sedang Berjalan",
       createdBy: "user",
       createdDate: new Date().toISOString(),
+      modifBy: null,
+      modifDate: null,
     };
 
     try {
@@ -67,8 +73,10 @@ const Topik = ({ navigation }) => {
       const result = await response.json();
 
       if (response.ok) {
+        console.log(result);
+
         navigation.navigate("DetailKonseling", {
-          topic: selectedTopic.nama,
+          topic: selectedTopic.id,
           konId: result.konId, // ← pastikan backend return ini
           isHistory: false,
         });
@@ -85,7 +93,8 @@ const Topik = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <ActivityIndicator size="large" color="#e91e63" />
           <Text>Memuat daftar topik...</Text>
         </View>
@@ -112,12 +121,14 @@ const Topik = ({ navigation }) => {
               key={index}
               style={styles.topicOption}
               onPress={() => handleTopicSelect(topic)}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+            >
               <View
                 style={[
                   styles.radioButton,
                   selectedTopic?.id === topic.id && styles.radioButtonSelected,
-                ]}>
+                ]}
+              >
                 {selectedTopic?.id === topic.id && (
                   <View style={styles.radioButtonInner} />
                 )}
@@ -127,7 +138,8 @@ const Topik = ({ navigation }) => {
                   styles.topicOptionText,
                   selectedTopic?.id === topic.id &&
                     styles.topicOptionTextSelected,
-                ]}>
+                ]}
+              >
                 {topic.nama}
               </Text>
             </TouchableOpacity>
@@ -141,7 +153,8 @@ const Topik = ({ navigation }) => {
           ]}
           onPress={handlePilihTopik}
           disabled={!selectedTopic}
-          activeOpacity={selectedTopic ? 0.8 : 1}>
+          activeOpacity={selectedTopic ? 0.8 : 1}
+        >
           <Text style={styles.selectButtonText}>Pilih Topik</Text>
         </TouchableOpacity>
       </View>

@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   card: {
     width: width - 40,
     marginHorizontal: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#D6385E",
     borderRadius: 24,
     overflow: "hidden",
     shadowColor: "#000",
@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
     flexDirection: "row", // <-- bikin jadi horizontal
     alignItems: "center", // biar isi sejajar tengah
     padding: 10, // kasih padding biar lega
-    opacity: 0.9, //
   },
   image: {
     width: 100,
@@ -120,12 +119,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#D6385E",
+    color: "#fff",
     marginBottom: 4,
   },
   desc: {
     fontSize: 14,
-    color: "#555",
+    color: "#fff",
   },
   indicatorWrapper: {
     flexDirection: "row",

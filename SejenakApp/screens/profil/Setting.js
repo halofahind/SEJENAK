@@ -7,13 +7,14 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-
+import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Setting({ navigation }) {
   const settingOptions = [
     "Akun Personal",
     "Ganti Password",
     "Hapus Akun",
-    "Kelola Akun"
+    "Kelola Akun",
   ];
 
   const handleOption = (label) => {
@@ -34,6 +35,26 @@ export default function Setting({ navigation }) {
         Alert.alert(label, `Fitur "${label}" belum tersedia.`);
     }
   };
+  const handleLogout = () => {
+    Alert.alert("Keluar", "Yakin ingin keluar dari aplikasi?", [
+      { text: "Batal", style: "cancel" },
+      {
+        text: "Keluar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await AsyncStorage.removeItem("userData");
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          } catch (err) {
+            Alert.alert("Gagal logout", err.message);
+          }
+        },
+      },
+    ]);
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -42,11 +63,14 @@ export default function Setting({ navigation }) {
         <TouchableOpacity
           key={index}
           style={styles.option}
-          onPress={() => handleOption(item)}
-        >
+          onPress={() => handleOption(item)}>
           <Text style={styles.optionText}>{item}</Text>
         </TouchableOpacity>
       ))}
+      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <Icon name="logout" size={20} color="#D33" style={{ marginRight: 8 }} />
+        <Text style={styles.logoutText}>Keluar</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

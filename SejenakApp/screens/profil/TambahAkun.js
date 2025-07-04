@@ -15,8 +15,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
-const API_BASE_URL = "http://192.168.43.40:8080";
+import { API_BASE_URL } from "../../utils/constants";
 
 export default function TambahAkun({ navigation }) {
   const [form, setForm] = useState({

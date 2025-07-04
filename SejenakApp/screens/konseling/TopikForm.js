@@ -13,14 +13,22 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { API_BASE_URL } from "../../utils/constants";
 
 const TopikForm = ({ navigation, route }) => {
   const { topik, mode, title } = route.params;
   const isEditMode = mode === "edit";
-  const [namaTopik, setNamaTopik] = useState("");
-  const [pesanPertama, setPesanPertama] = useState("");
-  const [pesanTerakhir, setPesanTerakhir] = useState("");
 
+  // State initialization - sesuaikan dengan struktur
+  const [namaTopik, setNamaTopik] = useState(
+    mode === "edit" ? topik.tpk_nama || topik.nama || "" : ""
+  );
+  const [pesanPertama, setPesanPertama] = useState(
+    mode === "edit" ? topik.tpk_pesan_pertama || topik.pesanPertama || "" : ""
+  );
+  const [pesanTerakhir, setPesanTerakhir] = useState(
+    mode === "edit" ? topik.tpk_pesan_terakhir || topik.pesanTerakhir || "" : ""
+  );
   const [formData, setFormData] = useState({
     tpk_nama: namaTopik || "",
     tpk_pesan_pertama: pesanPertama || "",
@@ -28,8 +36,6 @@ const TopikForm = ({ navigation, route }) => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const API_BASE_URL = "http://10.1.47.159:8080"; // Ganti dengan URL API Anda
 
   useEffect(() => {
     setFormData({
@@ -70,48 +76,46 @@ const TopikForm = ({ navigation, route }) => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
+
     setLoading(true);
     try {
+      const url = isEditMode
+        ? `${API_BASE_URL}/topik/${topik.tpk_id}` // Sertakan ID di URL
+        : `${API_BASE_URL}/topik`;
+
+      const method = isEditMode ? "PUT" : "POST";
+
       const topikData = {
-        nama: namaTopik || "",
-        pesanPertama: pesanPertama || "",
-        pesanTerakhir: pesanTerakhir || "",
+        id: topik.tpk_id, // Pastikan mengirim ID
+        nama: namaTopik,
+        pesanPertama: pesanPertama,
+        pesanTerakhir: pesanTerakhir,
       };
 
-      const response = await fetch(API_BASE_URL + "/topik", {
-        method: "POST",
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify(topikData),
       });
 
-      const responseData = await response.json();
-
       if (response.ok) {
-        const successMessage = isEditMode
-          ? "Topik berhasil diperbarui"
-          : "Topik berhasil ditambahkan";
-
-        Alert.alert("Berhasil", successMessage, [
+        Alert.alert("Berhasil", "Topik berhasil diperbarui", [
           {
             text: "OK",
-            onPress: () => navigation.goBack(),
+            onPress: () => {
+              navigation.goBack(); // Kembali ke previous screen
+              if (route.params?.onRefresh) {
+                route.params.onRefresh(); // Panggil callback refresh jika ada
+              }
+            },
           },
         ]);
-      } else {
-        throw new Error("Failed to save topik");
       }
     } catch (error) {
-      console.error("Error saving topik:", error);
-      const errorMessage = isEditMode
-        ? "Gagal memperbarui topik"
-        : "Gagal menambahkan topik";
-      Alert.alert("Error", errorMessage);
+      // Error handling
     } finally {
       setLoading(false);
     }
@@ -156,10 +160,12 @@ const TopikForm = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.header}>
             <Text style={styles.title}>
               {isEditMode ? "Edit Topik" : "Tambah Topik Baru"}
@@ -171,7 +177,7 @@ const TopikForm = ({ navigation, route }) => {
             </Text>
           </View>
 
-          <View style={styles.form}>
+          <View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>
                 Nama Topik <Text style={styles.required}>*</Text>
@@ -233,7 +239,7 @@ const TopikForm = ({ navigation, route }) => {
               </Text>
             </View>
 
-            {isEditMode && (
+            {/* {isEditMode && (
               <View style={styles.infoBox}>
                 <Ionicons
                   name="information-circle-outline"
@@ -247,7 +253,7 @@ const TopikForm = ({ navigation, route }) => {
                   )}
                 </Text>
               </View>
-            )}
+            )} */}
           </View>
         </ScrollView>
 
@@ -255,7 +261,8 @@ const TopikForm = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={handleCancel}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             <Text style={styles.cancelButtonText}>Batal</Text>
           </TouchableOpacity>
 
@@ -267,7 +274,8 @@ const TopikForm = ({ navigation, route }) => {
             ]}
             onPress={handleSubmit}
             disabled={loading}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
@@ -287,51 +295,33 @@ const TopikForm = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#fff",
   },
   keyboardAvoid: {
     flex: 1,
   },
   scrollContainer: {
-    padding: 20,
     paddingBottom: 120,
   },
   header: {
-    alignItems: "center",
-    marginBottom: 30,
-    marginTop: 10,
-  },
-  iconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    paddingTop: 40,
+    backgroundColor: "#e91e63",
+    padding: 15,
+    borderBottomRightRadius: 60,
   },
   title: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#333",
+    color: "#fff",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
-    textAlign: "center",
+    color: "#fff",
     lineHeight: 20,
-    paddingHorizontal: 20,
-  },
-  form: {
-    gap: 20,
   },
   inputGroup: {
-    marginBottom: 4,
+    padding: 20,
   },
   label: {
     fontSize: 16,
@@ -381,7 +371,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#e3f2fd",
-    padding: 12,
     borderRadius: 8,
     borderLeftWidth: 4,
     borderLeftColor: "#2196F3",

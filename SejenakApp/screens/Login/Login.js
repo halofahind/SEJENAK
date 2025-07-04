@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,13 +11,14 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BeritaCarousel from "../../components/BeritaCarousel";
 import { API_BASE_URL } from "../../utils/constants";
-import Video from "react-native-video";
-// Konstanta untuk API
+import SessionManager from "../../utils/SessionManager";
+
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
@@ -32,88 +33,83 @@ export default function Login({ navigation }) {
   const scrollViewRef = useRef(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-  const handleLogin = async () => {
-    // Validasi input
-    if (!email.trim()) {
-      Alert.alert("Error", "Username tidak boleh kosong!");
-      return;
-    }
+  useEffect(() => {
+    const checkSession = async () => {
+      const savedUser = await AsyncStorage.getItem("userData");
+      if (savedUser) {
+        navigation.replace("MainTabs");
+        SessionManager.start(navigation); // mulai session saat auto login
+      }
+    };
+    checkSession();
+  }, []);
 
-    if (!password.trim()) {
-      Alert.alert("Error", "Password tidak boleh kosong!");
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Username dan password wajib diisi.");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Buat request body sesuai dengan API Spring Boot
       const loginData = {
         username: email.trim(),
         password: password.trim(),
       };
-
-      console.log("Mengirim data login:", loginData);
+      console.log("Login data sent:", loginData);
 
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify(loginData),
-        // Tambahkan timeout untuk menghindari hanging
-        timeout: 10000,
       });
 
+      console.log("Login data sent:", loginData);
       console.log("Response status:", response.status);
 
+      // return;
       if (response.ok) {
-        // Login berhasil
         const userData = await response.json();
-        console.log("Login berhasil:", userData);
+        await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
-        // Simpan data user jika diperlukan (bisa pakai AsyncStorage)
-        // await AsyncStorage.setItem('userData', JSON.stringify(userData));
+        SessionManager.start(navigation); // mulai session timer
+        navigation.replace("MainTabs");
 
-        navigation.navigate("MainTabs");
+        console.log("Login success:", userData);
       } else if (response.status === 401) {
-        // Unauthorized - Username atau password salah
-        setErrorMsg("Username atau password salah!");
-        setIsPasswordInvalid(true);
+        const errorText = await response.text();
+        Alert.alert(
+          "Login Gagal",
+          errorText || "Username atau password salah."
+        );
       } else {
-        // Error lainnya
-        Alert.alert("Error", `Terjadi kesalahan server (${response.status})`);
+        const errorText = await response.text();
+        Alert.alert("Server Error", errorText || `Kode: ${response.status}`);
       }
     } catch (error) {
-      console.error("Error login:", error);
-
-      // Handle berbagai jenis error
-      if (
-        error.name === "TypeError" &&
-        error.message.includes("Network request failed")
-      ) {
-        Alert.alert(
-          "Koneksi Gagal",
-          "Tidak dapat terhubung ke server. Pastikan:\n" +
-            "• Koneksi internet stabil\n" +
-            "• Server sedang berjalan\n" +
-            "• IP address benar (192.168.43.40:8080)"
-        );
-      } else if (error.name === "AbortError") {
-        Alert.alert("Timeout", "Koneksi ke server terlalu lama. Coba lagi.");
-      } else {
-        Alert.alert(
-          "Error",
-          "Terjadi kesalahan tidak terduga: " + error.message
-        );
-      }
+      console.error("Login error:", error);
+      Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fungsi untuk scroll ke input yang sedang fokus
+  useEffect(() => {
+    const loadLastLogin = async () => {
+      const saved = await AsyncStorage.getItem("lastLogin");
+      if (saved) {
+        const data = JSON.parse(saved);
+        setEmail(data.username);
+        setPassword(data.password);
+      }
+    };
+
+    loadLastLogin();
+  }, []);
+
   const scrollToInput = (inputRef) => {
     setTimeout(() => {
       inputRef.current?.measureLayout(
@@ -140,7 +136,7 @@ export default function Login({ navigation }) {
     {
       id: "2",
       title: "Jangan Takut Sendiri",
-      desc: "Sekarang kamu bisa konsultasi dengan Admin Secara Real Time",
+      desc: "Sekarang kamu bisa konsultasi dengan Admin dengan nyaman secara anonim",
       image: require("../../assets/LoginCarousel/Konsultasi.png"),
     },
     {
@@ -167,9 +163,10 @@ export default function Login({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}>
+          bounces={false}
+        >
           <View style={styles.loginTitleWrap}>
-            <Text style={styles.loginTitle}>Login</Text>
+            <Text style={styles.loginTitle}>Masuk</Text>
           </View>
 
           {errorMsg !== "" && (
@@ -213,7 +210,8 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Icon
                 name={showPassword ? "visibility" : "visibility-off"}
                 size={20}
@@ -229,7 +227,8 @@ export default function Login({ navigation }) {
                 isLoading && styles.loginButtonDisabled,
               ]}
               onPress={handleLogin}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
@@ -245,12 +244,14 @@ export default function Login({ navigation }) {
             <Text style={styles.signupText}>Belum memiliki akun? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Text
                 style={{
                   color: isLoading ? "#ccc" : "#EF6A6A",
                   fontWeight: "bold",
-                }}>
+                }}
+              >
                 Daftar
               </Text>
             </TouchableOpacity>
@@ -326,10 +327,11 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     marginBottom: 30,
     marginTop: 10,
-    left: 220,
+    left: 200,
   },
   loginButtonDisabled: {
     backgroundColor: "#ccc",
+    left: 200,
   },
   loginButtonText: {
     color: "#fff",
@@ -379,18 +381,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 18,
   },
-  card: {
-    width: -40,
-    marginHorizontal: 20,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-  },
+
   image: {
     width: "100%",
     height: 100,

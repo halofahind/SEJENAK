@@ -20,13 +20,14 @@ import TopikForm from "./screens/konseling/TopikForm";
 import Topik from "./screens/konseling/Topik";
 import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
 import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
-import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
-import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
-import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
+import Konseling from "./screens/konseling/Konseling";
 import MoodSummary from "./screens/home/Mood/DetailMood/MoodSummary";
 import MoodTracker from "./screens/home/Mood/MoodTracker";
+import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
 import NextScreen from "./screens/home/Mood/NextScreen";
+import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
 import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
+import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
 const Stack = createNativeStackNavigator();
@@ -36,14 +37,17 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="MainTabs"
-        screenOptions={{ headerShown: false }}>
+        initialRouteName="Splash"
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Daftar" component={Daftar} />
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="Konseling" component={Konseling} />
+
         <Stack.Screen name="DetailKonseling" component={DetailKonseling} />
         <Stack.Screen name="Topik" component={Topik} />
         <Stack.Screen name="TopikList" component={TopikList} />

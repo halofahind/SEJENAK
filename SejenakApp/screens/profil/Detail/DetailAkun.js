@@ -10,9 +10,7 @@ import {
   Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-
-const API_BASE_URL = "http://192.168.43.40:8080";
+import { API_BASE_URL } from "../../../utils/constants";
 
 const formatToDDMMYYYY = (dateString) => {
   if (!dateString) return "";
