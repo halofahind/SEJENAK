@@ -1,11 +1,10 @@
-// utils/SessionManager.js
 import { AppState, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 let timeoutTimer = null;
 let appStateListener = null;
 
-const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
+const SESSION_TIMEOUT = 60 * 60 * 1000;
 
 const SessionManager = {
   start(navigation) {

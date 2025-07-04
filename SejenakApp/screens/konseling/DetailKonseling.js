@@ -12,6 +12,17 @@ import {
   Alert,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
+import dayjs from "dayjs";
+
+const formatDateToReadable = (dateStr) => {
+  const date = dayjs(dateStr, "DD/MM/YY");
+  const today = dayjs();
+  const yesterday = today.subtract(1, "day");
+
+  if (date.isSame(today, "day")) return "Hari Ini";
+  if (date.isSame(yesterday, "day")) return "Kemarin";
+  return date.format("D MMMM YYYY");
+};
 
 const DetailKonseling = ({ navigation, route }) => {
   const { topic, isHistory, konId } = route.params;
@@ -29,11 +40,59 @@ const DetailKonseling = ({ navigation, route }) => {
   const scrollViewRef = useRef();
 
   useEffect(() => {
-    // Auto scroll to bottom when new message is added
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-  }, [messages]);
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/detailKonselings`);
+        const data = await res.json();
+
+        // Filter berdasarkan konId dari route.params
+        const filtered = data
+          .filter((msg) => msg.konId === konId)
+          .map((msg, index) => ({
+            id: msg.id || index + 1,
+            text: msg.pesan,
+            isAdmin: msg.pengirim === "admin",
+            time: dayjs(msg.waktu).format("HH:mm"),
+            date: dayjs(msg.waktu).format("DD/MM/YY"),
+          }));
+
+        // Tambahkan default welcome message jika tidak ada pesan
+        setMessages(
+          filtered.length > 0
+            ? filtered
+            : [
+                {
+                  id: 1,
+                  text: `Halo! Saya siap membantu Anda dengan topik ${topic}. Silakan ceritakan apa yang ingin Anda diskusikan.`,
+                  isAdmin: true,
+                  time: getCurrentTime(),
+                  date: getCurrentDate(),
+                },
+              ]
+        );
+      } catch (error) {
+        console.error("Gagal mengambil pesan:", error.message);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+  const groupMessagesByDate = (messages) => {
+    const grouped = {};
+
+    messages.forEach((msg) => {
+      if (!grouped[msg.date]) {
+        grouped[msg.date] = [];
+      }
+      grouped[msg.date].push(msg);
+    });
+
+    return Object.entries(grouped).map(([date, msgs]) => ({
+      date,
+      messages: msgs,
+    }));
+  };
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -132,20 +191,7 @@ const DetailKonseling = ({ navigation, route }) => {
   };
 
   const handleBack = () => {
-    Alert.alert(
-      "Keluar dari Chat",
-      "Apakah Anda yakin ingin keluar dari sesi konseling ini?",
-      [
-        {
-          text: "Batal",
-          style: "cancel",
-        },
-        {
-          text: "Ya",
-          onPress: () => navigation.goBack(),
-        },
-      ]
-    );
+    navigation.goBack();
   };
 
   const showMenu = () => {
@@ -191,7 +237,8 @@ const DetailKonseling = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View style={styles.chatContainer}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
@@ -212,65 +259,67 @@ const DetailKonseling = ({ navigation, route }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Date Separator */}
-          <View style={styles.dateSeparator}>
-            <Text style={styles.dateText}>24 Juni 2025</Text>
-          </View>
-
-          {/* Messages */}
+          {/* Messages with grouped date headers */}
           <ScrollView
             ref={scrollViewRef}
             style={styles.messagesContainer}
             contentContainerStyle={styles.messagesContent}
-            showsVerticalScrollIndicator={false}>
-            {messages.map((msg) => (
-              <View
-                key={msg.id}
-                style={[
-                  styles.messageWrapper,
-                  msg.isAdmin
-                    ? styles.adminMessageWrapper
-                    : styles.userMessageWrapper,
-                ]}>
-                {msg.isAdmin && (
-                  <View style={styles.messageAvatar}>
-                    <Text style={styles.messageAvatarText}>👤</Text>
-                  </View>
-                )}
-
-                <View style={styles.messageContainer}>
-                  <View
-                    style={[
-                      styles.messageBubble,
-                      msg.isAdmin ? styles.adminMessage : styles.userMessage,
-                    ]}>
-                    <Text
-                      style={[
-                        styles.messageText,
-                        msg.isAdmin
-                          ? styles.adminMessageText
-                          : styles.userMessageText,
-                      ]}>
-                      {msg.text}
-                    </Text>
-                  </View>
-
-                  <Text
-                    style={[
-                      styles.messageTime,
-                      msg.isAdmin
-                        ? styles.adminMessageTime
-                        : styles.userMessageTime,
-                    ]}>
-                    {msg.date} {msg.time}
+            showsVerticalScrollIndicator={false}
+          >
+            {groupMessagesByDate(messages).map((group, index) => (
+              <View key={index}>
+                {/* Tanggal dinamis */}
+                <View style={styles.dateSeparator}>
+                  <Text style={styles.dateText}>
+                    {formatDateToReadable(group.key)}
                   </Text>
                 </View>
 
-                {!msg.isAdmin && (
-                  <View style={styles.messageAvatar}>
-                    <Text style={styles.messageAvatarText}>👤</Text>
+                {/* Semua pesan di tanggal ini */}
+                {group.messages.map((msg) => (
+                  <View
+                    key={msg.id}
+                    style={[
+                      styles.messageWrapper,
+                      msg.isAdmin
+                        ? styles.adminMessageWrapper
+                        : styles.userMessageWrapper,
+                    ]}
+                  >
+                    <View style={styles.messageContainer}>
+                      <View
+                        style={[
+                          styles.messageBubble,
+                          msg.isAdmin
+                            ? styles.adminMessage
+                            : styles.userMessage,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.messageText,
+                            msg.isAdmin
+                              ? styles.adminMessageText
+                              : styles.userMessageText,
+                          ]}
+                        >
+                          {msg.text}
+                        </Text>
+                      </View>
+
+                      <Text
+                        style={[
+                          styles.messageTime,
+                          msg.isAdmin
+                            ? styles.adminMessageTime
+                            : styles.userMessageTime,
+                        ]}
+                      >
+                        {msg.time}
+                      </Text>
+                    </View>
                   </View>
-                )}
+                ))}
               </View>
             ))}
           </ScrollView>
@@ -294,7 +343,8 @@ const DetailKonseling = ({ navigation, route }) => {
                 !message.trim() && styles.sendButtonDisabled,
               ]}
               onPress={sendMessage}
-              disabled={!message.trim()}>
+              disabled={!message.trim()}
+            >
               <Text style={styles.sendButtonText}>→</Text>
             </TouchableOpacity>
           </View>
@@ -325,7 +375,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   backButton: {
     marginRight: 16,
