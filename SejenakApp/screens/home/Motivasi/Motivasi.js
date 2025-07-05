@@ -1,73 +1,127 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  StatusBar,
   SafeAreaView,
+  FlatList,
+  TouchableOpacity,
   Alert,
+  ActivityIndicator,
+  Animated,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  PanGestureHandler,
+  State,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import axios from "axios";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
-import { Swipeable } from "react-native-gesture-handler";
 
 export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const BASE_URL = "http://192.168.1.7:8080/motivasi";
 
-  const BASE_URL = "http://192.168.53.121:8080/motivasi/get";
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchMotivasi();
-    }, [])
-  );
+  useEffect(() => {
+    fetchMotivasi();
+  }, []);
 
   const fetchMotivasi = async () => {
     try {
-      const res = await axios.get(BASE_URL);
-      setMotivasiList(res.data);
-    } catch (err) {
-      console.error("Gagal ambil motivasi:", err.message);
+      const response = await axios.get(`${BASE_URL}/get`);
+      setMotivasiList(response.data);
+    } catch (error) {
+      console.error("Gagal ambil motivasi:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://192.168.53.121:8080/motivasi/delete/${id}`);
-      setMotivasiList((prev) => prev.filter((item) => item.motivasiId !== id));
-      Alert.alert("Berhasil", "Motivasi berhasil dihapus.");
-    } catch (err) {
-      console.error("Gagal hapus motivasi:", err.message);
-      Alert.alert("Gagal", "Gagal menghapus motivasi. Coba lagi nanti.");
-    }
+  const handleDelete = (id, text) => {
+    Alert.alert("Hapus Motivasi", `Yakin ingin hapus motivasi:\n"${text}"?`, [
+      { text: "Batal", style: "cancel" },
+      {
+        text: "Hapus",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await axios.delete(`${BASE_URL}/delete/${id}`);
+            fetchMotivasi();
+            Alert.alert("Berhasil", "Motivasi berhasil dihapus");
+          } catch (error) {
+            console.error("Gagal hapus motivasi:", error.message);
+            Alert.alert("Gagal", "Terjadi kesalahan saat menghapus motivasi");
+          }
+        },
+      },
+    ]);
   };
 
-  const renderRightActions = (id) => (
-    <TouchableOpacity
-      style={styles.deleteButton}
-      onPress={() => handleDelete(id)}
-    >
-      <Text style={styles.deleteButtonText}>Hapus</Text>
-    </TouchableOpacity>
-  );
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchMotivasi();
+  };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+  const getStatusText = (status) =>
+    status === "Aktif" || status === 1 ? "Aktif" : "Tidak Aktif";
 
-      <View style={styles.flatHeader}>
-        <Text style={styles.flatTitle}>Daftar Motivasi</Text>
-      </View>
+  const getStatusColor = (status) =>
+    status === "Aktif" || status === 1 ? "#e91e63" : "#6c757d";
 
-      <ScrollView style={styles.scrollArea}>
-        <View style={styles.listWrapper}>
-          {motivasiList.map((item) => (
-            <Swipeable
-              key={item.motivasiId}
-              renderRightActions={() => renderRightActions(item.motivasiId)}
+  const SwipeableRow = ({ item }) => {
+    const translateX = new Animated.Value(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const onGestureEvent = Animated.event(
+      [{ nativeEvent: { translationX: translateX } }],
+      { useNativeDriver: true }
+    );
+
+    const onHandlerStateChange = (event) => {
+      if (event.nativeEvent.state === State.END) {
+        if (event.nativeEvent.translationX < -100) {
+          Animated.timing(translateX, {
+            toValue: -200,
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => {
+            setIsDeleting(true);
+            setTimeout(() => {
+              handleDelete(item.motivasiId, item.motivasiText);
+              setIsDeleting(false);
+            }, 100);
+          });
+        } else {
+          Animated.spring(translateX, {
+            toValue: 0,
+            useNativeDriver: true,
+          }).start();
+        }
+      }
+    };
+
+    return (
+      <View style={styles.swipeContainer}>
+        <View style={styles.deleteBackground}>
+          <Ionicons name="trash-outline" size={24} color="white" />
+          <Text style={styles.deleteText}>Hapus</Text>
+        </View>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <PanGestureHandler
+            onGestureEvent={onGestureEvent}
+            onHandlerStateChange={onHandlerStateChange}
+          >
+            <Animated.View
+              style={[
+                styles.rowFront,
+                {
+                  transform: [{ translateX }],
+                  opacity: isDeleting ? 0.5 : 1,
+                },
+              ]}
             >
               <TouchableOpacity
                 style={styles.card}
@@ -75,110 +129,195 @@ export default function MotivasiScreen({ navigation }) {
                   navigation.navigate("UpdateMotivasi", { item })
                 }
               >
+                <View style={styles.cardContent}>
+                  <Text style={styles.cardText}>{item.motivasiText}</Text>
 
-                <Text style={styles.cardText}>{item.motivasiText}</Text>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: getStatusColor(item.status),
+                      },
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {getStatusText(item.status)}
+                    </Text>
+                  </View>
+                </View>
               </TouchableOpacity>
-            </Swipeable>
-          ))}
+            </Animated.View>
+          </PanGestureHandler>
+        </GestureHandlerRootView>
+      </View>
+    );
+  };
+
+  const renderItem = ({ item }) => <SwipeableRow item={item} />;
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#D7385E" />
+          <Text style={styles.loadingText}>Memuat motivasi...</Text>
         </View>
-      </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Daftar Motivasi</Text>
+      </View>
+
+      <FlatList
+        data={motivasiList}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.motivasiId.toString()}
+        contentContainerStyle={styles.listContainer}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="chatbox-ellipses-outline" size={48} color="#ccc" />
+            <Text style={styles.emptyText}>Belum ada motivasi</Text>
+            <Text style={styles.emptySubtext}>
+              Tap tombol + untuk menambahkan motivasi baru
+            </Text>
+          </View>
+        }
+      />
 
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate("AddMotivasi")}
+        activeOpacity={0.8}
       >
-        <MaterialIcons name="add" size={28} color="#fff" />
+        <Ionicons name="add" size={36} color="#fff" />
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
-
-  // Header baru
-  flatHeader: {
-    backgroundColor: "#fff",
+  container: { flex: 1, backgroundColor: "#f8f9fa" },
+  header: {
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
+    paddingVertical: 20,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingTop: 40,
   },
-  flatTitle: {
+  title: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#D7385E",
   },
-
-  scrollArea: { flex: 1, paddingHorizontal: 20 },
-  listWrapper: { gap: 16, paddingBottom: 60, marginTop: 16 },
-
+  listContainer: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 30,
+    backgroundColor: "#D7385E",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+  },
+  swipeContainer: {
+    marginBottom: 12,
+    position: "relative",
+  },
+  deleteBackground: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "#ff4757",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    borderRadius: 12,
+    flexDirection: "row",
+  },
+  deleteText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "600",
+    marginLeft: 4,
+  },
+  rowFront: {
+    backgroundColor: "transparent",
+  },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
-    elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  cardHeader: {
+  cardContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#222",
-  },
-  statusBadge: {
-    backgroundColor: "#D7385E",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  statusText: {
-    fontSize: 12,
-    color: "#fff",
-    fontWeight: "bold",
   },
   cardText: {
     fontSize: 14,
     color: "#333",
-    lineHeight: 22,
+    lineHeight: 20,
+    flex: 1,
+    paddingRight: 10,
   },
-
-  fab: {
-    position: "absolute",
-    bottom: 40,
-    right: 20,
-    backgroundColor: "#D7385E",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 10,
+  },
+  statusText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  loadingContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
   },
-
-  deleteButton: {
-    backgroundColor: "#D7385E",
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#666",
+  },
+  emptyContainer: {
+    flex: 1,
     justifyContent: "center",
-    alignItems: "flex-end",
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginVertical: 2,
+    alignItems: "center",
+    paddingTop: 200,
   },
-  deleteButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+  emptyText: {
+    fontSize: 18,
+    color: "#999",
+    marginTop: 16,
+    fontWeight: "500",
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#bbb",
+    marginTop: 8,
+    textAlign: "center",
+    lineHeight: 20,
   },
 });
