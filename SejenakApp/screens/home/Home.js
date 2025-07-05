@@ -14,7 +14,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
 
 const screenWidth = Dimensions.get("window").width;
-import axios from "axios";
 
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");

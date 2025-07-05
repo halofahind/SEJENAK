@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -17,12 +17,12 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import axios from "axios";
+import { API_BASE_URL } from "../../../utils/constants";
 
 export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const BASE_URL = "http://192.168.1.7:8080/motivasi";
 
   useEffect(() => {
     fetchMotivasi();
@@ -30,7 +30,7 @@ export default function MotivasiScreen({ navigation }) {
 
   const fetchMotivasi = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/get`);
+      const response = await axios.get(`${API_BASE_URL}/motivasi/get`);
       setMotivasiList(response.data);
     } catch (error) {
       console.error("Gagal ambil motivasi:", error.message);
@@ -40,24 +40,32 @@ export default function MotivasiScreen({ navigation }) {
     }
   };
 
-  const handleDelete = (id, text) => {
-    Alert.alert("Hapus Motivasi", `Yakin ingin hapus motivasi:\n"${text}"?`, [
-      { text: "Batal", style: "cancel" },
-      {
-        text: "Hapus",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await axios.delete(`${BASE_URL}/delete/${id}`);
-            fetchMotivasi();
-            Alert.alert("Berhasil", "Motivasi berhasil dihapus");
-          } catch (error) {
-            console.error("Gagal hapus motivasi:", error.message);
-            Alert.alert("Gagal", "Terjadi kesalahan saat menghapus motivasi");
-          }
+  const handleDelete = (id, text, status) => {
+    let confirmationText = status === "Aktif" ? "Hapus" : "Pulihkan";
+    Alert.alert(
+      "Hapus Motivasi",
+      `Yakin ingin ${confirmationText} motivasi"?`,
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: confirmationText,
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await axios.delete(`${API_BASE_URL}/motivasi/delete/${id}`);
+              fetchMotivasi();
+              Alert.alert(
+                "Berhasil",
+                `Motivasi berhasil di${confirmationText}`
+              );
+            } catch (error) {
+              console.error("Gagal hapus motivasi:", error.message);
+              Alert.alert("Gagal", "Terjadi kesalahan saat menghapus motivasi");
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const onRefresh = () => {
@@ -72,8 +80,8 @@ export default function MotivasiScreen({ navigation }) {
     status === "Aktif" || status === 1 ? "#e91e63" : "#6c757d";
 
   const SwipeableRow = ({ item }) => {
-    const translateX = new Animated.Value(0);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const translateX = useRef(new Animated.Value(0)).current;
+    const [isOpen, setIsOpen] = useState(false);
 
     const onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: translateX } }],
@@ -82,60 +90,87 @@ export default function MotivasiScreen({ navigation }) {
 
     const onHandlerStateChange = (event) => {
       if (event.nativeEvent.state === State.END) {
-        if (event.nativeEvent.translationX < -100) {
+        const { translationX } = event.nativeEvent;
+
+        if (translationX < -80) {
           Animated.timing(translateX, {
-            toValue: -200,
+            toValue: -80,
             duration: 200,
             useNativeDriver: true,
-          }).start(() => {
-            setIsDeleting(true);
-            setTimeout(() => {
-              handleDelete(item.motivasiId, item.motivasiText);
-              setIsDeleting(false);
-            }, 100);
-          });
+          }).start(() => setIsOpen(true));
         } else {
           Animated.spring(translateX, {
             toValue: 0,
             useNativeDriver: true,
-          }).start();
+          }).start(() => setIsOpen(false));
         }
       }
     };
 
+    const closeSwipe = () => {
+      Animated.timing(translateX, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => setIsOpen(false));
+    };
+
     return (
-      <View style={styles.swipeContainer}>
-        <View style={styles.deleteBackground}>
-          <Ionicons name="trash-outline" size={24} color="white" />
-          <Text style={styles.deleteText}>Hapus</Text>
-        </View>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView>
+        <View style={styles.swipeableRowContainer}>
+          {/* Delete Button Background */}
+          <View style={styles.hiddenButton}>
+            {item.status === "Aktif" || item.status === 1 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  closeSwipe();
+                  handleDelete(item.motivasiId, item.motivasiText, item.status);
+                }}
+                style={styles.deleteButton}
+              >
+                <Ionicons name="trash-outline" size={24} color="white" />
+                <Text style={styles.deleteText}>Hapus</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  closeSwipe();
+                  handleDelete(item.motivasiId, item.motivasiText, item.status);
+                }}
+                style={styles.deleteButton}
+              >
+                <Ionicons name="refresh-outline" size={24} color="white" />
+                <Text style={styles.deleteText}>Pulihkan</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Swipeable Foreground */}
           <PanGestureHandler
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={onHandlerStateChange}
+            activeOffsetX={[-20, 20]}
+            failOffsetY={[-10, 10]}
           >
             <Animated.View
               style={[
                 styles.rowFront,
                 {
                   transform: [{ translateX }],
-                  opacity: isDeleting ? 0.5 : 1,
                 },
               ]}
             >
               <TouchableOpacity
                 style={styles.card}
                 onPress={() => navigation.navigate("UpdateMotivasi", { item })}
+                activeOpacity={0.8}
               >
                 <View style={styles.cardContent}>
                   <Text style={styles.cardText}>{item.motivasiText}</Text>
-
                   <View
                     style={[
                       styles.statusBadge,
-                      {
-                        backgroundColor: getStatusColor(item.status),
-                      },
+                      { backgroundColor: getStatusColor(item.status) },
                     ]}
                   >
                     <Text style={styles.statusText}>
@@ -146,8 +181,8 @@ export default function MotivasiScreen({ navigation }) {
               </TouchableOpacity>
             </Animated.View>
           </PanGestureHandler>
-        </GestureHandlerRootView>
-      </View>
+        </View>
+      </GestureHandlerRootView>
     );
   };
 
@@ -240,12 +275,19 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "#ff4757",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-end",
     width: 100,
     borderRadius: 12,
+  },
+  deleteButton: {
+    backgroundColor: "#ff4757",
+    width: 100,
+    height: "100%",
+    borderRadius: 12,
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   deleteText: {
     color: "white",
@@ -317,5 +359,28 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "center",
     lineHeight: 20,
+  },
+  swipeableRowContainer: {
+    marginBottom: 12,
+    position: "relative",
+    height: 80, // pastikan tingginya konsisten
+  },
+
+  hiddenButton: {
+    backgroundColor: "#ff4757",
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    borderRadius: 12,
+  },
+
+  deleteButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

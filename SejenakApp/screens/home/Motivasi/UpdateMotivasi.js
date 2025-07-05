@@ -13,6 +13,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { API_BASE_URL } from "../../../utils/constants";
 
 export default function UpdateMotivasiScreen({ route, navigation }) {
   const { item } = route.params;
@@ -41,7 +42,7 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://192.168.1.7:8080/motivasi/update/${item.motivasiId}`,
+        `${API_BASE_URL}/motivasi/update/${item.motivasiId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -95,9 +96,7 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Edit Motivasi</Text>
-            <Text style={styles.subtitle}>
-              Perbarui teks motivasi pengguna
-            </Text>
+            <Text style={styles.subtitle}>Perbarui teks motivasi pengguna</Text>
           </View>
 
           {/* Form */}
