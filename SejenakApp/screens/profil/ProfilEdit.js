@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
   View,
   Text,
@@ -23,13 +23,15 @@ export default function ProfilEdit({ navigation }) {
     role: "",
     name: "",
     username: "",
+    password: "",
+    tanggalLahir: "",
     email: "",
     phone: "",
     gender: "",
     address: "",
     hobi: "",
     tentang: "",
-    profilePic: require("../../assets/Home/1.png"),
+    profilePic: "",
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,14 +48,16 @@ export default function ProfilEdit({ navigation }) {
             role: parsedData.role || "",
             name: parsedData.nama || "",
             username: parsedData.username || "",
+            password: parsedData.password || "",
+            tanggalLahir: parsedData.tanggalLahir || "",
             email: parsedData.email || "",
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
             hobi: parsedData.hobi || "",
-            tentang: parsedData.tentang || "",
-            profilePic: parsedData.profilePic
-              ? { uri: parsedData.profilePic }
+            tentang: parsedData.about || "", // Perhatikan ini "about"
+            profilePic: parsedData.usrFoto
+              ? { uri: parsedData.usrFoto }
               : require("../../assets/Home/1.png"),
           });
         }
@@ -63,20 +67,12 @@ export default function ProfilEdit({ navigation }) {
         setIsLoading(false);
       }
     };
-
     fetchUserData();
   }, []);
 
   const uploadImageToServer = async (imageUri) => {
     try {
-      setIsLoading(true);
-
-      const fileInfo = await FileSystem.getInfoAsync(imageUri);
-
-      if (!fileInfo.exists) {
-        throw new Error("File tidak ditemukan");
-      }
-
+      // Upload seperti biasa
       const filename = imageUri.split("/").pop();
       const fileType = `image/${filename.split(".").pop()}`;
 
@@ -87,101 +83,167 @@ export default function ProfilEdit({ navigation }) {
         type: fileType,
       });
 
-      const response = await fetch(`${API_BASE_URL}/upload`, {
+      const response = await fetch(`${API_BASE_URL}/upload/${user.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer`,
         },
         body: formData,
       });
 
-      const responseData = await response.json();
+      // Pakai response.text() dulu biar tahu apa isi response-nya
+      const text = await response.text();
+      console.log("Response dari upload:", text);
+
+      const responseData = JSON.parse(text);
 
       if (!response.ok) {
         throw new Error(responseData.message || "Gagal mengupload gambar");
       }
 
-      return responseData.path; // Path gambar di server
+      return `${API_BASE_URL}/${responseData.filePath}`; // ← return string (full URL)
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  // const handleSave = async () => {
+  //   setIsSaving(true);
+  //   try {
+  //     const userData = {
+  //       id: user.id,
+  //       role: user.role,
+  //       nama: user.name,
+  //       username: user.username,
+  //       password: user.password,
+  //       tanggalLahir: user.tanggalLahir,
+  //       email: user.email,
+  //       telepon: user.phone,
+  //       gender: user.gender,
+  //       alamat: user.address,
+  //       hobi: user.hobi || null,
+  //       tentang: user.tentang || null,
+  //       profilPic: user.profilePic || null,
+  //     };
+
+  //     // ⬇ Upload foto jika masih lokal
+  //     if (user.profilePic?.uri && !user.profilePic.uri.includes(API_BASE_URL)) {
+  //       try {
+  //         const fotoProfilUrl = await uploadImageToServer(user.profilePic.uri);
+  //         userData.profilPic = fotoProfilUrl; // SIMPAN SEBAGAI STRING URL
+  //       } catch (uploadError) {
+  //         console.error("Gagal upload foto:", uploadError);
+  //       }
+  //     } else if (user.profilePic?.uri) {
+  //       // Kalau sudah URL sebelumnya, ambil string-nya saja
+  //       userData.profilPic = user.fotoProfilUrl;
+  //     }
+
+  //     // Kirim data ke backend
+  //     const response = await fetch(`${API_BASE_URL}/pengguna`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(userData),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errText = await response.text();
+  //       throw new Error(errText);
+  //     }
+
+  //     // Simpan juga ke AsyncStorage dalam bentuk string
+  //     await AsyncStorage.setItem("userData", JSON.stringify(userData));
+  //     Alert.alert("Sukses", "Profil berhasil diperbarui");
+  //     navigation.goBack();
+  //   } catch (err) {
+  //     console.error("Gagal simpan profil:", err);
+  //     Alert.alert("Error", err.message || "Gagal simpan profil");
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
+
   const handleSave = async () => {
-    if (isSaving) return;
     setIsSaving(true);
-
     try {
-      // Validasi wajib
-      if (!user.name || !user.email || !user.phone) {
-        throw new Error("Nama, email, dan nomor telepon harus diisi");
-      }
-
-      // Siapkan data untuk dikirim ke API
-      const userData = {
+      // Buat salinan data user yang akan dikirim
+      let userDataToSend = {
         id: user.id,
         role: user.role,
         nama: user.name,
         username: user.username,
+        password: user.password,
+        tanggalLahir: user.tanggalLahir,
         email: user.email,
         telepon: user.phone,
         gender: user.gender,
-        alamat: user.address,
         hobi: user.hobi || null,
         tentang: user.tentang || null,
+        profilPic: null, // Akan diisi nanti
       };
 
-      // Upload foto jika ada perubahan (uri baru yang belum diupload)
-      if (user.profilePic.uri && !user.profilePic.uri.includes(API_BASE_URL)) {
-        const fotoProfil = await uploadImageToServer(user.profilePic.uri);
-        userData.usrFoto = fotoProfil;
+      // Handle upload foto jika diperlukan
+      let profilePicUrl = user.profilePic;
+
+      if (typeof profilePicUrl === "object" && profilePicUrl.uri) {
+        // Jika foto baru (masih lokal)
+        if (!profilePicUrl.uri.includes(API_BASE_URL)) {
+          try {
+            const uploadedUrl = await uploadImageToServer(profilePicUrl.uri);
+            profilePicUrl = uploadedUrl;
+
+            // Update state dengan URL baru
+            setUser((prev) => ({
+              ...prev,
+              profilePic: uploadedUrl,
+            }));
+          } catch (uploadError) {
+            console.error("Gagal upload foto:", uploadError);
+            // Tetap lanjut tanpa foto jika upload gagal
+            profilePicUrl = null;
+          }
+        } else {
+          // Jika sudah URL, ambil string-nya saja
+          profilePicUrl = profilePicUrl.uri;
+        }
       }
 
+      // Set URL foto ke data yang akan dikirim
+      userDataToSend.profilPic = profilePicUrl;
+
+      // Kirim data ke backend
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer`,
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(userDataToSend),
       });
 
-      const responseData = await response.json();
-
       if (!response.ok) {
-        throw new Error(
-          responseData.message ||
-            responseData.error ||
-            "Gagal memperbarui profil"
-        );
+        const errText = await response.text();
+        throw new Error(errText);
       }
 
-      // Update local storage
+      // Simpan ke AsyncStorage
       const updatedUserData = {
-        ...JSON.parse(await AsyncStorage.getItem("userData")),
-        ...userData,
-        profilePic: userData.usrFoto
-          ? `${API_BASE_URL}/${userData.usrFoto}`
-          : user.profilePic.uri || user.profilePic,
+        ...userDataToSend,
+        profilePic: profilePicUrl, // Pastikan penamaannya konsisten
       };
-
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData));
 
       Alert.alert("Sukses", "Profil berhasil diperbarui");
       navigation.goBack();
-    } catch (error) {
-      console.error("Error:", error);
-      Alert.alert("Error", error.message || "Gagal menyimpan perubahan profil");
+    } catch (err) {
+      console.error("Gagal simpan profil:", err);
+      Alert.alert("Error", err.message || "Gagal simpan profil");
     } finally {
       setIsSaving(false);
     }
   };
-
   const showImagePickerOptions = async () => {
     Alert.alert(
       "Ubah Foto Profil",
@@ -227,7 +289,24 @@ export default function ProfilEdit({ navigation }) {
       handleImageSelected(result.assets[0].uri);
     }
   };
+  const getImageSource = (profilePic) => {
+    // Default image jika tidak ada
+    if (!profilePic) return require("../../assets/Home/1.png");
 
+    // Jika berupa string langsung (URI)
+    if (typeof profilePic === "string") {
+      // Pastikan string yang valid
+      return { uri: String(profilePic) };
+    }
+
+    // Jika berupa object dengan properti uri
+    if (profilePic.uri) {
+      return { uri: String(profilePic.uri) };
+    }
+
+    // Jika berupa require local image
+    return profilePic;
+  };
   const pickImageFromGallery = async () => {
     // Request permission for media library
     const galleryPermission =
@@ -255,17 +334,22 @@ export default function ProfilEdit({ navigation }) {
 
   const handleImageSelected = async (imageUri) => {
     try {
-      // Tampilkan gambar terlebih dahulu sebelum upload
-      setUser({
-        ...user,
-        profilePic: { uri: imageUri },
-      });
+      // Konversi ke string dan pastikan tidak null/undefined
+      const uri = imageUri ? String(imageUri) : null;
+
+      if (!uri) {
+        throw new Error("URI gambar tidak valid");
+      }
+
+      setUser((prev) => ({
+        ...prev,
+        profilePic: { uri },
+      }));
     } catch (error) {
       console.error("Error handling image:", error);
       Alert.alert("Error", "Gagal memproses gambar");
     }
   };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -280,11 +364,15 @@ export default function ProfilEdit({ navigation }) {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.profileSection}>
-            <TouchableOpacity onPress={showImagePickerOptions}>
+            <TouchableOpacity
+              onPress={showImagePickerOptions}
+              style={styles.profileImageContainer}>
               <Image
                 source={
                   typeof user.profilePic === "string"
                     ? { uri: user.profilePic }
+                    : user.profilePic.uri
+                    ? { uri: user.profilePic.uri }
                     : user.profilePic
                 }
                 style={styles.profileImage}
@@ -292,6 +380,11 @@ export default function ProfilEdit({ navigation }) {
               <View style={styles.cameraIcon}>
                 <Icon name="camera" size={20} color="#fff" />
               </View>
+              {isLoading && (
+                <View style={styles.loadingOverlay}>
+                  <ActivityIndicator size="large" color="#fff" />
+                </View>
+              )}
             </TouchableOpacity>
             <View style={styles.userInfo}>
               <Text style={styles.nameText}>Edit Profil</Text>
@@ -376,18 +469,6 @@ export default function ProfilEdit({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Alamat</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            value={user.address}
-            onChangeText={(text) => setUser({ ...user, address: text })}
-            placeholder="Masukkan alamat lengkap"
-            multiline
-            numberOfLines={3}
-          />
         </View>
 
         <View style={styles.inputGroup}>
