@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react"; 
 import {
   View,
   Text,
@@ -8,8 +8,34 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import axios from "axios";
 
 export default function Home({ navigation }) {
+
+  const [motivasiHarian, setMotivasiHarian] = useState("");
+
+  useEffect(() => {
+  const fetchMotivasi = async () => {
+    try {
+      const res = await axios.get("http://192.168.53.121:8080/motivasi/get"); // ganti IP sesuai
+      const list = res.data;
+
+      if (list.length > 0) {
+        const today = new Date();
+        const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+        const index = daySeed % list.length;
+
+        setMotivasiHarian(list[index].motivasiText);
+      }
+    } catch (err) {
+      console.error("Gagal ambil motivasi:", err.message);
+    }
+  };
+
+  fetchMotivasi();
+  }, []);
+
+
   const user = {
     name: "Alfian Ramdhan",
     profilePic: require("../../assets/Home/1.png"),
@@ -62,14 +88,21 @@ export default function Home({ navigation }) {
 
       <View style={styles.divider} />
 
-      {/* === Quotes === */}
-      <Text style={styles.sectionTitle}>Quotes hari ini</Text>
-      <View style={styles.quoteBox}>
-        <Text style={styles.quoteText}>
-          “Hari ini bukan tentang seberapa cepat kamu sampai, tapi seberapa
-          tulus kamu melangkah.”
-        </Text>
-      </View>
+    {/* === Quotes === */}
+    <View style={styles.headerContainer}>
+      <Text style={styles.manageQuotes}>Quotes hari ini</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("MotivasiScreen")}>
+        <Text style={styles.manageQuotes}>Kelola quotes</Text>
+      </TouchableOpacity>
+    </View>
+
+    <View style={styles.quoteBox}>
+      <Text style={styles.quoteText}>
+        {motivasiHarian
+          ? `“${motivasiHarian}”`
+          : "Memuat motivasi hari ini..."}
+      </Text>
+    </View>
 
       {/* === Topik === */}
       <Text style={styles.sectionTitle}>Topik Journal</Text>
@@ -143,6 +176,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#777",
     marginBottom: 10,
+  },
+    headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  manageQuotes: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginLeft: -18,
+    marginRight: -18,
+    marginTop: 10,
   },
   quoteBox: {
     backgroundColor: "#FCD6D9",
