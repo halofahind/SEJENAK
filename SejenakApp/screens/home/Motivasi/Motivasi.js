@@ -119,30 +119,40 @@ export default function MotivasiScreen({ navigation }) {
       <GestureHandlerRootView>
         <View style={styles.swipeableRowContainer}>
           {/* Delete Button Background */}
-          <View style={styles.hiddenButton}>
-            {item.status === "Aktif" || item.status === 1 ? (
-              <TouchableOpacity
-                onPress={() => {
-                  closeSwipe();
-                  handleDelete(item.motivasiId, item.motivasiText, item.status);
-                }}
-                style={styles.deleteButton}
-              >
-                <Ionicons name="trash-outline" size={24} color="white" />
-                <Text style={styles.deleteText}>Hapus</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={() => {
-                  closeSwipe();
-                  handleDelete(item.motivasiId, item.motivasiText, item.status);
-                }}
-                style={styles.deleteButton}
-              >
-                <Ionicons name="refresh-outline" size={24} color="white" />
-                <Text style={styles.deleteText}>Pulihkan</Text>
-              </TouchableOpacity>
-            )}
+          <View
+            style={[
+              styles.hiddenButton,
+              {
+                backgroundColor:
+                  item.status === "Aktif" || item.status === 1
+                    ? "#ff4757"
+                    : "#007bff",
+              },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                closeSwipe();
+                handleDelete(item.motivasiId, item.motivasiText, item.status);
+              }}
+              style={styles.actionButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={
+                  item.status === "Aktif" || item.status === 1
+                    ? "trash-outline"
+                    : "refresh-outline"
+                }
+                size={24}
+                color="white"
+              />
+              <Text style={styles.deleteText}>
+                {item.status === "Aktif" || item.status === 1
+                  ? "Hapus"
+                  : "Pulihkan"}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Swipeable Foreground */}
@@ -367,18 +377,18 @@ const styles = StyleSheet.create({
   },
 
   hiddenButton: {
-    backgroundColor: "#ff4757",
     position: "absolute",
     right: 0,
     top: 0,
     bottom: 0,
+    width: 80,
     justifyContent: "center",
     alignItems: "center",
-    width: 80,
+    backgroundColor: "#ff4757",
     borderRadius: 12,
   },
 
-  deleteButton: {
+  actionButton: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
