@@ -13,6 +13,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import KebijakanPrivasi from "./KebijakanPrivasi";
 
 export default function Profil({ navigation }) {
   const [user, setUser] = useState({
@@ -117,7 +118,9 @@ export default function Profil({ navigation }) {
       title: "Kebijakan Privasi",
       icon: "shield",
       type: "font-awesome",
-      onPress: () => {},
+      onPress: () => {
+        navigation.navigate(KebijakanPrivasi);
+      },
     },
     {
       title: "Hubungi Kami",

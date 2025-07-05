@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -36,8 +36,6 @@ export default function TopikList({ navigation }) {
           "Content-Type": "application/json",
         },
       });
-      console.log("Data topik:", response);
-
       const data = await response.json();
       setTopiks(data);
     } catch (error) {
@@ -48,23 +46,31 @@ export default function TopikList({ navigation }) {
     }
   };
 
-  const handleDelete = async (id, nama) => {
+  const handleDelete = async (id, nama, status) => {
+    const action = status === "Aktif" ? "Hapus" : "Aktifkan";
     Alert.alert(
-      "Hapus Topik",
-      `Apakah Anda yakin ingin menghapus topik "${nama}"?`,
+      `${action} Topik`,
+      `Apakah Anda yakin ingin ${action.toLowerCase()} topik "${nama}"?`,
       [
         { text: "Batal", style: "cancel" },
         {
-          text: "Hapus",
+          text: action,
           style: "destructive",
           onPress: async () => {
             try {
-              await axios.delete(`${API_BASE_URL}/topik/${id}`);
+              if (status === "Aktif") {
+                await axios.delete(`${API_BASE_URL}/topik/${id}`);
+              } else {
+                await axios.patch(`${API_BASE_URL}/topik/${id}`);
+              }
               fetchTopiks();
-              Alert.alert("Berhasil", "Topik berhasil dihapus");
+              Alert.alert(
+                "Berhasil",
+                `Topik berhasil di${action.toLowerCase()}`
+              );
             } catch (error) {
-              console.error("Error deleting topik:", error);
-              Alert.alert("Error", "Gagal menghapus topik");
+              console.error(`Error ${action.toLowerCase()} topik:`, error);
+              Alert.alert("Error", `Gagal ${action.toLowerCase()} topik`);
             }
           },
         },
@@ -73,9 +79,6 @@ export default function TopikList({ navigation }) {
   };
 
   const handleEditTopik = (topik) => {
-    console.log("Data yang dikirim:", topik); // Debugging
-
-    // Pastikan struktur data sesuai dengan yang diharapkan TopikForm
     const topikData = {
       tpk_nama: topik.nama,
       tpk_pesan_pertama: topik.pesanPertama,
@@ -84,7 +87,7 @@ export default function TopikList({ navigation }) {
     };
 
     navigation.navigate("TopikForm", {
-      topik: topikData, // Gunakan key 'topik' bukan 'topiks'
+      topik: topikData,
       mode: "edit",
       title: "Edit Topik",
     });
@@ -102,9 +105,9 @@ export default function TopikList({ navigation }) {
     fetchTopiks();
   };
 
-  const SwipeableRow = ({ item, onDelete, onEdit }) => {
-    const translateX = new Animated.Value(0);
-    const [isDeleting, setIsDeleting] = useState(false);
+  const SwipeableRow = ({ item }) => {
+    const translateX = useRef(new Animated.Value(0)).current;
+    const [isOpen, setIsOpen] = useState(false);
 
     const onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: translateX } }],
@@ -115,56 +118,86 @@ export default function TopikList({ navigation }) {
       if (event.nativeEvent.state === State.END) {
         const { translationX } = event.nativeEvent;
 
-        if (translationX < -100) {
-          // Swipe left untuk delete
+        if (translationX < -80) {
           Animated.timing(translateX, {
-            toValue: -200,
+            toValue: -80,
             duration: 200,
             useNativeDriver: true,
-          }).start(() => {
-            setIsDeleting(true);
-            setTimeout(() => {
-              onDelete(item.id, item.nama);
-              setIsDeleting(false);
-            }, 100);
-          });
+          }).start(() => setIsOpen(true));
         } else {
-          // Kembalikan ke posisi semula
           Animated.spring(translateX, {
             toValue: 0,
             useNativeDriver: true,
-          }).start();
+          }).start(() => setIsOpen(false));
         }
       }
     };
 
+    const closeSwipe = () => {
+      Animated.timing(translateX, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => setIsOpen(false));
+    };
+
     return (
-      <View style={styles.swipeContainer}>
-        <View style={styles.deleteBackground}>
-          <Ionicons name="trash-outline" size={24} color="white" />
-          <Text style={styles.deleteText}>Hapus</Text>
-        </View>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView>
+        <View style={styles.swipeableRowContainer}>
+          {/* Hidden Action Button */}
+          <View
+            style={[
+              styles.hiddenButton,
+              {
+                backgroundColor:
+                  item.status === "Aktif" ? "#ff4757" : "#4CAF50",
+              },
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                closeSwipe();
+                handleDelete(item.id, item.nama, item.status);
+              }}
+              style={styles.actionButton}
+              activeOpacity={0.7}>
+              <Ionicons
+                name={
+                  item.status === "Aktif"
+                    ? "trash-outline"
+                    : "checkmark-outline"
+                }
+                size={24}
+                color="white"
+              />
+              <Text style={styles.actionText}>
+                {item.status === "Aktif" ? "Hapus" : "Aktifkan"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Swipeable Content */}
           <PanGestureHandler
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={onHandlerStateChange}
             activeOffsetX={[-20, 20]}
-            failOffsetY={[-10, 10]}
-          >
+            failOffsetY={[-10, 10]}>
             <Animated.View
               style={[
                 styles.rowFront,
                 {
                   transform: [{ translateX }],
-                  opacity: isDeleting ? 0.5 : 1,
                 },
-              ]}
-            >
+              ]}>
               <TouchableOpacity
                 style={styles.topikItem}
-                onPress={() => onEdit(item)}
-                activeOpacity={0.7}
-              >
+                onPress={() => {
+                  if (isOpen) {
+                    closeSwipe();
+                  } else {
+                    handleEditTopik(item);
+                  }
+                }}
+                activeOpacity={0.8}>
                 <View style={styles.topikContent}>
                   <View style={styles.topikInfo}>
                     <Text style={styles.topikName}>{item.nama}</Text>
@@ -177,29 +210,27 @@ export default function TopikList({ navigation }) {
                   </View>
                 </View>
 
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>Aktif</Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    {
+                      backgroundColor:
+                        item.status === "Aktif" ? "#e91e63" : "#6c757d",
+                    },
+                  ]}>
+                  <Text style={styles.statusText}>
+                    {item.status || "Aktif"}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </Animated.View>
           </PanGestureHandler>
-        </GestureHandlerRootView>
-      </View>
+        </View>
+      </GestureHandlerRootView>
     );
   };
 
-  const renderTopikItem = ({ item }) => (
-    <SwipeableRow item={item} onDelete={handleDelete} onEdit={handleEditTopik}>
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => navigation.navigate("TopikForm", { topiks: item })}
-      >
-        <View style={{ flex: 1 }}>
-          <Text style={styles.nama}>{item.nama}</Text>
-        </View>
-      </TouchableOpacity>
-    </SwipeableRow>
-  );
+  const renderTopikItem = ({ item }) => <SwipeableRow item={item} />;
 
   if (loading) {
     return (
@@ -236,11 +267,11 @@ export default function TopikList({ navigation }) {
           </View>
         }
       />
+
       <TouchableOpacity
         style={styles.fab}
         onPress={handleAddTopik}
-        activeOpacity={0.8}
-      >
+        activeOpacity={0.8}>
         <Ionicons name="add" size={40} color="white" />
       </TouchableOpacity>
     </SafeAreaView>
@@ -253,15 +284,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 16,
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
     paddingTop: 40,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#e91e63",
   },
   fab: {
     position: "absolute",
@@ -274,35 +307,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
-  },
-  fabText: {
-    fontSize: 30,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#e91e63",
-  },
-  addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#e91e63",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    shadowColor: "#e91e63",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  addButtonText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "600",
-    marginLeft: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -318,23 +322,28 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 100,
   },
-  swipeContainer: {
-    marginBottom: 12,
+  swipeableRowContainer: {
+    marginBottom: 200,
     position: "relative",
+    height: 100, // Adjust based on your content height
   },
-  deleteBackground: {
+  hiddenButton: {
     position: "absolute",
     right: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "#ff4757",
+    width: 80,
     justifyContent: "center",
     alignItems: "center",
-    width: 100,
     borderRadius: 12,
+  },
+  actionButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     flexDirection: "row",
   },
-  deleteText: {
+  actionText: {
     color: "white",
     fontSize: 12,
     fontWeight: "600",
@@ -377,7 +386,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   statusBadge: {
-    backgroundColor: "#e91e63",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
@@ -405,19 +413,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "center",
     lineHeight: 20,
-  },
-  instructionContainer: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(0,0,0,0.8)",
-    borderRadius: 8,
-    padding: 12,
-  },
-  instructionText: {
-    color: "white",
-    fontSize: 12,
-    textAlign: "center",
   },
 });
