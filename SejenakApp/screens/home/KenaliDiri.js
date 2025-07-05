@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,21 +6,47 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  FlatList,
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const { width } = Dimensions.get("window");
 
+const carouselData = [
+  {
+    id: "1",
+    title: "Berdamai dengan Pikiran",
+    desc: "Tuliskan semua tentang dirimu agar kamu bisa menerima diri sendiri.",
+    image: require("../../assets/Home/1.png"),
+    pages: "11 Halaman",
+  },
+  {
+    id: "2",
+    title: "Menerima Diri Sendiri",
+    desc: "Mengenal kelebihan dan kekuranganmu adalah kekuatan.",
+    image: require("../../assets/Home/1.png"),
+    pages: "7 Halaman",
+  },
+  {
+    id: "3",
+    title: "Menerima Diri Sendiri",
+    desc: "Mengenal kelebihan dan kekuranganmu adalah kekuatan.",
+    image: require("../../assets/Home/1.png"),
+    pages: "2 Halaman",
+  },
+];
+
 const topikList = [
   {
     id: "1",
     title: "Berdamai dengan Kesalahan di Masa Lalu",
     image: require("../../assets/Home/1.png"),
+    navigateTo: "BerdamaiDenganMasaLalu"
   },
   {
     id: "2",
-    title: "Berdamai dengan Pikiran",
+    title: "Berdamai dengan Pikira qn",
     image: require("../../assets/Home/1.png"),
     navigateTo: "BerdamaiDenganPikiran",
   },
@@ -37,8 +63,17 @@ const topikList = [
 ];
 
 export default function KenaliDiriScreen({ navigation }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
+
+  const handleScroll = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / (width - 60));
+    setCurrentIndex(index);
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -49,29 +84,44 @@ export default function KenaliDiriScreen({ navigation }) {
       </View>
 
       {/* Carousel */}
-      <View style={styles.carousel}>
-        <Image
-          source={require("../../assets/Home/1.png")}
-          style={styles.carouselImage}
-        />
-        <View style={styles.carouselTextBox}>
-          <Text style={styles.carouselTitle}>Berdamai dengan Pikiran</Text>
-          <Text style={styles.carouselDesc}>
-            Tuliskan semua tentang dirimu agar kamu bisa menerima diri sendiri.
-          </Text>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>11 Halaman</Text>
+      <FlatList
+        ref={flatListRef}
+        data={carouselData}
+        keyExtractor={(item) => item.id}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={handleScroll}
+        renderItem={({ item }) => (
+          <View style={styles.carousel}>
+            <Image source={item.image} style={styles.carouselImage} />
+            <View style={styles.carouselTextBox}>
+              <Text style={styles.carouselTitle}>{item.title}</Text>
+              <Text style={styles.carouselDesc}>{item.desc}</Text>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{item.pages}</Text>
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
+        )}
+      />
 
-      {/* Dots */}
+      {/* Dot Indicator */}
       <View style={styles.dots}>
-        <View style={[styles.dot, { backgroundColor: "#D84059" }]} />
-        <View style={styles.dot} />
+        {carouselData.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              {
+                backgroundColor: currentIndex === index ? "#D84059" : "#ccc",
+              },
+            ]}
+          />
+        ))}
       </View>
 
-      {/* Detail */}
+      {/* Detail Section */}
       <Text style={styles.detailTitle}>Detail Topik</Text>
       <Text style={styles.detailDesc}>
         Kumpulan konten dari topik journal pilihanmu!
@@ -103,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
@@ -121,7 +171,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     flexDirection: "row",
-    marginBottom: 10,
+    marginRight: 12,
+    width: width - 60,
   },
   carouselImage: {
     width: 80,
@@ -131,6 +182,7 @@ const styles = StyleSheet.create({
   },
   carouselTextBox: {
     flex: 1,
+    justifyContent: "center",
   },
   carouselTitle: {
     fontSize: 14,
@@ -157,20 +209,19 @@ const styles = StyleSheet.create({
   dots: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 8,
+    marginTop: 12,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#ccc",
     marginHorizontal: 4,
   },
   detailTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
-    marginTop: 10,
+    marginTop: 30,
   },
   detailDesc: {
     fontSize: 12,
@@ -200,5 +251,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     color: "#333",
+    textAlign: "center",
   },
 });

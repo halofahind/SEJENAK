@@ -22,8 +22,8 @@
       },
       "edgeToEdgeEnabled": true
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "developer": {
+      "fastRefresh": true
     }
   }
 }

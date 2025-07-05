@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,176 +6,295 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  TextInput,
+  ActivityIndicator,
   Alert,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import * as ImagePicker from "expo-image-picker";
+import { Icon } from "react-native-elements";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profil({ navigation }) {
-  const user = {
-    name: "Alfian Ramdhan",
-    email: "alfianramdhan003@gmail.com",
-    phone: "082196787525",
-    gender: "Laki laki",
-    address: "Bandung",
+  const [user, setUser] = useState({
+    name: "",
+    username: "",
+    email: "",
+    phone: "",
+    gender: "",
+    address: "",
     profilePic: require("../../assets/Home/1.png"),
-  };
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setIsLoading(true);
+      try {
+        const userData = await AsyncStorage.getItem("userData");
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          setUser({
+            name: parsedData.nama || "",
+            username: parsedData.username || "",
+            email: parsedData.email || "",
+            phone: parsedData.telepon || "",
+            gender: parsedData.gender || "",
+            address: parsedData.alamat || "",
+            profilePic: parsedData.profilePic
+              ? { uri: parsedData.profilePic }
+              : require("../../assets/Home/1.png"),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Gallery permission denied");
+      }
+    })();
+  }, []);
 
   const handleSetting = () => {
-    alert("Pengaturan belum tersedia.");
-     navigation.navigate("Setting");
+    navigation.navigate("Setting");
   };
-
-  const handleEdit = () => {
-    alert("Fitur Edit Profil belum tersedia.");
+  const handleLogout = async () => {
+    Alert.alert(
+      "Konfirmasi Keluar",
+      "Apakah Anda yakin ingin keluar dari aplikasi?",
+      [
+        {
+          text: "Batal",
+          style: "cancel",
+        },
+        {
+          text: "Keluar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem("userToken");
+              await AsyncStorage.removeItem("userData");
+              navigation.replace("Login");
+            } catch (error) {
+              console.error("Logout error:", error);
+              Alert.alert(
+                "Error",
+                "Terjadi kesalahan saat keluar. Silakan coba lagi.",
+                [{ text: "OK" }]
+              );
+            }
+          },
+        },
+      ]
+    );
   };
-
-  const handleLogout = () => {
-    Alert.alert("Keluar", "Yakin ingin keluar dari aplikasi?", [
-      { text: "Batal", style: "cancel" },
-      {
-        text: "Keluar",
-        style: "destructive",
-        onPress: () => navigation.replace("Login"),
+  const menuItems = [
+    {
+      title: "Kelola Akun Pengguna",
+      icon: "user",
+      type: "font-awesome",
+      onPress: () => {
+        navigation.replace("KelolaAkun");
       },
-    ]);
-  };
+    },
+    {
+      title: "Ganti Password",
+      icon: "key",
+      type: "font-awesome",
+      onPress: () => {},
+    },
+    {
+      title: "Hapus Akun",
+      icon: "trash",
+      type: "font-awesome",
+      onPress: () => {},
+    },
+  ];
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#e91e63" />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ flex: 1 }}>
-        {/* Header pink */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.settingIcon} onPress={handleSetting}>
-            <Icon name="settings" size={24} color="#fff" />
-          </TouchableOpacity>
-          <Image source={user.profilePic} style={styles.profileImage} />
-          <Text style={styles.hiText}>Hi, {user.name}</Text>
-        </View>
+    <ScrollView style={styles.container}>
+      {/* Header Section */}
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <View style={styles.profileSection}>
+            <Image source={user.profilePic} style={styles.profileImage} />
+            <View style={styles.userInfo}>
+              <Text style={styles.nameText}>Hi, {user.name || "User"}</Text>
+              <View style={styles.infoRow}>
+                <Icon name="id-card" type="font-awesome" color="#fff" />
+                <Text style={styles.infoText}>{user.username}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon name="phone" type="font-awesome" color="#fff" />
+                <Text style={styles.infoText}>{user.phone || "-"}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon
+                  name="envelope"
+                  type="font-awesome"
+                  size={16}
+                  color="#fff"
+                />
+                <Text style={styles.infoText}>{user.email || "-"}</Text>
+              </View>
+            </View>
+          </View>
 
-        {/* Info Box */}
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>Nama Lengkap</Text>
-          <TextInput style={styles.input} value={user.name} editable={false} />
-
-          <Text style={styles.label}>Email</Text>
-          <TextInput style={styles.input} value={user.email} editable={false} />
-
-          <Text style={styles.label}>No Telephone/Hp</Text>
-          <TextInput style={styles.input} value={user.phone} editable={false} />
-
-          <Text style={styles.label}>Gender</Text>
-          <TextInput
-            style={styles.input}
-            value={user.gender}
-            editable={false}
-          />
-
-          <Text style={styles.label}>Alamat</Text>
-          <TextInput
-            style={styles.input}
-            value={user.address}
-            editable={false}
-          />
-
-          {/* Tombol Edit */}
-          <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
-            <Icon
-              name="edit"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 8 }}
-            />
-            <Text style={styles.editText}>Edit Profil</Text>
-          </TouchableOpacity>
-
-          {/* Tombol Logout */}
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Icon
-              name="logout"
-              size={20}
-              color="#D33"
-              style={{ marginRight: 8 }}
-            />
-            <Text style={styles.logoutText}>Keluar</Text>
+          <TouchableOpacity style={styles.editButton} onPress={handleSetting}>
+            <Icon name="edit" size={16} color="#e91e63" />
+            <Text style={styles.editButtonText}>Edit</Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Menu Section */}
+      <View style={styles.menuContainer}>
+        {menuItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.menuItem}
+            onPress={item.onPress}>
+            <Icon name={item.icon} type={item.type} color="#e91e63" />
+            <Text style={styles.menuText}>{item.title}</Text>
+            <Icon name="chevron-right" size={24} color="#ccc" />
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Logout Button */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Icon name="logout" size={20} color="#fff" />
+          <Text style={styles.logoutText}>Keluar</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
-
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: "#F28B8B",
+  container: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 40,
-    paddingTop: 60,
+  },
+  header: {
+    backgroundColor: "#e91e63",
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+    paddingTop: 50,
+    paddingBottom: 25,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     position: "relative",
   },
-  settingIcon: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    marginTop : 6,
-  },
-  profileImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+  profileSection: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
-  hiText: {
-    fontSize: 16,
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: "#fff",
+    marginRight: 15,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 20,
     color: "#fff",
     fontWeight: "bold",
+    marginBottom: 8,
   },
-  infoContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    backgroundColor: "#fff",
-  },
-  label: {
-    fontSize: 14,
-    color: "#333",
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 4,
-    fontWeight: "500",
   },
-  input: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
+  infoText: {
     fontSize: 14,
-    color: "#333",
+    color: "#fff",
+    marginLeft: 8,
+    opacity: 0.9,
   },
   editButton: {
+    position: "static",
+    top: 10,
+    right: 10,
+    backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#EF6A6A",
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginTop: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    width: 90,
   },
-  editText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "bold",
+  editButtonText: {
+    color: "#e91e63",
+    marginLeft: 5,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  menuContainer: {
+    backgroundColor: "#fff",
+    marginTop: 20,
+    marginHorizontal: 20,
+    borderRadius: 12,
+    paddingVertical: 5,
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  menuText: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "500",
+  },
+  logoutContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 30,
   },
   logoutButton: {
+    backgroundColor: "#e91e63",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFE5E5",
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginTop: 12,
+    paddingVertical: 15,
+    borderRadius: 25,
   },
   logoutText: {
-    color: "#D33",
-    fontSize: 15,
+    color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 8,
   },
 });
