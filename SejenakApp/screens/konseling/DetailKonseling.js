@@ -10,21 +10,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Keyboard,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
 import dayjs from "dayjs";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const formatDateToReadable = (dateStr) => {
-  const date = dayjs(dateStr, "DD/MM/YY");
-  const today = dayjs();
-  const yesterday = today.subtract(1, "day");
-
-  if (date.isSame(today, "day")) return "Hari Ini";
-  if (date.isSame(yesterday, "day")) return "Kemarin";
-  return date.format("D MMMM YYYY");
-};
+function getIndonesiaISOTime() {
+  const now = new Date();
+  const wibDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return wibDate.toISOString();
+}
 
 const DetailKonseling = ({ navigation, route }) => {
   const { topic, msg1, msg2, isHistory, status, konId } = route.params;
@@ -40,7 +37,8 @@ const DetailKonseling = ({ navigation, route }) => {
     },
   ]);
 
-  const scrollViewRef = useRef();
+  const [initialLoad, setInitialLoad] = useState(true);
+  const scrollViewRef = useRef(null);
 
   useEffect(() => {
     let intervalId;
@@ -50,84 +48,47 @@ const DetailKonseling = ({ navigation, route }) => {
       const parsedUserData = JSON.parse(userData);
       setCurrentRole(parsedUserData.role);
 
-      console.log("refresh");
-
       try {
         const res = await fetch(`${API_BASE_URL}/konselingbykonid?id=${konId}`);
         const data = await res.json();
 
-        console.log("data:", data);
-
         const filtered = data
           .filter((msg) => msg.konId === konId)
-          .map((msg, index) => ({
-            id: msg.id || index + 1,
+          .map((msg) => ({
+            id: `msg-${msg.id}`,
             text: msg.pesan,
             isAdmin: msg.pengirim === "admin",
             time: dayjs(msg.waktu).format("HH:mm"),
             date: dayjs(msg.waktu).format("DD/MM/YY"),
           }));
 
-        if (status === "Selesai") {
-          setMessages([
-            {
-              id: 0,
-              text: msg1,
-              isAdmin: true,
-              time: getCurrentTime(),
-              date: getCurrentDate(),
-            },
-            ...filtered,
-            {
-              id: -1,
-              text: msg2,
-              isAdmin: true,
-              time: getCurrentTime(),
-              date: getCurrentDate(),
-            },
-          ]);
-        } else {
-          setMessages([
-            {
-              id: 0,
-              text: msg1,
-              isAdmin: true,
-              time: getCurrentTime(),
-              date: getCurrentDate(),
-            },
-            ...filtered,
-          ]);
-        }
+        setMessages((prevMessages) => {
+          const prevLength = prevMessages.length;
+          const newLength = filtered.length;
+
+          // Hanya scroll kalau ada tambahan pesan
+          if (newLength !== prevLength) {
+            setTimeout(() => {
+              if (scrollViewRef.current) {
+                scrollViewRef.current.scrollToEnd({ animated: true });
+              }
+            }, 100);
+          }
+
+          if (initialLoad) setInitialLoad(false);
+
+          return filtered;
+        });
       } catch (error) {
         console.error("Gagal mengambil pesan:", error.message);
       }
     };
-
-    // ⏱ Panggil pertama kali
     fetchMessages();
 
-    // ⏱ Lalu buat polling setiap 3 detik
-    intervalId = setInterval(fetchMessages, 3000); // 3 detik
+    intervalId = setInterval(fetchMessages, 3000);
 
-    // 🧹 Bersihkan interval saat unmount
     return () => clearInterval(intervalId);
   }, [konId]);
-
-  const groupMessagesByDate = (messages) => {
-    const grouped = {};
-
-    messages.forEach((msg) => {
-      if (!grouped[msg.date]) {
-        grouped[msg.date] = [];
-      }
-      grouped[msg.date].push(msg);
-    });
-
-    return Object.entries(grouped).map(([date, msgs]) => ({
-      date,
-      messages: msgs,
-    }));
-  };
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -149,9 +110,6 @@ const DetailKonseling = ({ navigation, route }) => {
 
   const sendMessage = async () => {
     if (message.trim()) {
-      const currentDateTime = new Date();
-      const waktuISO = currentDateTime.toISOString();
-
       const newMessage = {
         id: messages.length + 1,
         text: message.trim(),
@@ -170,7 +128,7 @@ const DetailKonseling = ({ navigation, route }) => {
             konId: konId,
             pengirim: currentRole,
             pesan: message.trim(),
-            waktu: waktuISO,
+            waktu: getIndonesiaISOTime(),
           }),
         });
       } catch (error) {
@@ -253,13 +211,24 @@ const DetailKonseling = ({ navigation, route }) => {
     ]);
   };
 
+  useEffect(() => {
+    const keyboardDidShow = Keyboard.addListener("keyboardDidShow", () => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    });
+
+    return () => {
+      keyboardDidShow.remove();
+    };
+  }, [messages]);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
-        <View style={styles.chatContainer}>
+        <View style={{ flex: 1 }}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -273,40 +242,38 @@ const DetailKonseling = ({ navigation, route }) => {
                 <Text style={styles.adminName}>Topik : {topic}</Text>
               </View>
             </View>
-            {status != "Selesai" && (
+            {status !== "Selesai" && (
               <TouchableOpacity style={styles.menuButton} onPress={showMenu}>
                 <Text style={styles.menuButtonText}>⋮</Text>
               </TouchableOpacity>
             )}
           </View>
 
-          {/* Messages with grouped date headers */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-            showsVerticalScrollIndicator={false}
-          >
-            {groupMessagesByDate(messages).map((group, index) => (
-              <View key={index}>
-                {/* Tanggal dinamis */}
-                <View style={styles.dateSeparator}>
-                  <Text style={styles.dateText}>
-                    {formatDateToReadable(group.key)}
-                  </Text>
-                </View>
-
-                {/* Semua pesan di tanggal ini */}
-                {group.messages.map((msg) => {
-                  const isSender = msg.isAdmin === (currentRole === "admin"); // ⬅️ true jika pengirim = yang login
+          {/* Chat Messages */}
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={styles.messagesContainer}
+              contentContainerStyle={styles.messagesContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {[...messages]
+                .sort((a, b) =>
+                  dayjs(`${a.date} ${a.time}`, "DD/MM/YY HH:mm").diff(
+                    dayjs(`${b.date} ${b.time}`, "DD/MM/YY HH:mm")
+                  )
+                )
+                .map((msg) => {
+                  const isSender = msg.isAdmin === (currentRole === "admin");
                   return (
                     <View
                       key={msg.id}
                       style={[
                         styles.messageWrapper,
                         isSender
-                          ? styles.userMessageWrapper // ⬅️ di kanan (yang sedang login)
-                          : styles.adminMessageWrapper, // ⬅️ di kiri (lawan bicara)
+                          ? styles.userMessageWrapper
+                          : styles.adminMessageWrapper,
                       ]}
                     >
                       <View style={styles.messageContainer}>
@@ -335,18 +302,17 @@ const DetailKonseling = ({ navigation, route }) => {
                               : styles.adminMessageTime,
                           ]}
                         >
-                          {msg.time}
+                          {msg.date} {msg.time}
                         </Text>
                       </View>
                     </View>
                   );
                 })}
-              </View>
-            ))}
-          </ScrollView>
+            </ScrollView>
+          </View>
 
           {/* Input Area */}
-          {status != "Selesai" && (
+          {status !== "Selesai" && (
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.textInput}
