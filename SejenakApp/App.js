@@ -30,6 +30,8 @@ import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
 import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
+import ProfilEdit from "./screens/profil/ProfilEdit";
+import SyaratKetentuan from "./screens/profil/SyaratKetentuan";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -37,9 +39,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Splash"
-        screenOptions={{ headerShown: false }}
-      >
+        initialRouteName="MainTabs"
+        screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
         <Stack.Screen name="Login" component={Login} />
@@ -60,6 +61,7 @@ export default function App() {
         />
         <Stack.Screen name="Pertanyaan1" component={Pertanyaan1} />
         <Stack.Screen name="KelolaAkun" component={KelolaAkun} />
+        <Stack.Screen name="ProfilEdit" component={ProfilEdit} />
         <Stack.Screen name="GantiPassword" component={GantiPassword} />
         <Stack.Screen name="HapusAkun" component={HapusAkun} />
         <Stack.Screen name="AkunPersonal" component={AkunPersonal} />
@@ -69,6 +71,7 @@ export default function App() {
         <Stack.Screen name="Jurnal1" component={Jurnal1} />
         <Stack.Screen name="DetailAkun" component={DetailAkun} />
         <Stack.Screen name="TambahAkun" component={TambahAkun} />
+        <Stack.Screen name="SyaratKetentuan" component={SyaratKetentuan} />
 
         {/* ✅ Ini yang penting */}
       </Stack.Navigator>

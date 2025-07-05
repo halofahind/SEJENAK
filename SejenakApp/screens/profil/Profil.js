@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Linking,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements";
@@ -62,8 +63,8 @@ export default function Profil({ navigation }) {
     })();
   }, []);
 
-  const handleSetting = () => {
-    navigation.navigate("Setting");
+  const handleEdit = () => {
+    navigation.navigate("ProfilEdit");
   };
   const handleLogout = async () => {
     Alert.alert(
@@ -101,20 +102,39 @@ export default function Profil({ navigation }) {
       icon: "user",
       type: "font-awesome",
       onPress: () => {
-        navigation.replace("KelolaAkun");
+        navigation.navigate("KelolaAkun");
       },
     },
     {
-      title: "Ganti Password",
-      icon: "key",
+      title: "Syarat & Ketentuan",
+      icon: "book",
+      type: "font-awesome",
+      onPress: () => {
+        navigation.navigate("SyaratKetentuan");
+      },
+    },
+    {
+      title: "Kebijakan Privasi",
+      icon: "shield",
       type: "font-awesome",
       onPress: () => {},
     },
     {
-      title: "Hapus Akun",
-      icon: "trash",
+      title: "Hubungi Kami",
+      icon: "whatsapp",
       type: "font-awesome",
-      onPress: () => {},
+      onPress: () => {
+        const nomorWA = "6282118028300";
+        const pesan =
+          "Hai, Aku sedang mengalami kendala. Bisakah kamu membantuku?";
+        const url = `https://wa.me/${nomorWA}?text=${encodeURIComponent(
+          pesan
+        )}`;
+
+        Linking.openURL(url).catch((err) =>
+          console.error("Gagal membuka WhatsApp", err)
+        );
+      },
     },
   ];
 
@@ -136,6 +156,18 @@ export default function Profil({ navigation }) {
             <View style={styles.userInfo}>
               <Text style={styles.nameText}>Hi, {user.name || "User"}</Text>
               <View style={styles.infoRow}>
+                <Icon name="gamepad" type="font-awesome" color="#fff" />
+                <Text style={styles.infoText}>
+                  {user.hobi || "Hobi Belum Di isi"}
+                </Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon name="circle-info" type="font-awesome" color="#fff" />
+                <Text style={styles.infoText}>
+                  {user.hobi || "Tentang Belum Di isi"}
+                </Text>
+              </View>
+              {/* <View style={styles.infoRow}>
                 <Icon name="id-card" type="font-awesome" color="#fff" />
                 <Text style={styles.infoText}>{user.username}</Text>
               </View>
@@ -151,11 +183,11 @@ export default function Profil({ navigation }) {
                   color="#fff"
                 />
                 <Text style={styles.infoText}>{user.email || "-"}</Text>
-              </View>
+              </View> */}
             </View>
           </View>
 
-          <TouchableOpacity style={styles.editButton} onPress={handleSetting}>
+          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
             <Icon name="edit" size={16} color="#e91e63" />
             <Text style={styles.editButtonText}>Edit</Text>
           </TouchableOpacity>
