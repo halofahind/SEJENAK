@@ -36,7 +36,6 @@ export default function TambahAkun({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-
   const scrollViewRef = useRef(null);
   const screenHeight = Dimensions.get("window").height;
 
@@ -59,20 +58,40 @@ export default function TambahAkun({ navigation }) {
 
   const handleSubmit = async () => {
     setIsLoading(true);
+
+    // Validasi input wajib
+    const requiredFields = [
+      "nama",
+      "usrNim",
+      "username",
+      "password",
+      "role",
+      "usrStatus",
+      "tanggalLahir",
+      "gender",
+      "email",
+    ];
+
+    const emptyFields = requiredFields.filter((key) => !form[key]);
+
+    if (emptyFields.length > 0) {
+      Alert.alert("Validasi", "Harap lengkapi semua field yang wajib diisi.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      if (form.tanggalLahir) {
-        const [day, month, year] = form.tanggalLahir.split("/");
-        form.tanggalLahir = `${year}-${month.padStart(2, "0")}-${day.padStart(
-          2,
-          "0"
-        )}`;
-      }
-      console.log("titid :");
-      console.log(form);
+      const payload = { ...form };
+      const [day, month, year] = payload.tanggalLahir.split("/");
+      payload.tanggalLahir = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
+
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json().catch(() => null);
@@ -104,7 +123,7 @@ export default function TambahAkun({ navigation }) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.innerContent}>
-          {/* Panah Kembali */}
+          {/* Tombol kembali */}
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
@@ -115,52 +134,16 @@ export default function TambahAkun({ navigation }) {
           <Text style={styles.registerTitle}>Tambah Pengguna</Text>
 
           {[
-            {
-              icon: "mail-outline",
-              placeholder: "Email",
-              key: "email",
-              keyboardType: "email-address",
-            },
-            {
-              icon: "person-outline",
-              placeholder: "Username",
-              key: "username",
-            },
+            { icon: "mail-outline", placeholder: "Email", key: "email", keyboardType: "email-address" },
+            { icon: "person-outline", placeholder: "Username", key: "username" },
             { icon: "badge", placeholder: "NIM", key: "usrNim" },
-            {
-              icon: "person-outline",
-              placeholder: "Nama Lengkap",
-              key: "nama",
-            },
-            {
-              icon: "lock-outline",
-              placeholder: "Password",
-              key: "password",
-              secure: true,
-            },
-            {
-              icon: "verified-user",
-              placeholder: "Role (Admin / Mahasiswa)",
-              key: "role",
-            },
-            {
-              icon: "check-circle",
-              placeholder: "Status (Aktif / Tidak Aktif)",
-              key: "usrStatus",
-            },
-            {
-              icon: "phone",
-              placeholder: "Nomor Telepon",
-              key: "telepon",
-              keyboardType: "phone-pad",
-            },
+            { icon: "person-outline", placeholder: "Nama Lengkap", key: "nama" },
+            { icon: "lock-outline", placeholder: "Password", key: "password", secure: true },
+            { icon: "verified-user", placeholder: "Role (Admin / Mahasiswa)", key: "role" },
+            { icon: "check-circle", placeholder: "Status (Aktif / Tidak Aktif)", key: "usrStatus" },
+            { icon: "phone", placeholder: "Nomor Telepon", key: "telepon", keyboardType: "phone-pad" },
             { icon: "sports-tennis", placeholder: "Hobi", key: "hobi" },
-            {
-              icon: "info",
-              placeholder: "Tentang Diri",
-              key: "about",
-              multiline: true,
-            },
+            { icon: "info", placeholder: "Tentang Diri", key: "about", multiline: true },
           ].map((field, i) => (
             <View style={styles.inputWrapper} key={i}>
               <Icon name={field.icon} size={20} color="#333" />
@@ -202,8 +185,11 @@ export default function TambahAkun({ navigation }) {
               onChange={(e, selectedDate) => {
                 setShowDatePicker(false);
                 if (selectedDate) {
-                  const date = selectedDate.toLocaleDateString("id-ID");
-                  handleChange("tanggalLahir", date);
+                  const day = String(selectedDate.getDate()).padStart(2, "0");
+                  const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+                  const year = selectedDate.getFullYear();
+                  const formattedDate = `${day}/${month}/${year}`;
+                  handleChange("tanggalLahir", formattedDate);
                 }
               }}
             />

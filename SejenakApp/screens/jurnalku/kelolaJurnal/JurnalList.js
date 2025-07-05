@@ -1,47 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
   FlatList,
+  TouchableOpacity,
   Alert,
   ActivityIndicator,
-  Animated,
+  SafeAreaView,
 } from "react-native";
+import { PanGestureHandler, State } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  PanGestureHandler,
-  State,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { API_BASE_URL } from "../../utils/constants";
 import axios from "axios";
+import styles from "./styles"; // ganti dengan file styles kamu
+import { API_BASE_URL } from "../config"; // ganti sesuai lokasi config kamu
 
-export default function TopikList({ navigation }) {
-  const [topiks, setTopiks] = useState([]);
+export default function JurnalList({ navigation }) {
+  const [materis, setMateris] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchTopiks();
+    fetchMateris();
   }, []);
 
-  const fetchTopiks = async () => {
+  const fetchMateris = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/topiks`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("Data topik:", response);
-
+      const response = await fetch(`${API_BASE_URL}/jurnals`);
       const data = await response.json();
-      setTopiks(data);
+      setMateris(data);
     } catch (error) {
-      console.error("Error fetching topiks:", error.message);
+      console.error("Error fetching materis:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -50,8 +39,8 @@ export default function TopikList({ navigation }) {
 
   const handleDelete = async (id, nama) => {
     Alert.alert(
-      "Hapus Topik",
-      `Apakah Anda yakin ingin menghapus topik "${nama}"?`,
+      "Hapus Materi",
+      `Apakah Anda yakin ingin menghapus materi "${nama}"?`,
       [
         { text: "Batal", style: "cancel" },
         {
@@ -59,12 +48,12 @@ export default function TopikList({ navigation }) {
           style: "destructive",
           onPress: async () => {
             try {
-              await axios.delete(`${API_BASE_URL}/topik/${id}`);
-              fetchTopiks();
-              Alert.alert("Berhasil", "Topik berhasil dihapus");
+              await axios.delete(`${API_BASE_URL}/materi/${id}`);
+              fetchMateris();
+              Alert.alert("Berhasil", "Materi berhasil dihapus");
             } catch (error) {
-              console.error("Error deleting topik:", error);
-              Alert.alert("Error", "Gagal menghapus topik");
+              console.error("Error deleting materi:", error);
+              Alert.alert("Error", "Gagal menghapus materi");
             }
           },
         },
@@ -72,34 +61,30 @@ export default function TopikList({ navigation }) {
     );
   };
 
-  const handleEditTopik = (topik) => {
-    console.log("Data yang dikirim:", topik); // Debugging
-
-    // Pastikan struktur data sesuai dengan yang diharapkan TopikForm
-    const topikData = {
-      tpk_nama: topik.nama,
-      tpk_pesan_pertama: topik.pesanPertama,
-      tpk_pesan_terakhir: topik.pesanTerakhir,
-      tpk_id: topik.id,
+  const handleEditMateri = (materi) => {
+    const materiData = {
+      mtr_judul: materi.judul,
+      mtr_deskripsi: materi.deskripsi,
+      mtr_id: materi.id,
     };
 
-    navigation.navigate("TopikForm", {
-      topik: topikData, // Gunakan key 'topik' bukan 'topiks'
+    navigation.navigate("MateriForm", {
+      materi: materiData,
       mode: "edit",
-      title: "Edit Topik",
+      title: "Edit Materi",
     });
   };
 
-  const handleAddTopik = () => {
-    navigation.navigate("TopikForm", {
+  const handleAddMateri = () => {
+    navigation.navigate("MateriForm", {
       mode: "add",
-      title: "Tambah Topik",
+      title: "Tambah Materi",
     });
   };
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchTopiks();
+    fetchMateris();
   };
 
   const SwipeableRow = ({ item, onDelete, onEdit }) => {
@@ -116,7 +101,6 @@ export default function TopikList({ navigation }) {
         const { translationX } = event.nativeEvent;
 
         if (translationX < -100) {
-          // Swipe left untuk delete
           Animated.timing(translateX, {
             toValue: -200,
             duration: 200,
@@ -124,12 +108,11 @@ export default function TopikList({ navigation }) {
           }).start(() => {
             setIsDeleting(true);
             setTimeout(() => {
-              onDelete(item.id, item.nama);
+              onDelete(item.id, item.judul);
               setIsDeleting(false);
             }, 100);
           });
         } else {
-          // Kembalikan ke posisi semula
           Animated.spring(translateX, {
             toValue: 0,
             useNativeDriver: true,
@@ -144,61 +127,43 @@ export default function TopikList({ navigation }) {
           <Ionicons name="trash-outline" size={24} color="white" />
           <Text style={styles.deleteText}>Hapus</Text>
         </View>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <PanGestureHandler
-            onGestureEvent={onGestureEvent}
-            onHandlerStateChange={onHandlerStateChange}
-            activeOffsetX={[-20, 20]}
-            failOffsetY={[-10, 10]}
+        <PanGestureHandler
+          onGestureEvent={onGestureEvent}
+          onHandlerStateChange={onHandlerStateChange}
+        >
+          <Animated.View
+            style={[
+              styles.rowFront,
+              { transform: [{ translateX }], opacity: isDeleting ? 0.5 : 1 },
+            ]}
           >
-            <Animated.View
-              style={[
-                styles.rowFront,
-                {
-                  transform: [{ translateX }],
-                  opacity: isDeleting ? 0.5 : 1,
-                },
-              ]}
+            <TouchableOpacity
+              style={styles.item}
+              onPress={() => onEdit(item)}
+              activeOpacity={0.7}
             >
-              <TouchableOpacity
-                style={styles.topikItem}
-                onPress={() => onEdit(item)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.topikContent}>
-                  <View style={styles.topikInfo}>
-                    <Text style={styles.topikName}>{item.nama}</Text>
-                    <Text style={styles.topikSubtitle}>
-                      {item.pesanPertama || "Belum ada pesan"}
-                    </Text>
-                    <Text style={styles.topikSubtitle}>
-                      {item.pesanTerakhir || "Belum ada pesan"}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>Aktif</Text>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-          </PanGestureHandler>
-        </GestureHandlerRootView>
+              <View style={styles.itemContent}>
+                <Text style={styles.itemTitle}>{item.judul}</Text>
+                <Text style={styles.itemSubtitle}>
+                  {item.deskripsi || "Tidak ada deskripsi"}
+                </Text>
+              </View>
+              <View style={styles.statusBadge}>
+                <Text style={styles.statusText}>Aktif</Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        </PanGestureHandler>
       </View>
     );
   };
 
-  const renderTopikItem = ({ item }) => (
-    <SwipeableRow item={item} onDelete={handleDelete} onEdit={handleEditTopik}>
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => navigation.navigate("TopikForm", { topiks: item })}
-      >
-        <View style={{ flex: 1 }}>
-          <Text style={styles.nama}>{item.nama}</Text>
-        </View>
-      </TouchableOpacity>
-    </SwipeableRow>
+  const renderMateriItem = ({ item }) => (
+    <SwipeableRow
+      item={item}
+      onDelete={handleDelete}
+      onEdit={handleEditMateri}
+    />
   );
 
   if (loading) {
@@ -215,12 +180,12 @@ export default function TopikList({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Daftar Topik</Text>
+        <Text style={styles.title}>Daftar Materi</Text>
       </View>
 
       <FlatList
-        data={topiks}
-        renderItem={renderTopikItem}
+        data={materis}
+        renderItem={renderMateriItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         refreshing={refreshing}
@@ -228,17 +193,18 @@ export default function TopikList({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="chatbubbles-outline" size={48} color="#ccc" />
-            <Text style={styles.emptyText}>Belum ada topik tersedia</Text>
+            <Ionicons name="book-outline" size={48} color="#ccc" />
+            <Text style={styles.emptyText}>Belum ada materi tersedia</Text>
             <Text style={styles.emptySubtext}>
-              Tap tombol "Tambah" untuk membuat topik baru
+              Tap tombol "Tambah" untuk menambahkan materi baru
             </Text>
           </View>
         }
       />
+
       <TouchableOpacity
         style={styles.fab}
-        onPress={handleAddTopik}
+        onPress={handleAddMateri}
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={40} color="white" />
