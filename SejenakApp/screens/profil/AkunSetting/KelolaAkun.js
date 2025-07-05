@@ -10,6 +10,7 @@ import {
   Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons"; // ← tombol icon back
 import { API_BASE_URL } from "../../../utils/constants";
 
 export default function KelolaAkun({ navigation }) {
@@ -18,8 +19,6 @@ export default function KelolaAkun({ navigation }) {
 
   const fetchPengguna = async () => {
     try {
-      console.log("Memulai fetch data pengguna...");
-
       const response = await fetch(`${API_BASE_URL}/penggunas`, {
         method: "GET",
         headers: {
@@ -27,22 +26,17 @@ export default function KelolaAkun({ navigation }) {
         },
       });
 
-      console.log("Response status:", response.status);
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const json = await response.json();
-      console.log("Data JSON dari server:", json);
-
       if (Array.isArray(json)) {
         setPengguna(json);
       } else {
         throw new Error("Data dari server bukan array");
       }
     } catch (error) {
-      console.error("Error fetchPengguna:", error);
       Alert.alert("Gagal Mengambil Data", error.message);
     } finally {
       setLoading(false);
@@ -62,7 +56,6 @@ export default function KelolaAkun({ navigation }) {
       onPress={() => navigation.navigate("DetailAkun", { data: item })}
     >
       <View style={styles.cardHeader}>
-        {/* Kiri: Gambar + Info */}
         <View style={styles.leftSection}>
           <Image
             source={require("../../../assets/Home/1.png")}
@@ -77,8 +70,6 @@ export default function KelolaAkun({ navigation }) {
             <Text style={styles.detail}>🆔 {item.role}</Text>
           </View>
         </View>
-
-        {/* Kanan: Status */}
         <View style={styles.rightSection}>
           <Text
             style={[
@@ -95,6 +86,19 @@ export default function KelolaAkun({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.navigate("MainTabs", { screen: "Profil" }); // Ganti 'Profil' jika namanya beda
+          }
+        }}
+        style={styles.backButton}
+      >
+        <Ionicons name="arrow-back" size={28} color="#D6385E" />
+      </TouchableOpacity>
+
       <Text style={styles.judul}>Daftar Akun Pengguna</Text>
       <Text style={styles.subjudul}>Total Akun: {pengguna.length}</Text>
 
@@ -126,13 +130,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
+    paddingTop: 60, // Tambahan agar tombol back tidak ketimpa
+  },
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 15,
+    zIndex: 100,
+    padding: 10,
   },
   judul: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#D6385E",
     marginBottom: 10,
-    marginTop: 50,
     textAlign: "center",
   },
   subjudul: {
@@ -172,9 +183,16 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: "#ccc",
   },
-  nama: {
+  infoContainer: {
+    marginLeft: 10,
+  },
+  namaBold: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#333",
+  },
+  nama: {
+    fontSize: 16,
     color: "#333",
   },
   detail: {
@@ -202,19 +220,5 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#fff",
     fontWeight: "bold",
-  },
-  namaBold: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  nama: {
-    fontSize: 16,
-    color: "#333",
-  },
-  detail: {
-    fontSize: 14,
-    color: "#555",
-    marginTop: 2,
   },
 });
