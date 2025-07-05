@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import {
   View,
@@ -65,35 +64,30 @@ export default function Home({ navigation }) {
       title: "Kenali Diri Lebih Baik",
       image: require("../../assets/Home/1.png"),
       backgroundColor: "#EF6A6A",
-      navigateTo: "KenaliDiriScreen",
     },
     {
       id: "2",
       title: "Menjalin Relasi",
       image: require("../../assets/Home/2.png"),
       backgroundColor: "#F6A75A",
-      navigateTo: "KenaliDiriScreen",
     },
     {
       id: "3",
       title: "Cerita Keseharian",
       image: require("../../assets/Home/1.png"),
       backgroundColor: "#697BC4",
-      navigateTo: "KenaliDiriScreen",
     },
     {
       id: "4",
       title: "Tingkatkan Potensi Diri",
       image: require("../../assets/Home/1.png"),
       backgroundColor: "#11CBE0",
-      navigateTo: "KenaliDiriScreen",
     },
     {
       id: "5",
       title: "Membangun Keberanian",
       image: require("../../assets/Home/1.png"),
       backgroundColor: "#B676AA",
-      navigateTo: "KenaliDiriScreen",
     },
   ];
 
@@ -170,11 +164,11 @@ export default function Home({ navigation }) {
               style={[
                 styles.card,
                 { backgroundColor: item.backgroundColor },
-                shouldFullWidth && { width: screenWidth - 40 }, // padding/margin adjustment
+                shouldFullWidth && { width: screenWidth - 40 },
               ]}
               onPress={() =>
-                navigation.navigate(item.navigateTo || "DetailTopik", {
-                  topik: item,
+                navigation.navigate("DaftarJurnal", {
+                  jenisjurnal: item,
                 })
               }
             >

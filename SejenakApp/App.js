@@ -11,7 +11,6 @@ import OnboardingScreen from "./screens/Start/OnBoarding";
 import Login from "./screens/Login/Login";
 import Daftar from "./screens/Login/Daftar";
 import Setting from "./screens/profil/Setting";
-import KenaliDiriScreen from "./screens/home/KenaliDiri";
 import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPikiran";
 import DetailKonseling from "./screens/konseling/DetailKonseling";
 import TopikList from "./screens/konseling/TopikList";
@@ -30,6 +29,7 @@ import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
 import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
+import DaftarJurnal from "./screens/jurnalku/DaftarJurnal";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -46,12 +46,13 @@ export default function App() {
         <Stack.Screen name="Daftar" component={Daftar} />
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
-        <Stack.Screen name="Konseling" component={Konseling} />
 
+        <Stack.Screen name="Konseling" component={Konseling} />
         <Stack.Screen name="DetailKonseling" component={DetailKonseling} />
         <Stack.Screen name="Topik" component={Topik} />
         <Stack.Screen name="TopikList" component={TopikList} />
-        <Stack.Screen name="KenaliDiriScreen" component={KenaliDiriScreen} />
+
+        <Stack.Screen name="DaftarJurnal" component={DaftarJurnal} />
         <Stack.Screen name="TopikForm" component={TopikForm} />
 
         <Stack.Screen
