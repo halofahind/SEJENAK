@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import axios from "axios";
+import { API_BASE_URL } from "../../../utils/constants";
 
 export default function AddMotivasiScreen({ navigation }) {
   const [motivasi, setMotivasi] = useState("");
@@ -22,7 +23,7 @@ export default function AddMotivasiScreen({ navigation }) {
     }
 
     try {
-      const response = await axios.post("http://192.168.53.121:8080/motivasi/add", {
+      const response = await axios.post(`${API_BASE_URL}/motivasi/add`, {
         motivasiText: motivasi,
       });
 
@@ -35,7 +36,10 @@ export default function AddMotivasiScreen({ navigation }) {
       }
     } catch (error) {
       console.error("Gagal menambahkan motivasi:", error.message);
-      Alert.alert("Error", "Gagal menambahkan motivasi. Pastikan server aktif dan IP benar.");
+      Alert.alert(
+        "Error",
+        "Gagal menambahkan motivasi. Pastikan server aktif dan IP benar."
+      );
     }
   };
 

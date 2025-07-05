@@ -13,11 +13,10 @@ import axios from "axios";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { Swipeable } from "react-native-gesture-handler";
+import { API_BASE_URL } from "../../../utils/constants";
 
 export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
-
-  const BASE_URL = "http://192.168.53.121:8080/motivasi/get";
 
   useFocusEffect(
     useCallback(() => {
@@ -27,7 +26,7 @@ export default function MotivasiScreen({ navigation }) {
 
   const fetchMotivasi = async () => {
     try {
-      const res = await axios.get(BASE_URL);
+      const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
       setMotivasiList(res.data);
     } catch (err) {
       console.error("Gagal ambil motivasi:", err.message);
@@ -36,7 +35,7 @@ export default function MotivasiScreen({ navigation }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://192.168.53.121:8080/motivasi/delete/${id}`);
+      await axios.delete(`${API_BASE_URL}/motivasi/delete/${id}`);
       setMotivasiList((prev) => prev.filter((item) => item.motivasiId !== id));
       Alert.alert("Berhasil", "Motivasi berhasil dihapus.");
     } catch (err) {
@@ -71,11 +70,8 @@ export default function MotivasiScreen({ navigation }) {
             >
               <TouchableOpacity
                 style={styles.card}
-                onPress={() =>
-                  navigation.navigate("UpdateMotivasi", { item })
-                }
+                onPress={() => navigation.navigate("UpdateMotivasi", { item })}
               >
-
                 <Text style={styles.cardText}>{item.motivasiText}</Text>
               </TouchableOpacity>
             </Swipeable>

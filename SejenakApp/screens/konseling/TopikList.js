@@ -148,6 +148,7 @@ export default function TopikList({ navigation }) {
           <PanGestureHandler
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={onHandlerStateChange}
+            activeOffsetX={[-10, 10]}
           >
             <Animated.View
               style={[

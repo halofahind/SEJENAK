@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
+import { API_BASE_URL } from "../../../utils/constants";
 
 export default function UpdateMotivasiScreen({ route, navigation }) {
   const { item } = route.params;
@@ -23,7 +24,7 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
     }
 
     try {
-      await axios.put(`http://192.168.53.121:8080/motivasi/update/${item.motivasiId}`, {
+      await axios.put(`${API_BASE_URL}/motivasi/update/${item.motivasiId}`, {
         motivasiText: updatedText,
       });
 
