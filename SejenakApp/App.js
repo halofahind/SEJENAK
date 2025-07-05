@@ -1,10 +1,15 @@
 // App.js
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ionicons from "react-native-vector-icons/Feather";
-import { SafeAreaView, StyleSheet, Text } from "react-native";
+import { Alert, Platform } from "react-native";
+
+// Notifikasi
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+
 // Screens
 import SplashScreen from "./screens/Start/Splash";
 import OnboardingScreen from "./screens/Start/OnBoarding";
@@ -30,14 +35,61 @@ import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
 import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
+import NotifikasiScreen from "./screens/home/NotifikasiScreen";
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function App() {
+  useEffect(() => {
+    setupNotifications();
+  }, []);
+
+  const setupNotifications = async () => {
+    await registerForPushNotificationsAsync();
+    await Notifications.cancelAllScheduledNotificationsAsync(); 
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "⏰ Ingatkan Jurnal Harian",
+        body: "Yuk, isi jurnal harianmu sekarang!",
+      },
+      trigger: {
+        seconds: 3600,
+        repeats: true,
+      },
+    });
+  };
+
+  const registerForPushNotificationsAsync = async () => {
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        Alert.alert("Gagal mendapatkan izin notifikasi!");
+        return;
+      }
+    } else {
+      Alert.alert("Notifikasi hanya bisa di perangkat fisik.");
+    }
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Splash"
+        initialRouteName="MainTabs"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -47,13 +99,11 @@ export default function App() {
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="Konseling" component={Konseling} />
-
         <Stack.Screen name="DetailKonseling" component={DetailKonseling} />
         <Stack.Screen name="Topik" component={Topik} />
         <Stack.Screen name="TopikList" component={TopikList} />
         <Stack.Screen name="KenaliDiriScreen" component={KenaliDiriScreen} />
         <Stack.Screen name="TopikForm" component={TopikForm} />
-
         <Stack.Screen
           name="BerdamaiDenganPikiran"
           component={BerdamaiDenganPikiran}
@@ -69,8 +119,7 @@ export default function App() {
         <Stack.Screen name="Jurnal1" component={Jurnal1} />
         <Stack.Screen name="DetailAkun" component={DetailAkun} />
         <Stack.Screen name="TambahAkun" component={TambahAkun} />
-
-        {/* ✅ Ini yang penting */}
+        <Stack.Screen name="NotifikasiScreen" component={NotifikasiScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -122,7 +122,9 @@ export default function Home({ navigation }) {
             </Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => alert("Notifikasi belum tersedia")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("NotifikasiScreen")}
+        >
           <Icon name="notifications-none" size={28} color="#444" />
         </TouchableOpacity>
       </View>

@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  genderButton: {
+  genderButton: {  
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
