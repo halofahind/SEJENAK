@@ -7,117 +7,237 @@ import {
   StyleSheet,
   Alert,
   SafeAreaView,
-  StatusBar,
+  ScrollView,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import axios from "axios";
-import { API_BASE_URL } from "../../../utils/constants";
 
 export default function AddMotivasiScreen({ navigation }) {
-  const [motivasi, setMotivasi] = useState("");
+  const [motivasiText, setMotivasiText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const validate = () => {
+    if (!motivasiText.trim()) {
+      setError("Motivasi tidak boleh kosong");
+      return false;
+    }
+    setError("");
+    return true;
+  };
 
   const handleSubmit = async () => {
-    if (motivasi.trim() === "") {
-      Alert.alert("Oops", "Motivasi tidak boleh kosong.");
-      return;
-    }
+    if (!validate()) return;
 
+    setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/motivasi/add`, {
-        motivasiText: motivasi,
+      const response = await fetch("http://192.168.1.7:8080/motivasi/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ motivasiText }),
       });
 
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert("Berhasil", "Motivasi berhasil ditambahkan.");
-        setMotivasi("");
-        navigation.goBack();
+      if (response.ok) {
+        Alert.alert("Berhasil", "Motivasi berhasil ditambahkan", [
+          {
+            text: "OK",
+            onPress: () => navigation.goBack(),
+          },
+        ]);
+        setMotivasiText("");
       } else {
-        throw new Error("Gagal simpan motivasi");
+        throw new Error("Gagal menambahkan motivasi");
       }
-    } catch (error) {
-      console.error("Gagal menambahkan motivasi:", error.message);
+    } catch (err) {
+      Alert.alert("Error", "Gagal terhubung ke server");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (motivasiText.trim()) {
       Alert.alert(
-        "Error",
-        "Gagal menambahkan motivasi. Pastikan server aktif dan IP benar."
+        "Batalkan",
+        "Perubahan belum disimpan. Yakin ingin membatalkan?",
+        [
+          { text: "Lanjut Edit", style: "cancel" },
+          {
+            text: "Ya, Batalkan",
+            style: "destructive",
+            onPress: () => navigation.goBack(),
+          },
+        ]
       );
+    } else {
+      navigation.goBack();
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#D7385E" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Tambah Motivasi</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Tambah Motivasi</Text>
+            <Text style={styles.subtitle}>
+              Tulis kutipan atau pesan yang bisa memotivasi pengguna
+            </Text>
+          </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Tulis Motivasi</Text>
-        <TextInput
-          style={styles.input}
-          multiline
-          value={motivasi}
-          onChangeText={setMotivasi}
-          placeholder="Contoh: Jangan takut gagal, takutlah untuk tidak mencoba."
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Simpan Motivasi</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>
+              Motivasi <Text style={styles.required}>*</Text>
+            </Text>
+            <TextInput
+              style={[styles.input, error && styles.inputError]}
+              value={motivasiText}
+              onChangeText={setMotivasiText}
+              placeholder="Contoh: Jangan takut gagal, takutlah untuk tidak mencoba."
+              placeholderTextColor="#999"
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              maxLength={255}
+            />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            <Text style={styles.charCount}>{motivasiText.length}/255</Text>
+          </View>
+        </ScrollView>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancel}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.cancelButtonText}>Batal</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.submitButton,
+              loading && styles.submitButtonDisabled,
+            ]}
+            onPress={handleSubmit}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.submitButtonText}>Simpan</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  scrollContent: { paddingBottom: 120 },
   header: {
     backgroundColor: "#D7385E",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 35,
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
+    paddingTop: 40,
+    paddingBottom: 20,
+    borderBottomRightRadius: 60,
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
+  title: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#fff",
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
     color: "#fff",
   },
-  form: {
+  inputGroup: {
     padding: 20,
   },
   label: {
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: "500",
     color: "#333",
+    marginBottom: 6,
+  },
+  required: {
+    color: "#e91e63",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#D7385E",
-    borderRadius: 10,
+    borderColor: "#ddd",
+    borderRadius: 12,
     padding: 14,
-    fontSize: 14,
-    minHeight: 100,
-    textAlignVertical: "top",
-    marginBottom: 20,
+    fontSize: 15,
+    color: "#333",
+    backgroundColor: "#fff",
   },
-  button: {
-    backgroundColor: "#D7385E",
-    paddingVertical: 14,
-    borderRadius: 10,
+  inputError: {
+    borderColor: "#e91e63",
+    backgroundColor: "#fff5f5",
+  },
+  errorText: {
+    color: "#e91e63",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  charCount: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 4,
+    textAlign: "right",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 12,
+    padding: 20,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 30,
+    padding: 14,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
-  buttonText: {
+  cancelButtonText: {
+    color: "#666",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  submitButton: {
+    flex: 1,
+    backgroundColor: "#e91e63",
+    borderRadius: 30,
+    padding: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  submitButtonDisabled: {
+    backgroundColor: "#ccc",
+    shadowOpacity: 0,
+  },
+  submitButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
