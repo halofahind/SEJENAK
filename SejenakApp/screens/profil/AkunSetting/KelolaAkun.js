@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons"; // ← tombol icon back
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { API_BASE_URL } from "../../../utils/constants";
 
 export default function KelolaAkun({ navigation }) {
@@ -19,16 +19,9 @@ export default function KelolaAkun({ navigation }) {
 
   const fetchPengguna = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/penggunas`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
+      const response = await fetch(`${API_BASE_URL}/penggunas`);
+      if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
-      }
 
       const json = await response.json();
       if (Array.isArray(json)) {
@@ -86,20 +79,28 @@ export default function KelolaAkun({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => {
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-          } else {
-            navigation.navigate("MainTabs", { screen: "Profil" }); // Ganti 'Profil' jika namanya beda
-          }
-        }}
-        style={styles.backButton}
-      >
-        <Ionicons name="arrow-back" size={28} color="#D6385E" />
-      </TouchableOpacity>
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack(); // transisi ke kiri
+            } else {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "MainTabs", params: { screen: "Profil" } }],
+              });
+            }
+          }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#D6385E" />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.judul}>Daftar Akun Pengguna</Text>
+        </View>
+      </View>
 
-      <Text style={styles.judul}>Daftar Akun Pengguna</Text>
       <Text style={styles.subjudul}>Total Akun: {pengguna.length}</Text>
 
       {loading ? (
@@ -130,21 +131,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
-    paddingTop: 60, // Tambahan agar tombol back tidak ketimpa
+    paddingTop: 60,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    position: "relative",
   },
   backButton: {
+    zIndex: 1,
+    padding: 4,
+  },
+  headerCenter: {
     position: "absolute",
-    top: 20,
-    left: 15,
-    zIndex: 100,
-    padding: 10,
+    left: 0,
+    right: 0,
+    alignItems: "center",
   },
   judul: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#D6385E",
-    marginBottom: 10,
-    textAlign: "center",
   },
   subjudul: {
     fontSize: 16,

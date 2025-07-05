@@ -55,18 +55,30 @@ export default function App() {
 
   const setupNotifications = async () => {
     await registerForPushNotificationsAsync();
-    await Notifications.cancelAllScheduledNotificationsAsync(); 
+    await Notifications.cancelAllScheduledNotificationsAsync();
+
+    if (Platform.OS === "IOS") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "Default Channel",
+        importance: Notifications.AndroidImportance.HIGH,
+        sound: "default",
+      });
+    }
+
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "⏰ Ingatkan Jurnal Harian",
         body: "Yuk, isi jurnal harianmu sekarang!",
+        sound: "default",
       },
       trigger: {
-        seconds: 3600,
-        repeats: true,
+        seconds: 60, // setiap 10 detik
+        repeats: true, // supaya muncul terus-menerus
+        channelId: "default",
       },
     });
   };
+
 
   const registerForPushNotificationsAsync = async () => {
     if (Device.isDevice) {

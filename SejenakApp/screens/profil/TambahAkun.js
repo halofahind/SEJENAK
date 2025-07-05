@@ -23,8 +23,8 @@ export default function TambahAkun({ navigation }) {
     usrNim: "",
     username: "",
     password: "",
-    role: "",
-    usrStatus: "",
+    role: "",       
+    usrStatus: "Aktif",  
     tanggalLahir: "",
     gender: "",
     hobi: "",
@@ -59,17 +59,9 @@ export default function TambahAkun({ navigation }) {
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    // Validasi input wajib
     const requiredFields = [
-      "nama",
-      "usrNim",
-      "username",
-      "password",
-      "role",
-      "usrStatus",
-      "tanggalLahir",
-      "gender",
-      "email",
+      "nama", "usrNim", "username", "password",
+      "role", "tanggalLahir", "gender", "email"
     ];
 
     const emptyFields = requiredFields.filter((key) => !form[key]);
@@ -83,10 +75,7 @@ export default function TambahAkun({ navigation }) {
     try {
       const payload = { ...form };
       const [day, month, year] = payload.tanggalLahir.split("/");
-      payload.tanggalLahir = `${year}-${month.padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`;
+      payload.tanggalLahir = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
         method: "POST",
@@ -95,9 +84,7 @@ export default function TambahAkun({ navigation }) {
       });
 
       const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        throw new Error(data?.message || "Gagal menyimpan pengguna");
-      }
+      if (!response.ok) throw new Error(data?.message || "Gagal menyimpan pengguna");
 
       Alert.alert("Sukses", "Pengguna berhasil ditambahkan");
       navigation.goBack();
@@ -123,24 +110,19 @@ export default function TambahAkun({ navigation }) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.innerContent}>
-          {/* Tombol kembali */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Icon name="arrow-back-ios" size={24} color="#D6385E" />
           </TouchableOpacity>
 
           <Text style={styles.registerTitle}>Tambah Pengguna</Text>
 
+          {/* Input Fields */}
           {[
             { icon: "mail-outline", placeholder: "Email", key: "email", keyboardType: "email-address" },
             { icon: "person-outline", placeholder: "Username", key: "username" },
             { icon: "badge", placeholder: "NIM", key: "usrNim" },
             { icon: "person-outline", placeholder: "Nama Lengkap", key: "nama" },
             { icon: "lock-outline", placeholder: "Password", key: "password", secure: true },
-            { icon: "verified-user", placeholder: "Role (Admin / Mahasiswa)", key: "role" },
-            { icon: "check-circle", placeholder: "Status (Aktif / Tidak Aktif)", key: "usrStatus" },
             { icon: "phone", placeholder: "Nomor Telepon", key: "telepon", keyboardType: "phone-pad" },
             { icon: "sports-tennis", placeholder: "Hobi", key: "hobi" },
             { icon: "info", placeholder: "Tentang Diri", key: "about", multiline: true },
@@ -160,6 +142,37 @@ export default function TambahAkun({ navigation }) {
               />
             </View>
           ))}
+
+          {/* Role Picker */}
+          <View style={styles.genderButtonContainer}>
+            {["Admin", "User"].map((r, i) => (
+              <TouchableOpacity
+                key={i}
+                style={[
+                  styles.genderButton,
+                  form.role === r && {
+                    backgroundColor: "#D6385E",
+                    borderColor: "#D6385E",
+                  },
+                ]}
+                onPress={() => handleChange("role", r)}
+              >
+                <Icon
+                  name="verified-user"
+                  size={18}
+                  color={form.role === r ? "#fff" : "#555"}
+                />
+                <Text
+                  style={[
+                    styles.genderButtonText,
+                    form.role === r && styles.genderButtonTextActive,
+                  ]}
+                >
+                  {r}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
           {/* Tanggal Lahir */}
           <View style={styles.inputWrapper}>
@@ -195,7 +208,7 @@ export default function TambahAkun({ navigation }) {
             />
           )}
 
-          {/* Gender */}
+          {/* Gender Picker */}
           <View style={styles.genderButtonContainer}>
             {["Laki-laki", "Perempuan"].map((g, i) => (
               <TouchableOpacity
@@ -228,10 +241,7 @@ export default function TambahAkun({ navigation }) {
 
           {/* Tombol Simpan */}
           <TouchableOpacity
-            style={[
-              styles.registerButton,
-              isLoading && styles.registerButtonDisabled,
-            ]}
+            style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
             onPress={handleSubmit}
             disabled={isLoading}
           >
@@ -301,6 +311,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+    minWidth: 80,
     textAlign: "center",
   },
   genderButtonContainer: {
