@@ -11,6 +11,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "../../utils/constants";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -29,7 +30,7 @@ export default function Home({ navigation }) {
   useEffect(() => {
     const fetchMotivasi = async () => {
       try {
-        const res = await axios.get("http://192.168.53.121:8080/motivasi/get");
+        const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
         const list = res.data;
 
         if (list.length > 0) {
