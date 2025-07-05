@@ -57,42 +57,41 @@ export default function Login({ navigation }) {
         username: email.trim(),
         password: password.trim(),
       };
+      console.log("Login data sent:", loginData);
 
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify(loginData),
       });
 
+      console.log("Login data sent:", loginData);
+      console.log("Response status:", response.status);
+
+      // return;
       if (response.ok) {
         const userData = await response.json();
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
-        navigation.replace("MainTabs");
+
         SessionManager.start(navigation); // mulai session timer
+        navigation.replace("MainTabs");
 
-        await AsyncStorage.setItem(
-          "lastLogin",
-          JSON.stringify({
-            username: email,
-            password: password, // ⚠️ hati-hati nyimpan password ya, ini cuma contoh
-          })
-        );
-
-        console.log("Data", userData);
+        console.log("Login success:", userData);
       } else if (response.status === 401) {
-        Alert.alert("Login Gagal", "Username atau password salah.");
+        const errorText = await response.text();
+        Alert.alert(
+          "Login Gagal",
+          errorText || "Username atau password salah."
+        );
       } else {
-        Alert.alert("Error", `Server error (${response.status})`);
+        const errorText = await response.text();
+        Alert.alert("Server Error", errorText || `Kode: ${response.status}`);
       }
     } catch (error) {
-      Alert.alert(
-        "Koneksi Gagal",
-        "Periksa koneksi dan coba lagi.",
-        ` (${response.status})`
-      );
+      console.error("Login error:", error);
+      Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +163,8 @@ export default function Login({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}>
+          bounces={false}
+        >
           <View style={styles.loginTitleWrap}>
             <Text style={styles.loginTitle}>Masuk</Text>
           </View>
@@ -210,7 +210,8 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Icon
                 name={showPassword ? "visibility" : "visibility-off"}
                 size={20}
@@ -226,7 +227,8 @@ export default function Login({ navigation }) {
                 isLoading && styles.loginButtonDisabled,
               ]}
               onPress={handleLogin}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
@@ -242,12 +244,14 @@ export default function Login({ navigation }) {
             <Text style={styles.signupText}>Belum memiliki akun? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Text
                 style={{
                   color: isLoading ? "#ccc" : "#EF6A6A",
                   fontWeight: "bold",
-                }}>
+                }}
+              >
                 Daftar
               </Text>
             </TouchableOpacity>

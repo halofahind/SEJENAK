@@ -31,7 +31,10 @@ export default function MainTabs() {
   // }, []);
 
   return (
-    <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
       <Tab.Screen
         name="Home"
         component={Home}

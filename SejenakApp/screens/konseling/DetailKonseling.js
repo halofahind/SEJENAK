@@ -10,30 +10,85 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Keyboard,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
+import dayjs from "dayjs";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+function getIndonesiaISOTime() {
+  const now = new Date();
+  const wibDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return wibDate.toISOString();
+}
 
 const DetailKonseling = ({ navigation, route }) => {
-  const { topic, isHistory, konId } = route.params;
+  const { topic, msg1, msg2, isHistory, status, konId } = route.params;
+  const [currentRole, setCurrentRole] = useState("user");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: `Halo! Saya siap membantu Anda dengan topik ${topic}. Silakan ceritakan apa yang ingin Anda diskusikan.`,
+      text: msg1,
       isAdmin: true,
       time: "05:44",
       date: "24/06/22",
     },
   ]);
 
-  const scrollViewRef = useRef();
+  const [initialLoad, setInitialLoad] = useState(true);
+  const scrollViewRef = useRef(null);
 
   useEffect(() => {
-    // Auto scroll to bottom when new message is added
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-  }, [messages]);
+    let intervalId;
+
+    const fetchMessages = async () => {
+      const userData = await AsyncStorage.getItem("userData");
+      const parsedUserData = JSON.parse(userData);
+      setCurrentRole(parsedUserData.role);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/konselingbykonid?id=${konId}`);
+        const data = await res.json();
+
+        const filtered = data
+          .filter((msg) => msg.konId === konId)
+          .map((msg) => ({
+            id: `msg-${msg.id}`,
+            text: msg.pesan,
+            isAdmin: msg.pengirim === "admin",
+            time: dayjs(msg.waktu).format("HH:mm"),
+            date: dayjs(msg.waktu).format("DD/MM/YY"),
+          }));
+
+        setMessages((prevMessages) => {
+          const prevLength = prevMessages.length;
+          const newLength = filtered.length;
+
+          // Hanya scroll kalau ada tambahan pesan
+          if (newLength !== prevLength) {
+            setTimeout(() => {
+              if (scrollViewRef.current) {
+                scrollViewRef.current.scrollToEnd({ animated: true });
+              }
+            }, 100);
+          }
+
+          if (initialLoad) setInitialLoad(false);
+
+          return filtered;
+        });
+      } catch (error) {
+        console.error("Gagal mengambil pesan:", error.message);
+      }
+    };
+    fetchMessages();
+
+    intervalId = setInterval(fetchMessages, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [konId]);
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -55,18 +110,14 @@ const DetailKonseling = ({ navigation, route }) => {
 
   const sendMessage = async () => {
     if (message.trim()) {
-      const currentDateTime = new Date();
-      const waktuISO = currentDateTime.toISOString();
-
       const newMessage = {
         id: messages.length + 1,
         text: message.trim(),
-        isAdmin: false,
+        isAdmin: currentRole === "admin",
         time: getCurrentTime(),
         date: getCurrentDate(),
       };
 
-      // ⬇️ Simpan ke database lewat API
       try {
         await fetch(`${API_BASE_URL}/detailKonseling`, {
           method: "POST",
@@ -75,9 +126,9 @@ const DetailKonseling = ({ navigation, route }) => {
           },
           body: JSON.stringify({
             konId: konId,
-            pengirim: "user",
+            pengirim: currentRole,
             pesan: message.trim(),
-            waktu: waktuISO,
+            waktu: getIndonesiaISOTime(),
           }),
         });
       } catch (error) {
@@ -86,70 +137,25 @@ const DetailKonseling = ({ navigation, route }) => {
 
       setMessages((prev) => [...prev, newMessage]);
       setMessage("");
-
-      // Simulasi balasan admin
-      setTimeout(async () => {
-        const responses = [
-          "Terima kasih sudah berbagi. Saya memahami perasaan Anda. Bisakah Anda ceritakan lebih detail?",
-          "Itu adalah hal yang wajar untuk dirasakan. Bagaimana Anda biasanya mengatasi situasi seperti ini?",
-          "Saya mendengarkan Anda. Apakah ada hal spesifik yang membuat Anda merasa seperti itu?",
-          "Pengalaman yang Anda ceritakan pasti tidak mudah. Apa yang paling mengganggu pikiran Anda saat ini?",
-          "Terima kasih telah mempercayai saya. Mari kita coba eksplorasi lebih dalam tentang hal ini.",
-        ];
-
-        const randomResponse =
-          responses[Math.floor(Math.random() * responses.length)];
-
-        const adminMessage = {
-          id: messages.length + 2,
-          text: randomResponse,
-          isAdmin: true,
-          time: getCurrentTime(),
-          date: getCurrentDate(),
-        };
-
-        // ⬇️ Simpan balasan admin ke DB juga
-        try {
-          await fetch(`${API_BASE_URL}/detailKonseling`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              konId: konId,
-              pengirim: "admin",
-              pesan: randomResponse,
-              waktu: new Date().toISOString(),
-            }),
-          });
-        } catch (error) {
-          console.error("Gagal simpan balasan admin ke DB:", error.message);
-        }
-
-        setMessages((prev) => [...prev, adminMessage]);
-      }, Math.random() * 1000 + 1000);
     }
   };
 
   const handleBack = () => {
-    Alert.alert(
-      "Keluar dari Chat",
-      "Apakah Anda yakin ingin keluar dari sesi konseling ini?",
-      [
+    navigation.reset({
+      index: 0,
+      routes: [
         {
-          text: "Batal",
-          style: "cancel",
+          name: "MainTabs",
+          state: {
+            routes: [{ name: "Konseling" }],
+          },
         },
-        {
-          text: "Ya",
-          onPress: () => navigation.goBack(),
-        },
-      ]
-    );
+      ],
+    });
   };
 
   const showMenu = () => {
-    Alert.alert("Menu", "Pilih opsi:", [
+    Alert.alert("Akhiri Sesi?", "", [
       {
         text: "Akhiri Sesi",
         onPress: () => {
@@ -160,24 +166,42 @@ const DetailKonseling = ({ navigation, route }) => {
               { text: "Batal", style: "cancel" },
               {
                 text: "Ya",
-                onPress: () => navigation.navigate("Konseling"),
+                onPress: async () => {
+                  try {
+                    const response = await fetch(
+                      `${API_BASE_URL}/finishKonseling?id=${konId}`,
+                      {
+                        method: "DELETE",
+                      }
+                    );
+
+                    if (response.ok) {
+                      Alert.alert("Berhasil", "Sesi konseling telah diakhiri.");
+                      navigation.reset({
+                        index: 0,
+                        routes: [
+                          {
+                            name: "MainTabs",
+                            state: {
+                              routes: [{ name: "Konseling" }],
+                            },
+                          },
+                        ],
+                      });
+                    } else {
+                      Alert.alert("Gagal", "Gagal mengakhiri sesi konseling.");
+                    }
+                  } catch (error) {
+                    console.error("Error:", error);
+                    Alert.alert(
+                      "Error",
+                      "Terjadi kesalahan saat mengakhiri sesi."
+                    );
+                  }
+                },
               },
             ]
           );
-        },
-      },
-      {
-        text: "Hapus Chat",
-        style: "destructive",
-        onPress: () => {
-          Alert.alert("Hapus Chat", "Semua pesan akan dihapus. Lanjutkan?", [
-            { text: "Batal", style: "cancel" },
-            {
-              text: "Hapus",
-              style: "destructive",
-              onPress: () => setMessages([messages[0]]), // Keep only first message
-            },
-          ]);
         },
       },
       {
@@ -187,12 +211,24 @@ const DetailKonseling = ({ navigation, route }) => {
     ]);
   };
 
+  useEffect(() => {
+    const keyboardDidShow = Keyboard.addListener("keyboardDidShow", () => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    });
+
+    return () => {
+      keyboardDidShow.remove();
+    };
+  }, [messages]);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        <View style={styles.chatContainer}>
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
+        <View style={{ flex: 1 }}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -203,101 +239,104 @@ const DetailKonseling = ({ navigation, route }) => {
                 <Text style={styles.adminAvatarText}>👤</Text>
               </View>
               <View style={styles.adminDetails}>
-                <Text style={styles.adminName}>Admin Konseling</Text>
-                <Text style={styles.adminStatus}>Online</Text>
+                <Text style={styles.adminName}>Topik : {topic}</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.menuButton} onPress={showMenu}>
-              <Text style={styles.menuButtonText}>⋮</Text>
-            </TouchableOpacity>
+            {status !== "Selesai" && (
+              <TouchableOpacity style={styles.menuButton} onPress={showMenu}>
+                <Text style={styles.menuButtonText}>⋮</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          {/* Date Separator */}
-          <View style={styles.dateSeparator}>
-            <Text style={styles.dateText}>24 Juni 2025</Text>
-          </View>
-
-          {/* Messages */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-            showsVerticalScrollIndicator={false}>
-            {messages.map((msg) => (
-              <View
-                key={msg.id}
-                style={[
-                  styles.messageWrapper,
-                  msg.isAdmin
-                    ? styles.adminMessageWrapper
-                    : styles.userMessageWrapper,
-                ]}>
-                {msg.isAdmin && (
-                  <View style={styles.messageAvatar}>
-                    <Text style={styles.messageAvatarText}>👤</Text>
-                  </View>
-                )}
-
-                <View style={styles.messageContainer}>
-                  <View
-                    style={[
-                      styles.messageBubble,
-                      msg.isAdmin ? styles.adminMessage : styles.userMessage,
-                    ]}>
-                    <Text
+          {/* Chat Messages */}
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={styles.messagesContainer}
+              contentContainerStyle={styles.messagesContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {[...messages]
+                .sort((a, b) =>
+                  dayjs(`${a.date} ${a.time}`, "DD/MM/YY HH:mm").diff(
+                    dayjs(`${b.date} ${b.time}`, "DD/MM/YY HH:mm")
+                  )
+                )
+                .map((msg) => {
+                  const isSender = msg.isAdmin === (currentRole === "admin");
+                  return (
+                    <View
+                      key={msg.id}
                       style={[
-                        styles.messageText,
-                        msg.isAdmin
-                          ? styles.adminMessageText
-                          : styles.userMessageText,
-                      ]}>
-                      {msg.text}
-                    </Text>
-                  </View>
-
-                  <Text
-                    style={[
-                      styles.messageTime,
-                      msg.isAdmin
-                        ? styles.adminMessageTime
-                        : styles.userMessageTime,
-                    ]}>
-                    {msg.date} {msg.time}
-                  </Text>
-                </View>
-
-                {!msg.isAdmin && (
-                  <View style={styles.messageAvatar}>
-                    <Text style={styles.messageAvatarText}>👤</Text>
-                  </View>
-                )}
-              </View>
-            ))}
-          </ScrollView>
+                        styles.messageWrapper,
+                        isSender
+                          ? styles.userMessageWrapper
+                          : styles.adminMessageWrapper,
+                      ]}
+                    >
+                      <View style={styles.messageContainer}>
+                        <View
+                          style={[
+                            styles.messageBubble,
+                            isSender ? styles.userMessage : styles.adminMessage,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.messageText,
+                              isSender
+                                ? styles.userMessageText
+                                : styles.adminMessageText,
+                            ]}
+                          >
+                            {msg.text}
+                          </Text>
+                        </View>
+                        <Text
+                          style={[
+                            styles.messageTime,
+                            isSender
+                              ? styles.userMessageTime
+                              : styles.adminMessageTime,
+                          ]}
+                        >
+                          {msg.date} {msg.time}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+            </ScrollView>
+          </View>
 
           {/* Input Area */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Type here"
-              placeholderTextColor="#999"
-              value={message}
-              onChangeText={setMessage}
-              multiline
-              maxLength={1000}
-              onSubmitEditing={sendMessage}
-              blurOnSubmit={false}
-            />
-            <TouchableOpacity
-              style={[
-                styles.sendButton,
-                !message.trim() && styles.sendButtonDisabled,
-              ]}
-              onPress={sendMessage}
-              disabled={!message.trim()}>
-              <Text style={styles.sendButtonText}>→</Text>
-            </TouchableOpacity>
-          </View>
+          {status !== "Selesai" && (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Type here"
+                placeholderTextColor="#999"
+                value={message}
+                onChangeText={setMessage}
+                multiline
+                maxLength={1000}
+                onSubmitEditing={sendMessage}
+                blurOnSubmit={false}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  !message.trim() && styles.sendButtonDisabled,
+                ]}
+                onPress={sendMessage}
+                disabled={!message.trim()}
+              >
+                <Text style={styles.sendButtonText}>→</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -325,7 +364,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   backButton: {
     marginRight: 16,

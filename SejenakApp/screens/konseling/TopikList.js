@@ -147,7 +147,8 @@ export default function TopikList({ navigation }) {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <PanGestureHandler
             onGestureEvent={onGestureEvent}
-            onHandlerStateChange={onHandlerStateChange}>
+            onHandlerStateChange={onHandlerStateChange}
+          >
             <Animated.View
               style={[
                 styles.rowFront,
@@ -155,11 +156,13 @@ export default function TopikList({ navigation }) {
                   transform: [{ translateX }],
                   opacity: isDeleting ? 0.5 : 1,
                 },
-              ]}>
+              ]}
+            >
               <TouchableOpacity
                 style={styles.topikItem}
                 onPress={() => onEdit(item)}
-                activeOpacity={0.7}>
+                activeOpacity={0.7}
+              >
                 <View style={styles.topikContent}>
                   <View style={styles.topikInfo}>
                     <Text style={styles.topikName}>{item.nama}</Text>
@@ -184,11 +187,16 @@ export default function TopikList({ navigation }) {
   };
 
   const renderTopikItem = ({ item }) => (
-    <SwipeableRow
-      item={item}
-      onDelete={handleDelete}
-      onEdit={handleEditTopik}
-    />
+    <SwipeableRow item={item} onDelete={handleDelete} onEdit={handleEditTopik}>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => navigation.navigate("TopikForm", { topiks: item })}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={styles.nama}>{item.nama}</Text>
+        </View>
+      </TouchableOpacity>
+    </SwipeableRow>
   );
 
   if (loading) {
@@ -229,7 +237,8 @@ export default function TopikList({ navigation }) {
       <TouchableOpacity
         style={styles.fab}
         onPress={handleAddTopik}
-        activeOpacity={0.8}>
+        activeOpacity={0.8}
+      >
         <Ionicons name="add" size={40} color="white" />
       </TouchableOpacity>
     </SafeAreaView>

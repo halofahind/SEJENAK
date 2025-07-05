@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Topik = ({ navigation }) => {
   const [topiks, setTopiks] = useState([]);
@@ -46,46 +47,56 @@ const Topik = ({ navigation }) => {
   const handlePilihTopik = async () => {
     if (!selectedTopic) return;
 
-    const userId = 3;
-    const newKonseling = {
-      topik: {
-        id: selectedTopic.id,
-      },
-      userId: userId,
-      tglMulai: new Date().toISOString(),
-      tglSelesai: null, // opsional kalau belum selesai
-      status: "Sedang Berjalan",
-      createdBy: "user",
-      createdDate: new Date().toISOString(),
-      modifBy: null,
-      modifDate: null,
-    };
+    const userData = await AsyncStorage.getItem("userData");
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/konseling`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+
+      const userId = parsedUserData.id;
+
+      const newKonseling = {
+        topik: {
+          id: selectedTopic.id,
         },
-        body: JSON.stringify(newKonseling),
-      });
+        userId: userId,
+        tglMulai: new Date().toISOString(),
+        tglSelesai: null, // opsional kalau belum selesai
+        status: "Sedang Berjalan",
+        createdBy: "user",
+        createdDate: new Date().toISOString(),
+        modifBy: null,
+        modifDate: null,
+      };
 
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log(result);
-
-        navigation.navigate("DetailKonseling", {
-          topic: selectedTopic.id,
-          konId: result.konId, // ← pastikan backend return ini
-          isHistory: false,
+      try {
+        const response = await fetch(`${API_BASE_URL}/konseling`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newKonseling),
         });
-      } else {
-        Alert.alert("Gagal", "Gagal membuat sesi konseling");
+
+        const result = await response.json();
+
+        if (response.ok) {
+          console.log(result);
+
+          navigation.navigate("DetailKonseling", {
+            topic: selectedTopic.nama,
+            msg1: selectedTopic.pesanPertama,
+            msg2: selectedTopic.pesanTerakhir,
+            status: result.status,
+            konId: result.konId,
+            isHistory: false,
+          });
+        } else {
+          Alert.alert("Gagal", "Gagal membuat sesi konseling");
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+        Alert.alert("Error", "Terjadi kesalahan saat membuat sesi konseling");
       }
-    } catch (error) {
-      console.error("Error:", error.message);
-      Alert.alert("Error", "Terjadi kesalahan saat membuat sesi konseling");
     }
   };
 
@@ -93,7 +104,8 @@ const Topik = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <ActivityIndicator size="large" color="#e91e63" />
           <Text>Memuat daftar topik...</Text>
         </View>
@@ -120,12 +132,14 @@ const Topik = ({ navigation }) => {
               key={index}
               style={styles.topicOption}
               onPress={() => handleTopicSelect(topic)}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+            >
               <View
                 style={[
                   styles.radioButton,
                   selectedTopic?.id === topic.id && styles.radioButtonSelected,
-                ]}>
+                ]}
+              >
                 {selectedTopic?.id === topic.id && (
                   <View style={styles.radioButtonInner} />
                 )}
@@ -135,7 +149,8 @@ const Topik = ({ navigation }) => {
                   styles.topicOptionText,
                   selectedTopic?.id === topic.id &&
                     styles.topicOptionTextSelected,
-                ]}>
+                ]}
+              >
                 {topic.nama}
               </Text>
             </TouchableOpacity>
@@ -149,7 +164,8 @@ const Topik = ({ navigation }) => {
           ]}
           onPress={handlePilihTopik}
           disabled={!selectedTopic}
-          activeOpacity={selectedTopic ? 0.8 : 1}>
+          activeOpacity={selectedTopic ? 0.8 : 1}
+        >
           <Text style={styles.selectButtonText}>Pilih Topik</Text>
         </TouchableOpacity>
       </View>

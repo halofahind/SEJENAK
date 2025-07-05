@@ -10,8 +10,7 @@ import {
   Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-
-const API_BASE_URL = "http://192.168.43.40:8080";
+import { API_BASE_URL } from "../../../utils/constants";
 
 export default function KelolaAkun({ navigation }) {
   const [pengguna, setPengguna] = useState([]);

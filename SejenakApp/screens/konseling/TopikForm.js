@@ -160,10 +160,12 @@ const TopikForm = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.header}>
             <Text style={styles.title}>
               {isEditMode ? "Edit Topik" : "Tambah Topik Baru"}
@@ -259,7 +261,8 @@ const TopikForm = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={handleCancel}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             <Text style={styles.cancelButtonText}>Batal</Text>
           </TouchableOpacity>
 
@@ -271,7 +274,8 @@ const TopikForm = ({ navigation, route }) => {
             ]}
             onPress={handleSubmit}
             disabled={loading}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
