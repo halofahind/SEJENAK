@@ -1,0 +1,23 @@
+{
+  "OnBoardingSlide1Title": "Get to Know Yourself\nMore Deeply",
+  "OnBoardingSlide1Desc": "We know campus life can be overwhelming. Here, you can take the time to understand your feelings, thoughts, and needs without judgment.",
+  "OnBoardingSlide2Title": "You Are Not\nAlone",
+  "OnBoardingSlide2Desc": "This app is here as your mental companion. From journaling to access to professional help, all in one safe and private space.",
+  "OnBoardingSlide3Title": "Take a\nBreath",
+  "OnBoardingSlide3Desc": "It’s time to give yourself space. Start your journey toward better mental health one small step, one mindful moment at a time.",
+  "OnBoardingSlide4Title": "Welcome to\nSejenak",
+  "OnBoardingSlide4Desc": "This is your safe space to feel, reflect, and grow. You don’t need to be perfect—just be yourself, one mindful step at a time.",
+  "OnBoardingSkipBtn": "Skip",
+  "OnBoardingNextBtn": "Next",
+  "OnBoardingStartBtn": "Let’s Start",
+  "InfoSlide1Title": "This is the Info Title",
+  "InfoSlide1Desc": "This is the Description",
+  "LoginTitle": "Login",
+  "LoginUsernamePlaceholder": "Username",
+  "LoginPasswordPlaceholder": "Password",
+  "LoginButtonLogin": "Login",
+  "LoginRegisterLabel": "Don't have an account?",
+  "LoginRegisterBtn": "Register",
+  "RegTitle": "Register",
+  "RegEmailInputPlaceholder": "Enter Email"
+}

@@ -10,13 +10,15 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Animated } from "react-native";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const { width } = Dimensions.get("window");
 
 const slides = [
   {
     id: "1",
-    title: "Kenali Dirimu\nLebih Dalam",
+    title: "OnBoardingSlide1Title",
     desc: "Kami tahu dunia kampus bisa melelahkan. Di sini, kamu bisa meluangkan waktu untuk memahami perasaan, pikiran, dan kebutuhanmu tanpa penilaian.",
     image: require("../../assets/OnBoarding/KenaliDirimuLebihDalam.png"),
   },
@@ -91,9 +93,8 @@ export default function OnboardingScreen() {
       <View style={[styles.slide]}>
         {/* Title dengan animasi */}
         <Animated.Text
-          style={[styles.title, { color: titleColor, opacity: titleOpacity }]}
-        >
-          {item.title}
+          style={[styles.title, { color: titleColor, opacity: titleOpacity }]}>
+          {t(item.title)}
         </Animated.Text>
 
         {/* Gambar dengan animasi */}
@@ -109,8 +110,7 @@ export default function OnboardingScreen() {
 
         {/* Deskripsi dengan animasi */}
         <Animated.Text
-          style={[styles.desc, { color: descColor, opacity: descOpacity }]}
-        >
+          style={[styles.desc, { color: descColor, opacity: descOpacity }]}>
           {item.desc}
         </Animated.Text>
       </View>
@@ -194,8 +194,7 @@ export default function OnboardingScreen() {
       {/* Next Button - Fixed */}
       <TouchableOpacity
         onPress={handleNext}
-        style={[styles.nextButton, { backgroundColor: buttonBgColor }]}
-      >
+        style={[styles.nextButton, { backgroundColor: buttonBgColor }]}>
         <Text style={[styles.nextText, { color: buttonColor }]}>
           {currentSlide === slides.length - 1 ? "AYO MULAI" : "SELANJUTNYA"}
         </Text>
