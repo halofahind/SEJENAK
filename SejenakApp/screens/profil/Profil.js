@@ -9,13 +9,69 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Modal,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import KebijakanPrivasi from "./KebijakanPrivasi";
+import i18n from "../../locales/i18n";
+import { useTranslation } from "react-i18next";
 
 export default function Profil({ navigation }) {
+  // BAHASA
+  const { t } = useTranslation();
+  const changeLanguage = async (lng) => {
+    Alert.alert(t("language_change_title"), t("language_change_message"), [
+      {
+        text: t("cancel"),
+        style: "cancel",
+        onPress: () => {},
+      },
+      {
+        text: t("confirm"),
+        onPress: async () => {
+          try {
+            await i18n.changeLanguage(lng);
+            setCurrentLanguage(lng);
+            await AsyncStorage.setItem("appLanguage", lng);
+
+            // Force re-render dengan mengubah state
+            setLanguageModalVisible(false);
+
+            // Tampilkan alert perlu restart
+            Alert.alert(
+              t("restart_required_title"),
+              t("restart_required_message"),
+              [
+                {
+                  text: t("later"),
+                  style: "cancel",
+                },
+                {
+                  text: t("restart_now"),
+                  onPress: () => {
+                    // Implementasi restart aplikasi
+                    // Untuk Expo: mungkin perlu menggunakan Updates.reloadAsync()
+                    // Untuk RN biasa: mungkin perlu implementasi native
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "Splash" }], // Ganti dengan halaman splash/loading Anda
+                    });
+                  },
+                },
+              ]
+            );
+          } catch (error) {
+            console.error("Gagal mengganti bahasa:", error);
+            Alert.alert("Error", t("language_change_failed"));
+          }
+        },
+      },
+    ]);
+  };
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -107,6 +163,14 @@ export default function Profil({ navigation }) {
       },
     },
     {
+      title: "Ganti Kata Sandi",
+      icon: "lock",
+      type: "font-awesome",
+      onPress: () => {
+        navigation.navigate("GantiPassword");
+      },
+    },
+    {
       title: "Syarat & Ketentuan",
       icon: "book",
       type: "font-awesome",
@@ -138,6 +202,12 @@ export default function Profil({ navigation }) {
           console.error("Gagal membuka WhatsApp", err)
         );
       },
+    },
+    {
+      title: "Ganti Bahasa",
+      icon: "language",
+      type: "font-awesome",
+      onPress: () => setLanguageModalVisible(true),
     },
   ];
 
@@ -196,7 +266,6 @@ export default function Profil({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-
       {/* Menu Section */}
       <View style={styles.menuContainer}>
         {menuItems.map((item, index) => (
@@ -210,7 +279,6 @@ export default function Profil({ navigation }) {
           </TouchableOpacity>
         ))}
       </View>
-
       {/* Logout Button */}
       <View style={styles.logoutContainer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -218,6 +286,41 @@ export default function Profil({ navigation }) {
           <Text style={styles.logoutText}>Keluar</Text>
         </TouchableOpacity>
       </View>
+      {/* Language Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={languageModalVisible}
+        onRequestClose={() => setLanguageModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>{t("select_language")}</Text>
+
+            {["id", "en"].map((lang) => (
+              <TouchableOpacity
+                key={lang}
+                style={[
+                  styles.languageButton,
+                  currentLanguage === lang && styles.selectedLanguage,
+                ]}
+                onPress={() => changeLanguage(lang)}>
+                <Text style={styles.languageText}>
+                  {lang === "id" ? "Bahasa Indonesia" : "English"}
+                </Text>
+                {currentLanguage === lang && (
+                  <Icon name="check" color="#e91e63" size={20} />
+                )}
+              </TouchableOpacity>
+            ))}
+
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setLanguageModalVisible(false)}>
+              <Text style={styles.modalCloseText}>{t("cancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -331,5 +434,48 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  languageButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  selectedLanguage: {
+    backgroundColor: "#f8f8f8",
+  },
+  languageText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  modalCloseButton: {
+    marginTop: 20,
+    padding: 10,
+    alignItems: "center",
+  },
+  modalCloseText: {
+    color: "#e91e63",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

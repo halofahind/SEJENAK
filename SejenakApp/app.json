@@ -22,9 +22,11 @@
       },
       "edgeToEdgeEnabled": true
     },
-    
     "developer": {
       "fastRefresh": true
-    }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   }
 }

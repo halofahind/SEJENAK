@@ -72,7 +72,6 @@ export default function ProfilEdit({ navigation }) {
 
   const uploadImageToServer = async (imageUri) => {
     try {
-      // Upload seperti biasa
       const filename = imageUri.split("/").pop();
       const fileType = `image/${filename.split(".").pop()}`;
 
@@ -91,7 +90,6 @@ export default function ProfilEdit({ navigation }) {
         body: formData,
       });
 
-      // Pakai response.text() dulu biar tahu apa isi response-nya
       const text = await response.text();
       console.log("Response dari upload:", text);
 
@@ -101,7 +99,13 @@ export default function ProfilEdit({ navigation }) {
         throw new Error(responseData.message || "Gagal mengupload gambar");
       }
 
-      return `${API_BASE_URL}/${responseData.filePath}`; // ← return string (full URL)
+      // ✅ BERSIHKAN DOUBLE SLASH
+      const cleanUrl = `${API_BASE_URL}/${responseData.filePath}`.replace(
+        /([^:]\/)\/+/g,
+        "$1"
+      );
+
+      return cleanUrl;
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
@@ -169,8 +173,31 @@ export default function ProfilEdit({ navigation }) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Buat salinan data user yang akan dikirim
-      let userDataToSend = {
+      let profilePicUrl = user.profilePic;
+
+      // Kalau foto baru (masih lokal)
+      if (typeof profilePicUrl === "object" && profilePicUrl.uri) {
+        if (!profilePicUrl.uri.includes(API_BASE_URL)) {
+          try {
+            const uploadedUrl = await uploadImageToServer(profilePicUrl.uri);
+            profilePicUrl = uploadedUrl;
+
+            setUser((prev) => ({
+              ...prev,
+              profilePic: uploadedUrl,
+            }));
+          } catch (uploadError) {
+            console.error("Gagal upload foto:", uploadError);
+            profilePicUrl = null;
+          }
+        } else {
+          // Sudah URL
+          profilePicUrl = profilePicUrl.uri;
+        }
+      }
+
+      // Buat data yang akan dikirim
+      const userDataToSend = {
         id: user.id,
         role: user.role,
         nama: user.name,
@@ -182,39 +209,9 @@ export default function ProfilEdit({ navigation }) {
         gender: user.gender,
         hobi: user.hobi || null,
         tentang: user.tentang || null,
-        profilPic: null, // Akan diisi nanti
+        usrFoto: profilePicUrl, // ✅ ini penting, harus pakai nama sesuai backend
       };
 
-      // Handle upload foto jika diperlukan
-      let profilePicUrl = user.profilePic;
-
-      if (typeof profilePicUrl === "object" && profilePicUrl.uri) {
-        // Jika foto baru (masih lokal)
-        if (!profilePicUrl.uri.includes(API_BASE_URL)) {
-          try {
-            const uploadedUrl = await uploadImageToServer(profilePicUrl.uri);
-            profilePicUrl = uploadedUrl;
-
-            // Update state dengan URL baru
-            setUser((prev) => ({
-              ...prev,
-              profilePic: uploadedUrl,
-            }));
-          } catch (uploadError) {
-            console.error("Gagal upload foto:", uploadError);
-            // Tetap lanjut tanpa foto jika upload gagal
-            profilePicUrl = null;
-          }
-        } else {
-          // Jika sudah URL, ambil string-nya saja
-          profilePicUrl = profilePicUrl.uri;
-        }
-      }
-
-      // Set URL foto ke data yang akan dikirim
-      userDataToSend.profilPic = profilePicUrl;
-
-      // Kirim data ke backend
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
         method: "POST",
         headers: {
@@ -228,11 +225,12 @@ export default function ProfilEdit({ navigation }) {
         throw new Error(errText);
       }
 
-      // Simpan ke AsyncStorage
+      // Simpan ke lokal (AsyncStorage)
       const updatedUserData = {
         ...userDataToSend,
-        profilePic: profilePicUrl, // Pastikan penamaannya konsisten
+        profilePic: profilePicUrl, // Untuk keperluan frontend, bebas pakai nama apa
       };
+
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData));
 
       Alert.alert("Sukses", "Profil berhasil diperbarui");
@@ -244,6 +242,7 @@ export default function ProfilEdit({ navigation }) {
       setIsSaving(false);
     }
   };
+
   const showImagePickerOptions = async () => {
     Alert.alert(
       "Ubah Foto Profil",

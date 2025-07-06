@@ -11,7 +11,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Animated } from "react-native";
 import { useTranslation } from "react-i18next";
-import { t } from "i18next";
+import "../../locales/i18n";
 
 const { width } = Dimensions.get("window");
 
@@ -43,6 +43,8 @@ const slides = [
 ];
 
 export default function OnboardingScreen() {
+  const { t, i18n } = useTranslation();
+
   const navigation = useNavigation();
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -55,6 +57,8 @@ export default function OnboardingScreen() {
       navigation.replace("Login");
     }
   };
+  console.log("Bahasa aktif:", i18n.language);
+  console.log("Isi key:", t("OnBoardingSlide1Title"));
 
   const handleSkip = () => navigation.replace("Login");
 
