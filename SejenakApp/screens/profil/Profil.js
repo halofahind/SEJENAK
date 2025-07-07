@@ -22,7 +22,7 @@ export default function Profil({ navigation }) {
   // BAHASA
   const { t } = useTranslation();
   const changeLanguage = async (lng) => {
-    Alert.alert(t("language_change_title"), t("language_change_message"), [
+    Alert.alert(t("Ganti Bahasa"), t("Anda Yakin Ingin Mengubah Bahasa?"), [
       {
         text: t("cancel"),
         style: "cancel",
@@ -41,8 +41,8 @@ export default function Profil({ navigation }) {
 
             // Tampilkan alert perlu restart
             Alert.alert(
-              t("restart_required_title"),
-              t("restart_required_message"),
+              t("Mulai Ulang Aplikasi"),
+              t("Aplikasi Akan Dimulai Ulang Sekarang?"),
               [
                 {
                   text: t("later"),
@@ -155,7 +155,7 @@ export default function Profil({ navigation }) {
   };
   const menuItems = [
     {
-      title: "Kelola Akun Pengguna",
+      title: t("ProfilMenuManageAcc"),
       icon: "user",
       type: "font-awesome",
       onPress: () => {
@@ -163,7 +163,7 @@ export default function Profil({ navigation }) {
       },
     },
     {
-      title: "Ganti Kata Sandi",
+      title: t("ProfilMenuPassChange"),
       icon: "lock",
       type: "font-awesome",
       onPress: () => {
@@ -171,7 +171,7 @@ export default function Profil({ navigation }) {
       },
     },
     {
-      title: "Syarat & Ketentuan",
+      title: t("ProfilMenuSK"),
       icon: "book",
       type: "font-awesome",
       onPress: () => {
@@ -179,7 +179,7 @@ export default function Profil({ navigation }) {
       },
     },
     {
-      title: "Kebijakan Privasi",
+      title: t("ProfilMenuPrivacy"),
       icon: "shield",
       type: "font-awesome",
       onPress: () => {
@@ -187,7 +187,7 @@ export default function Profil({ navigation }) {
       },
     },
     {
-      title: "Hubungi Kami",
+      title: t("ProfilMenuCallMe"),
       icon: "whatsapp",
       type: "font-awesome",
       onPress: () => {
@@ -204,7 +204,7 @@ export default function Profil({ navigation }) {
       },
     },
     {
-      title: "Ganti Bahasa",
+      title: t("ProfileMenuLangChange"),
       icon: "language",
       type: "font-awesome",
       onPress: () => setLanguageModalVisible(true),
@@ -262,7 +262,7 @@ export default function Profil({ navigation }) {
 
           <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
             <Icon name="edit" size={16} color="#e91e63" />
-            <Text style={styles.editButtonText}>Edit</Text>
+            <Text style={styles.editButtonText}>{t("ProfilEditBtn")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -283,7 +283,7 @@ export default function Profil({ navigation }) {
       <View style={styles.logoutContainer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Icon name="logout" size={20} color="#fff" />
-          <Text style={styles.logoutText}>Keluar</Text>
+          <Text style={styles.logoutText}>{t("ProfilLogOutBtn")}</Text>
         </TouchableOpacity>
       </View>
       {/* Language Selection Modal */}
@@ -294,7 +294,7 @@ export default function Profil({ navigation }) {
         onRequestClose={() => setLanguageModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>{t("select_language")}</Text>
+            <Text style={styles.modalTitle}>Pilih Bahasa</Text>
 
             {["id", "en"].map((lang) => (
               <TouchableOpacity
@@ -316,7 +316,7 @@ export default function Profil({ navigation }) {
             <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setLanguageModalVisible(false)}>
-              <Text style={styles.modalCloseText}>{t("cancel")}</Text>
+              <Text style={styles.modalCloseText}>Batal</Text>
             </TouchableOpacity>
           </View>
         </View>

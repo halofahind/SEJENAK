@@ -18,10 +18,14 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BeritaCarousel from "../../components/BeritaCarousel";
 import { API_BASE_URL } from "../../utils/constants";
 import SessionManager from "../../utils/SessionManager";
+import { useTranslation } from "react-i18next";
+import "../../locales/i18n";
 
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
+  const { t, i18n } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -172,7 +176,7 @@ export default function Login({ navigation }) {
           keyboardShouldPersistTaps="handled"
           bounces={false}>
           <View style={styles.loginTitleWrap}>
-            <Text style={styles.loginTitle}>Masuk</Text>
+            <Text style={styles.loginTitle}>{t("LoginTitle")}</Text>
           </View>
 
           {errorMsg !== "" && (
@@ -236,16 +240,18 @@ export default function Login({ navigation }) {
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
-                  <Text style={styles.loginButtonText}>Memuat...</Text>
+                  <Text style={styles.loginButtonText}>{t("Loading")}</Text>
                 </View>
               ) : (
-                <Text style={styles.loginButtonText}>Login</Text>
+                <Text style={styles.loginButtonText}>
+                  {t("LoginButtonLogin")}
+                </Text>
               )}
             </TouchableOpacity>
           </View>
 
           <View style={{ flexDirection: "row", bottom: 90 }}>
-            <Text style={styles.signupText}>Belum memiliki akun? </Text>
+            <Text style={styles.signupText}>{t("LoginRegisterLabel")} </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
               disabled={isLoading}>
@@ -254,7 +260,7 @@ export default function Login({ navigation }) {
                   color: isLoading ? "#ccc" : "#EF6A6A",
                   fontWeight: "bold",
                 }}>
-                Daftar
+                {t("LoginRegisterBtn")}
               </Text>
             </TouchableOpacity>
           </View>

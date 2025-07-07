@@ -19,25 +19,25 @@ const slides = [
   {
     id: "1",
     title: "OnBoardingSlide1Title",
-    desc: "Kami tahu dunia kampus bisa melelahkan. Di sini, kamu bisa meluangkan waktu untuk memahami perasaan, pikiran, dan kebutuhanmu tanpa penilaian.",
+    desc: "OnBoardingSlide1Desc",
     image: require("../../assets/OnBoarding/KenaliDirimuLebihDalam.png"),
   },
   {
     id: "2",
-    title: "Kamu tidak\nsendirian",
-    desc: "Aplikasi ini hadir sebagai teman perjalanan mentamu. Dari journaling, hingga akses bantuan profesional semua dalam satu ruang yang aman dan rahasia.",
+    title: "OnBoardingSlide2Title",
+    desc: "OnBoardingSlide2Desc",
     image: require("../../assets/OnBoarding/KamuTidakSendirian.png"),
   },
   {
     id: "3",
-    title: "Ambil Napas\nSejenak",
-    desc: "Waktunya memberi ruang untuk dirimu sendiri. Mulailah perjalanan menuju kesehatan mental yang lebih baik satu langkah kecil, satu hari sejenak.",
+    title: "OnBoardingSlide3Title",
+    desc: "OnBoardingSlide3Desc",
     image: require("../../assets/OnBoarding/AmbilNapasSejenak.png"),
   },
   {
     id: "4",
-    title: "Selamat Datang di,\nSejenak",
-    desc: "Ini ruang amanmu untuk merasa, merenung, dan berkembang. Tak perlu sempurna ukup jadi dirimu, satu langkah sejenak demi sejenak.",
+    title: "OnBoardingSlide4Title",
+    desc: "OnBoardingSlide4Desc",
     image: require("../../assets/OnBoarding/SelamatDatang.png"),
   },
 ];
@@ -57,8 +57,6 @@ export default function OnboardingScreen() {
       navigation.replace("Login");
     }
   };
-  console.log("Bahasa aktif:", i18n.language);
-  console.log("Isi key:", t("OnBoardingSlide1Title"));
 
   const handleSkip = () => navigation.replace("Login");
 
@@ -115,7 +113,7 @@ export default function OnboardingScreen() {
         {/* Deskripsi dengan animasi */}
         <Animated.Text
           style={[styles.desc, { color: descColor, opacity: descOpacity }]}>
-          {item.desc}
+          {t(item.desc)}
         </Animated.Text>
       </View>
     );
@@ -137,7 +135,9 @@ export default function OnboardingScreen() {
 
       {/* Skip Button - Fixed */}
       <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
-        <Text style={[styles.skipText, , { color: buttonColor }]}>Lewati</Text>
+        <Text style={[styles.skipText, { color: buttonColor }]}>
+          {t("OnBoardingSkipBtn")}
+        </Text>
       </TouchableOpacity>
 
       {/* FlatList */}
@@ -200,7 +200,9 @@ export default function OnboardingScreen() {
         onPress={handleNext}
         style={[styles.nextButton, { backgroundColor: buttonBgColor }]}>
         <Text style={[styles.nextText, { color: buttonColor }]}>
-          {currentSlide === slides.length - 1 ? "AYO MULAI" : "SELANJUTNYA"}
+          {currentSlide === slides.length - 1
+            ? t("OnBoardingStartBtn")
+            : t("OnBoardingNextBtn")}
         </Text>
       </TouchableOpacity>
     </View>

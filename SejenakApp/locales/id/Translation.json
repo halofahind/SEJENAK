@@ -12,12 +12,47 @@
   "OnBoardingStartBtn": "Ayo Mulai",
   "InfoSlide1Title": "Ini Judul Informasi",
   "InfoSlide1Desc": "Ini Deskripsi",
+
   "LoginTitle": "Masuk",
   "LoginUsernamePlaceholder": "Nama Pengguna",
   "LoginPasswordPlaceholder": "Kata Sandi",
   "LoginButtonLogin": "Masuk",
-  "LoginRegisterLabel": "Belum Mempunyai Akun?",
+  "LoginRegisterLabel": "Belum Memiliki Akun?",
   "LoginRegisterBtn": "Daftar",
   "RegTitle": "Daftar",
-  "RegEmailInputPlaceholder": "Masukkan Email"
+  "RegLoginLabel": "Sudah Memiliki Akun?",
+  "RegLoginBtn": "Masuk",
+
+  "Loading": "Memuat",
+
+  "EmailInputPh": "E-mail",
+  "UsernameInputPh": "Nama Pengguna",
+  "NameInputPh": "Nama Lengkap",
+  "PasswordInputPh": "Kata Sandi",
+  "PasswordConfInputPh": "Konfirmasi Kata Sandi",
+  "DateInputPh": "Tanggal (DD/MM/YYYY)",
+  "MGender": "Laki-laki",
+  "FGender": "Perempuan",
+  "PhoneInputPh": "Nomor telepon (contoh: 0812345678)",
+
+  "MainTabsHome": "Beranda",
+  "MainTabsJournal": "Jurnalku",
+  "MainTabsCounseling": "Konseling",
+  "MainTabsProfil": "Profil",
+
+  "ProfilGreetingLabel": "Hai, ",
+  "ProfilEditBtn": "Ubah",
+  "ProfilMenuManageAcc": "Kelola Akun Pengguna",
+  "ProfilMenuPassChange": "Ubah Kata Sandi",
+  "ProfilMenuSK": "Syarat & Ketentuan",
+  "ProfilMenuPrivacy": "Kebijakan Privasi",
+  "ProfilMenuCallMe": "Hubungi Kami",
+  "ProfileMenuLangChange": "Ganti Bahasa",
+  "ProfilLogOutBtn": "Keluar",
+
+  "CounselingHeadTitle": "Konseling",
+  "CounselingHeadDesc": "Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan nyaman",
+  "CounselingHistoryTitle": "Riwayat Konseling",
+  "CounselingHistoryEmpTitle": "Belum Ada Riwayat Konseling",
+  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru"
 }

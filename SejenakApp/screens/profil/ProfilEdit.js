@@ -209,7 +209,7 @@ export default function ProfilEdit({ navigation }) {
         gender: user.gender,
         hobi: user.hobi || null,
         tentang: user.tentang || null,
-        usrFoto: profilePicUrl, // ✅ ini penting, harus pakai nama sesuai backend
+        usrFoto: profilePicUrl,
       };
 
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
