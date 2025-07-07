@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  RefreshControl,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
@@ -17,6 +18,8 @@ const screenWidth = Dimensions.get("window").width;
 
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -27,53 +30,121 @@ export default function Home({ navigation }) {
     profilePic: require("../../assets/Home/1.png"),
   });
 
-  useEffect(() => {
-    const fetchMotivasi = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
-        const list = res.data;
+  // useEffect(() => {
+  //   const fetchMotivasi = async () => {
+  //     try {
+  //       const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
+  //       const list = res.data;
 
-        if (list.length > 0) {
-          const today = new Date();
-          const daySeed =
-            today.getFullYear() * 10000 +
-            (today.getMonth() + 1) * 100 +
-            today.getDate();
-          const index = daySeed % list.length;
+  //       if (list.length > 0) {
+  //         const today = new Date();
+  //         const daySeed =
+  //           today.getFullYear() * 10000 +
+  //           (today.getMonth() + 1) * 100 +
+  //           today.getDate();
+  //         const index = daySeed % list.length;
 
-          setMotivasiHarian(list[index].motivasiText);
-        }
-      } catch (err) {
-        console.error("Gagal ambil motivasi:", err.message);
+  //         setMotivasiHarian(list[index].motivasiText);
+  //       }
+  //     } catch (err) {
+  //       console.error("Gagal ambil motivasi:", err.message);
+  //     }
+  //   };
+
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const userData = await AsyncStorage.getItem("userData");
+  //       if (userData) {
+  //         const parsedData = JSON.parse(userData);
+  //         setUser({
+  //           name: parsedData.nama || "",
+  //           username: parsedData.username || "",
+  //           email: parsedData.email || "",
+  //           phone: parsedData.telepon || "",
+  //           gender: parsedData.gender || "",
+  //           address: parsedData.alamat || "",
+  //           profilePic: parsedData.profilePic
+  //             ? { uri: parsedData.profilePic }
+  //             : require("../../assets/Home/1.png"),
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch user data:", error);
+  //     }
+  //   };
+
+  //   fetchMotivasi();
+  //   fetchUserData();
+  // }, []);
+  const loadData = useCallback(async () => {
+    try {
+      setRefreshing(true);
+
+      // Load motivasi
+      const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
+      const list = res.data;
+      if (list.length > 0) {
+        const today = new Date();
+        const daySeed =
+          today.getFullYear() * 10000 +
+          (today.getMonth() + 1) * 100 +
+          today.getDate();
+        const index = daySeed % list.length;
+        setMotivasiHarian(list[index].motivasiText);
       }
-    };
 
-    const fetchUserData = async () => {
-      try {
-        const userData = await AsyncStorage.getItem("userData");
-        if (userData) {
-          const parsedData = JSON.parse(userData);
-          setUser({
-            name: parsedData.nama || "",
-            username: parsedData.username || "",
-            email: parsedData.email || "",
-            phone: parsedData.telepon || "",
-            gender: parsedData.gender || "",
-            address: parsedData.alamat || "",
-            profilePic: parsedData.profilePic
+      // Load user data
+      const userData = await AsyncStorage.getItem("userData");
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+
+        // Handle profile picture
+        let profilePicSource;
+        if (parsedData.usrFoto) {
+          profilePicSource = {
+            uri: parsedData.usrFoto.includes("http")
+              ? parsedData.usrFoto
+              : `${API_BASE_URL}/uploads/${parsedData.usrFoto}`,
+          };
+        } else if (parsedData.profilePic) {
+          profilePicSource =
+            typeof parsedData.profilePic === "string"
               ? { uri: parsedData.profilePic }
-              : require("../../assets/Home/1.png"),
-          });
+              : parsedData.profilePic;
+        } else {
+          profilePicSource = require("../../assets/Home/1.png");
         }
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
 
-    fetchMotivasi();
-    fetchUserData();
+        setUser({
+          name: parsedData.nama || "",
+          username: parsedData.username || "",
+          email: parsedData.email || "",
+          phone: parsedData.telepon || "",
+          gender: parsedData.gender || "",
+          address: parsedData.alamat || "",
+          profilePic: profilePicSource,
+        });
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Fungsi untuk refresh
+  const onRefresh = useCallback(() => {
+    loadData();
+  }, [loadData]);
+
+  // Navigasi ke profil
+  const navigateToProfile = () => {
+    navigation.navigate("Profil");
+  };
   const topiks = [
     {
       id: "1",
@@ -120,11 +191,28 @@ export default function Home({ navigation }) {
       style={{ flex: 1, backgroundColor: "#fff", marginTop: 40 }}
       contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
       showsVerticalScrollIndicator={false}
-    >
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={["#e91e63"]}
+          tintColor="#e91e63"
+        />
+      }>
       {/* === Profil & Notifikasi === */}
       <View style={styles.profileRow}>
         <View style={styles.profileContainer}>
-          <Image source={user.profilePic} style={styles.profileImage} />
+          <Image
+            source={
+              user.profilePic && user.profilePic.uri
+                ? { uri: user.profilePic.uri }
+                : typeof user.profilePic === "string"
+                ? { uri: user.profilePic }
+                : user.profilePic
+            }
+            style={styles.profileImage}
+            onError={() => console.log("Gagal memuat gambar profil")}
+          />
           <View>
             <Text style={styles.userName}>Hai, {user.name}</Text>
             <Text style={styles.welcomeText}>
@@ -133,8 +221,7 @@ export default function Home({ navigation }) {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("NotifikasiScreen")}
-        >
+          onPress={() => navigation.navigate("NotifikasiScreen")}>
           <Icon name="notifications-none" size={28} color="#444" />
         </TouchableOpacity>
       </View>
@@ -147,8 +234,7 @@ export default function Home({ navigation }) {
             style={styles.moodItem}
             onPress={() =>
               navigation.navigate("MoodTracker", { selectedMood: mood })
-            }
-          >
+            }>
             <Text style={styles.moodEmoji}>{mood.emoji}</Text>
             <Text style={styles.moodLabel}>{mood.label}</Text>
           </TouchableOpacity>
@@ -195,8 +281,7 @@ export default function Home({ navigation }) {
                 navigation.navigate("DaftarJurnal", {
                   jenisjurnal: item,
                 })
-              }
-            >
+              }>
               <Image source={item.image} style={styles.image} />
               <Text style={styles.cardTitle}>{item.title}</Text>
             </TouchableOpacity>
