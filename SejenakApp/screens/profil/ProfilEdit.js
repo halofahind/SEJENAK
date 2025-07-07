@@ -36,6 +36,40 @@ export default function ProfilEdit({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const userData = await AsyncStorage.getItem("userData");
+  //       if (userData) {
+  //         const parsedData = JSON.parse(userData);
+  //         setUser({
+  //           id: parsedData.id || "",
+  //           role: parsedData.role || "",
+  //           name: parsedData.nama || "",
+  //           username: parsedData.username || "",
+  //           password: parsedData.password || "",
+  //           tanggalLahir: parsedData.tanggalLahir || "",
+  //           email: parsedData.email || "",
+  //           phone: parsedData.telepon || "",
+  //           gender: parsedData.gender || "",
+  //           address: parsedData.alamat || "",
+  //           hobi: parsedData.hobi || "",
+  //           tentang: parsedData.about || "", // Perhatikan ini "about"
+  //           profilePic: parsedData.usrFoto
+  //             ? { uri: parsedData.usrFoto }
+  //             : require("../../assets/Profil/Profil.png"),
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch user data:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchUserData();
+  // }, []);
+
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
@@ -43,22 +77,35 @@ export default function ProfilEdit({ navigation }) {
         const userData = await AsyncStorage.getItem("userData");
         if (userData) {
           const parsedData = JSON.parse(userData);
+
+          // PERBAIKAN UTAMA DI SINI:
+          let profilePicSource;
+          if (parsedData.usrFoto) {
+            // Jika usrFoto ada, formatkan sebagai object {uri}
+            const fullUrl = parsedData.usrFoto.includes("http")
+              ? parsedData.usrFoto
+              : `${API_BASE_URL}/uploads/${parsedData.usrFoto}`;
+            profilePicSource = { uri: fullUrl };
+          } else if (parsedData.profilePic) {
+            // Handle fallback ke profilePic jika ada
+            profilePicSource =
+              typeof parsedData.profilePic === "string"
+                ? { uri: parsedData.profilePic }
+                : parsedData.profilePic;
+          } else {
+            // Default image
+            profilePicSource = require("../../assets/Profil/Profil.png");
+          }
+
+          console.log("Loaded profile pic:", profilePicSource); // Debugging
+
           setUser({
-            id: parsedData.id || "",
-            role: parsedData.role || "",
+            ...parsedData,
             name: parsedData.nama || "",
-            username: parsedData.username || "",
-            password: parsedData.password || "",
-            tanggalLahir: parsedData.tanggalLahir || "",
-            email: parsedData.email || "",
             phone: parsedData.telepon || "",
-            gender: parsedData.gender || "",
             address: parsedData.alamat || "",
-            hobi: parsedData.hobi || "",
-            tentang: parsedData.about || "", // Perhatikan ini "about"
-            profilePic: parsedData.usrFoto
-              ? { uri: parsedData.usrFoto }
-              : require("../../assets/Profil/Profil.png"),
+            tentang: parsedData.tentang || parsedData.about || "",
+            profilePic: profilePicSource,
           });
         }
       } catch (error) {
@@ -67,9 +114,9 @@ export default function ProfilEdit({ navigation }) {
         setIsLoading(false);
       }
     };
+
     fetchUserData();
   }, []);
-
   const uploadImageToServer = async (imageUri) => {
     try {
       const filename = imageUri.split("/").pop();
@@ -110,64 +157,6 @@ export default function ProfilEdit({ navigation }) {
       throw error;
     }
   };
-
-  // const handleSave = async () => {
-  //   setIsSaving(true);
-  //   try {
-  //     const userData = {
-  //       id: user.id,
-  //       role: user.role,
-  //       nama: user.name,
-  //       username: user.username,
-  //       password: user.password,
-  //       tanggalLahir: user.tanggalLahir,
-  //       email: user.email,
-  //       telepon: user.phone,
-  //       gender: user.gender,
-  //       alamat: user.address,
-  //       hobi: user.hobi || null,
-  //       tentang: user.tentang || null,
-  //       profilPic: user.profilePic || null,
-  //     };
-
-  //     // ⬇ Upload foto jika masih lokal
-  //     if (user.profilePic?.uri && !user.profilePic.uri.includes(API_BASE_URL)) {
-  //       try {
-  //         const fotoProfilUrl = await uploadImageToServer(user.profilePic.uri);
-  //         userData.profilPic = fotoProfilUrl; // SIMPAN SEBAGAI STRING URL
-  //       } catch (uploadError) {
-  //         console.error("Gagal upload foto:", uploadError);
-  //       }
-  //     } else if (user.profilePic?.uri) {
-  //       // Kalau sudah URL sebelumnya, ambil string-nya saja
-  //       userData.profilPic = user.fotoProfilUrl;
-  //     }
-
-  //     // Kirim data ke backend
-  //     const response = await fetch(`${API_BASE_URL}/pengguna`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(userData),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errText = await response.text();
-  //       throw new Error(errText);
-  //     }
-
-  //     // Simpan juga ke AsyncStorage dalam bentuk string
-  //     await AsyncStorage.setItem("userData", JSON.stringify(userData));
-  //     Alert.alert("Sukses", "Profil berhasil diperbarui");
-  //     navigation.goBack();
-  //   } catch (err) {
-  //     console.error("Gagal simpan profil:", err);
-  //     Alert.alert("Error", err.message || "Gagal simpan profil");
-  //   } finally {
-  //     setIsSaving(false);
-  //   }
-  // };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -365,7 +354,7 @@ export default function ProfilEdit({ navigation }) {
             <TouchableOpacity
               onPress={showImagePickerOptions}
               style={styles.profileImageContainer}>
-              <Image
+              {/* <Image
                 source={
                   typeof user.profilePic === "string"
                     ? { uri: user.profilePic }
@@ -374,6 +363,24 @@ export default function ProfilEdit({ navigation }) {
                     : user.profilePic
                 }
                 style={styles.profileImage}
+              /> */}
+              <Image
+                source={
+                  // Handle semua kemungkinan format:
+                  // 1. Object dengan uri (hasil dari image picker)
+                  // 2. String URL (dari server)
+                  // 3. Default require
+                  user.profilePic && user.profilePic.uri
+                    ? { uri: user.profilePic.uri }
+                    : typeof user.profilePic === "string"
+                    ? { uri: user.profilePic }
+                    : user.profilePic
+                }
+                style={styles.profileImage}
+                onError={(e) =>
+                  console.log("Gagal memuat gambar:", e.nativeEvent.error)
+                }
+                defaultSource={require("../../assets/Profil/Profil.png")}
               />
               <View style={styles.cameraIcon}>
                 <Icon name="camera" size={20} color="#fff" />

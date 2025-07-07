@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -10,7 +11,9 @@ import {
   Alert,
   Linking,
   Modal,
+  RefreshControl,
 } from "react-native";
+
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,6 +23,8 @@ import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../utils/constants";
 
 export default function Profil({ navigation }) {
+  const [refreshing, setRefreshing] = useState(false);
+
   // BAHASA
   const { t } = useTranslation();
   const changeLanguage = async (lng) => {
@@ -68,6 +73,51 @@ export default function Profil({ navigation }) {
       },
     ]);
   };
+  const refreshProfile = async () => {
+    setRefreshing(true);
+    try {
+      const userData = await AsyncStorage.getItem("userData");
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+
+        let profilePicSource;
+        if (parsedData.usrFoto) {
+          // Tambahkan timestamp untuk menghindari cache
+          profilePicSource = {
+            uri: `${API_BASE_URL}/uploads/${
+              parsedData.usrFoto
+            }?${new Date().getTime()}`,
+          };
+        } else if (parsedData.profilePic) {
+          profilePicSource = { uri: parsedData.profilePic };
+        } else {
+          profilePicSource = require("../../assets/Profil/Profil.png");
+        }
+
+        setUser({
+          name: parsedData.nama || "",
+          username: parsedData.username || "",
+          email: parsedData.email || "",
+          phone: parsedData.telepon || "",
+          gender: parsedData.gender || "",
+          address: parsedData.alamat || "",
+          profilePic: profilePicSource,
+        });
+      }
+    } catch (error) {
+      console.error("Gagal merefresh profil:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // Refresh otomatis saat screen focus
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshProfile();
+    }, [])
+  );
+
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   const [user, setUser] = useState({
@@ -88,6 +138,22 @@ export default function Profil({ navigation }) {
         const userData = await AsyncStorage.getItem("userData");
         if (userData) {
           const parsedData = JSON.parse(userData);
+
+          // Perbaikan utama di sini:
+          let profilePicSource;
+          if (parsedData.usrFoto) {
+            // Jika ada usrFoto, gunakan sebagai URI
+            profilePicSource = {
+              uri: `${API_BASE_URL}/uploads/${parsedData.usrFoto}`,
+            };
+          } else if (parsedData.profilePic) {
+            // Jika ada profilePic (alternatif)
+            profilePicSource = { uri: parsedData.profilePic };
+          } else {
+            // Default image
+            profilePicSource = require("../../assets/Profil/Profil.png");
+          }
+
           setUser({
             name: parsedData.nama || "",
             username: parsedData.username || "",
@@ -95,10 +161,9 @@ export default function Profil({ navigation }) {
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
-            profilePic: parsedData.profilePic
-              ? { uri: `${API_BASE_URL}/uploads/${parsedData.usrFoto}` }
-              : require("../../assets/Profil/Profil.png"),
+            profilePic: profilePicSource,
           });
+
           console.log("profilePic dari parsedData:", parsedData.usrFoto);
           console.log(
             "FULL URL IMAGE:",
@@ -113,14 +178,6 @@ export default function Profil({ navigation }) {
     };
 
     fetchUserData();
-
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Gallery permission denied");
-      }
-    })();
   }, []);
 
   const handleEdit = () => {
@@ -223,7 +280,16 @@ export default function Profil({ navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={refreshProfile}
+          colors={["#e91e63"]}
+          tintColor="#e91e63"
+        />
+      }>
       {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
