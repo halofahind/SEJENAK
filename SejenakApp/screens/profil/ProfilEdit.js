@@ -58,7 +58,7 @@ export default function ProfilEdit({ navigation }) {
             tentang: parsedData.about || "", // Perhatikan ini "about"
             profilePic: parsedData.usrFoto
               ? { uri: parsedData.usrFoto }
-              : require("../../assets/Home/1.png"),
+              : require("../../assets/Profil/Profil.png"),
           });
         }
       } catch (error) {
@@ -99,7 +99,6 @@ export default function ProfilEdit({ navigation }) {
         throw new Error(responseData.message || "Gagal mengupload gambar");
       }
 
-      // ✅ BERSIHKAN DOUBLE SLASH
       const cleanUrl = `${API_BASE_URL}/${responseData.filePath}`.replace(
         /([^:]\/)\/+/g,
         "$1"
@@ -180,18 +179,18 @@ export default function ProfilEdit({ navigation }) {
         if (!profilePicUrl.uri.includes(API_BASE_URL)) {
           try {
             const uploadedUrl = await uploadImageToServer(profilePicUrl.uri);
-            profilePicUrl = uploadedUrl;
+            const fileNameOnly = uploadedUrl.split("/").pop(); // ambil "profile_1_xxx.jpeg"
+            profilePicUrl = fileNameOnly;
 
             setUser((prev) => ({
               ...prev,
-              profilePic: uploadedUrl,
+              profilePic: `${API_BASE_URL}/uploads/${fileNameOnly}`,
             }));
           } catch (uploadError) {
             console.error("Gagal upload foto:", uploadError);
             profilePicUrl = null;
           }
         } else {
-          // Sudah URL
           profilePicUrl = profilePicUrl.uri;
         }
       }
@@ -228,7 +227,7 @@ export default function ProfilEdit({ navigation }) {
       // Simpan ke lokal (AsyncStorage)
       const updatedUserData = {
         ...userDataToSend,
-        profilePic: profilePicUrl, // Untuk keperluan frontend, bebas pakai nama apa
+        profilePic: `${API_BASE_URL}/uploads/${profilePicUrl}`, // Untuk keperluan frontend, bebas pakai nama apa
       };
 
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData));

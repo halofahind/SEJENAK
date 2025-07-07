@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import KebijakanPrivasi from "./KebijakanPrivasi";
 import i18n from "../../locales/i18n";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL } from "../../utils/constants";
 
 export default function Profil({ navigation }) {
   // BAHASA
@@ -51,12 +52,9 @@ export default function Profil({ navigation }) {
                 {
                   text: t("restart_now"),
                   onPress: () => {
-                    // Implementasi restart aplikasi
-                    // Untuk Expo: mungkin perlu menggunakan Updates.reloadAsync()
-                    // Untuk RN biasa: mungkin perlu implementasi native
                     navigation.reset({
                       index: 0,
-                      routes: [{ name: "Splash" }], // Ganti dengan halaman splash/loading Anda
+                      routes: [{ name: "Splash" }],
                     });
                   },
                 },
@@ -79,7 +77,7 @@ export default function Profil({ navigation }) {
     phone: "",
     gender: "",
     address: "",
-    profilePic: require("../../assets/Home/1.png"),
+    profilePic: "",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -98,9 +96,14 @@ export default function Profil({ navigation }) {
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
             profilePic: parsedData.profilePic
-              ? { uri: parsedData.profilePic }
-              : require("../../assets/Home/1.png"),
+              ? { uri: `${API_BASE_URL}/uploads/${parsedData.usrFoto}` }
+              : require("../../assets/Profil/Profil.png"),
           });
+          console.log("profilePic dari parsedData:", parsedData.usrFoto);
+          console.log(
+            "FULL URL IMAGE:",
+            `${API_BASE_URL}/uploads/${parsedData.usrFoto}`
+          );
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
