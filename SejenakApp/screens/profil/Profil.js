@@ -333,13 +333,12 @@ export default function Profil({ navigation }) {
                 />
                 <Text style={styles.infoText}>{user.email || "-"}</Text>
               </View> */}
+              <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                <Icon name="edit" size={16} color="#e91e63" />
+                <Text style={styles.editButtonText}>{t("ProfilEditBtn")}</Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Icon name="edit" size={16} color="#e91e63" />
-            <Text style={styles.editButtonText}>{t("ProfilEditBtn")}</Text>
-          </TouchableOpacity>
         </View>
       </View>
       {/* Menu Section */}
@@ -413,8 +412,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#e91e63",
-    borderBottomLeftRadius: 14,
-    borderBottomRightRadius: 14,
+
     paddingTop: 50,
     paddingBottom: 25,
     paddingHorizontal: 20,
@@ -428,15 +426,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 70,
     borderWidth: 3,
     borderColor: "#fff",
     marginRight: 15,
+    left: 20,
   },
   userInfo: {
     flex: 1,
+    left: 30,
   },
   nameText: {
     fontSize: 20,
@@ -457,15 +457,15 @@ const styles = StyleSheet.create({
   },
   editButton: {
     position: "static",
-    top: 10,
+    top: 20,
     right: 10,
     backgroundColor: "#fff",
     flexDirection: "row",
-    alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
     width: 90,
+    left: 30,
   },
   editButtonText: {
     color: "#e91e63",
@@ -475,9 +475,9 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     backgroundColor: "#fff",
-    marginTop: 20,
     marginHorizontal: 20,
-    borderRadius: 12,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
     paddingVertical: 5,
   },
   menuItem: {
@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 15,
     borderRadius: 25,
+    top: 100,
   },
   logoutText: {
     color: "#fff",

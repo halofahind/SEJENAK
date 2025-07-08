@@ -9,8 +9,10 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { Icon } from "react-native-elements";
+// import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
 import { API_BASE_URL } from "../../../utils/constants";
 export default function GantiPassword({ navigation }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -128,7 +130,7 @@ export default function GantiPassword({ navigation }) {
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="Masukkan password baru (min. 8 karakter)"
+              placeholder="Masukkan password baru "
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
@@ -203,6 +205,7 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 20,
+    padding: 10,
   },
   label: {
     fontSize: 16,
@@ -216,8 +219,8 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#f5f5f5",
     borderRadius: 10,
-    paddingHorizontal: 45,
-    paddingVertical: 12,
+    paddingHorizontal: 40,
+    paddingVertical: 14,
     fontSize: 16,
     color: "#333",
     borderWidth: 1,
@@ -227,6 +230,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 15,
     top: 12,
+    color: "#e91e63",
   },
   buttonContainer: {
     marginTop: 30,
@@ -236,6 +240,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
+    top: 330,
   },
   buttonDisabled: {
     backgroundColor: "#c0c0c0",
