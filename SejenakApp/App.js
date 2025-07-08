@@ -46,6 +46,9 @@ import TopikForm from "./screens/konseling/TopikForm";
 
 // Screens - Jurnalku
 import DaftarJurnal from "./screens/jurnalku/DaftarJurnal";
+import ProfilEdit from "./screens/profil/ProfilEdit";
+import SyaratKetentuan from "./screens/profil/SyaratKetentuan";
+import KebijakanPrivasi from "./screens/profil/KebijakanPrivasi";
 
 // Stack navigator
 const Stack = createNativeStackNavigator();
@@ -103,8 +106,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
-          screenOptions={{ headerShown: false }}
-        >
+          screenOptions={{ headerShown: false }}>
           {/* Start */}
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
@@ -145,6 +147,9 @@ export default function App() {
           <Stack.Screen name="AkunPersonal" component={AkunPersonal} />
           <Stack.Screen name="DetailAkun" component={DetailAkun} />
           <Stack.Screen name="TambahAkun" component={TambahAkun} />
+          <Stack.Screen name="ProfilEdit" component={ProfilEdit} />
+          <Stack.Screen name="SyaratKetentuan" component={SyaratKetentuan} />
+          <Stack.Screen name="KebijakanPrivasi" component={KebijakanPrivasi} />
 
           {/* Jurnal */}
           <Stack.Screen name="DaftarJurnal" component={DaftarJurnal} />
