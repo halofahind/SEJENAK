@@ -22,12 +22,11 @@
       },
       "edgeToEdgeEnabled": true
     },
-    "notification": {
-      "iosDisplayInForeground": true,
-      "sounds": ["notif.wav"]
-    },
     "developer": {
       "fastRefresh": true
-    }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   }
 }

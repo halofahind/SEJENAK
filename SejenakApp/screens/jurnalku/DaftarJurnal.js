@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,61 +10,37 @@ import {
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { API_BASE_URL } from "../../utils/constants";
 
 const { width } = Dimensions.get("window");
 
-const carouselData = [
-  {
-    id: "1",
-    title: "Berdamai dengan Pikiran",
-    desc: "Tuliskan semua tentang dirimu agar kamu bisa menerima diri sendiri.",
-    image: require("../../assets/Home/1.png"),
-    pages: "11 Halaman",
-  },
-  {
-    id: "2",
-    title: "Menerima Diri Sendiri",
-    desc: "Mengenal kelebihan dan kekuranganmu adalah kekuatan.",
-    image: require("../../assets/Home/1.png"),
-    pages: "7 Halaman",
-  },
-  {
-    id: "3",
-    title: "Menerima Diri Sendiri",
-    desc: "Mengenal kelebihan dan kekuranganmu adalah kekuatan.",
-    image: require("../../assets/Home/1.png"),
-    pages: "2 Halaman",
-  },
-];
-
-const topikList = [
-  {
-    id: "1",
-    title: "Berdamai dengan Kesalahan di Masa Lalu",
-    image: require("../../assets/Home/1.png"),
-    navigateTo: "BerdamaiDenganMasaLalu"
-  },
-  {
-    id: "2",
-    title: "Berdamai dengan Pikira qn",
-    image: require("../../assets/Home/1.png"),
-    navigateTo: "BerdamaiDenganPikiran",
-  },
-  {
-    id: "3",
-    title: "Bertumbuh dalam Duka",
-    image: require("../../assets/Home/1.png"),
-  },
-  {
-    id: "4",
-    title: "It’s Okay Not To Be Okay",
-    image: require("../../assets/Home/1.png"),
-  },
-];
-
-export default function KenaliDiriScreen({ navigation }) {
+export default function DaftarJurnal({ route, navigation }) {
+  const { jenisjurnal } = route.params;
+  const [carouselData, setCarouselData] = useState([]);
+  const [topikList, setTopikList] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/jurnalAktif?id=${jenisjurnal.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const mappedData = data.map((item, index) => ({
+          id: item.id.toString(),
+          title: item.judul,
+          desc: item.kenapa,
+          image: require("../../assets/Home/1.png"),
+          pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
+          navigateTo: "BerdamaiDenganPikiran",
+        }));
+
+        setCarouselData(mappedData);
+        setTopikList(mappedData); // Jika memang semua item juga dipakai untuk Topik
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
   const handleScroll = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -79,7 +55,7 @@ export default function KenaliDiriScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.title}>Kenali Diri Lebih Baik</Text>
+        <Text style={styles.title}>{jenisjurnal.title}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -122,7 +98,7 @@ export default function KenaliDiriScreen({ navigation }) {
       </View>
 
       {/* Detail Section */}
-      <Text style={styles.detailTitle}>Detail Topik</Text>
+      <Text style={styles.detailTitle}>Detail Topik Jurnal</Text>
       <Text style={styles.detailDesc}>
         Kumpulan konten dari topik journal pilihanmu!
       </Text>

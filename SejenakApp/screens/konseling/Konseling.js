@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 import { Image } from "react-native-elements";
+import { Ionicons } from "@expo/vector-icons";
 
 const Konseling = ({ navigation }) => {
   dayjs.locale("id");
@@ -114,8 +115,7 @@ const Konseling = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.historyItem}
-        onPress={() => handleHistoryPress(item)}
-      >
+        onPress={() => handleHistoryPress(item)}>
         <Image
           style={styles.avatarImage}
           source={require("../../assets/User/user-pr.png")}
@@ -171,8 +171,7 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "admin" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleAddTopik}
-              >
+                onPress={handleAddTopik}>
                 <Text style={styles.primaryButtonText}>Kelola Topik</Text>
               </TouchableOpacity>
             )}
@@ -180,8 +179,7 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "user" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleStartCounseling}
-              >
+                onPress={handleStartCounseling}>
                 <Text style={styles.primaryButtonText}>Mulai Konseling</Text>
               </TouchableOpacity>
             )}
@@ -203,6 +201,17 @@ const Konseling = ({ navigation }) => {
                 fetchKonselings();
               }}
               refreshing={refreshing}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Ionicons name="chatbubbles-outline" size={48} color="#ccc" />
+                  <Text style={styles.emptyText}>
+                    Belum Ada Riwayat Konseling
+                  </Text>
+                  <Text style={styles.emptySubtext}>
+                    Tap tombol "Mulai Konseling" untuk memulai konseling baru
+                  </Text>
+                </View>
+              }
             />
           )}
         </View>
@@ -331,6 +340,25 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "600",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 210,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#999",
+    marginTop: 16,
+    fontWeight: "500",
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#bbb",
+    marginTop: 8,
+    textAlign: "center",
+    lineHeight: 20,
   },
 });
 

@@ -8,70 +8,78 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Icon } from "react-native-elements";
 import { API_BASE_URL } from "../../../utils/constants";
 
 export default function KelolaAkun({ navigation }) {
   const [pengguna, setPengguna] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchPengguna = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/penggunas`);
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
-
       const json = await response.json();
-      if (Array.isArray(json)) {
-        setPengguna(json);
-      } else {
-        throw new Error("Data dari server bukan array");
-      }
+      setPengguna(Array.isArray(json) ? json : []);
     } catch (error) {
-      Alert.alert("Gagal Mengambil Data", error.message);
+      Alert.alert("Error", "Gagal memuat data pengguna");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
       fetchPengguna();
     }, [])
   );
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchPengguna();
+  };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("DetailAkun", { data: item })}
-    >
-      <View style={styles.cardHeader}>
-        <View style={styles.leftSection}>
-          <Image
-            source={require("../../../assets/Home/1.png")}
-            style={styles.profileImage}
-          />
-          <View style={styles.infoContainer}>
-            <Text style={styles.namaBold}>{item.nama || item.usr_nama}</Text>
-            {item.nama && item.usr_nama && item.nama !== item.usr_nama && (
-              <Text style={styles.nama}>{item.usr_nama}</Text>
-            )}
-            <Text style={styles.detail}>👤 {item.usrNim}</Text>
-            <Text style={styles.detail}>🆔 {item.role}</Text>
+      onPress={() => navigation.navigate("DetailAkun", { data: item })}>
+      <View style={styles.cardContent}>
+        <Image
+          source={
+            item.profilePic
+              ? { uri: item.profilePic }
+              : require("../../../assets/Home/1.png")
+          }
+          style={styles.profileImage}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.nameText}>
+            {item.nama || "Nama tidak tersedia"}
+          </Text>
+          <View style={styles.detailRow}>
+            <Icon name="person" size={16} color="#888" />
+            <Text style={styles.detailText}>{item.username || "-"}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Icon name="mail" size={16} color="#888" />
+            <Text style={styles.detailText}>{item.email || "-"}</Text>
           </View>
         </View>
-        <View style={styles.rightSection}>
-          <Text
+        <View style={styles.statusContainer}>
+          <View
             style={[
-              styles.statusText,
-              { color: item.usrStatus === "Aktif" ? "#4CAF50" : "#fc0814" },
-            ]}
-          >
-            {item.usrStatus || "-"}
-          </Text>
+              styles.statusBadge,
+              item.usrStatus === "Aktif"
+                ? styles.activeBadge
+                : styles.inactiveBadge,
+            ]}>
+            <Text style={styles.statusText}>{item.usrStatus || "-"}</Text>
+          </View>
+          <Icon name="chevron-right" size={24} color="#ccc" />
         </View>
       </View>
     </TouchableOpacity>
@@ -80,47 +88,61 @@ export default function KelolaAkun({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.headerRow}>
+      <View style={styles.header}>
         <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (navigation.canGoBack()) {
-              navigation.goBack(); // transisi ke kiri
-            } else {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: "MainTabs", params: { screen: "Profil" } }],
-              });
-            }
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color="#D6385E" />
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}>
+          <Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.judul}>Daftar Akun Pengguna</Text>
-        </View>
+        <Text style={styles.headerTitle}>Kelola Akun Pengguna</Text>
       </View>
 
-      <Text style={styles.subjudul}>Total Akun: {pengguna.length}</Text>
+      {/* Content */}
+      <ScrollView style={styles.content}>
+        <View style={styles.summaryContainer}>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryNumber}>{pengguna.length}</Text>
+            <Text style={styles.summaryLabel}>Total Akun</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryNumber}>
+              {pengguna.filter((u) => u.usrStatus === "Aktif").length}
+            </Text>
+            <Text style={styles.summaryLabel}>Aktif</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryNumber}>
+              {pengguna.filter((u) => u.usrStatus !== "Aktif").length}
+            </Text>
+            <Text style={styles.summaryLabel}>Non-Aktif</Text>
+          </View>
+        </View>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#D6385E" />
-      ) : (
-        <FlatList
-          data={pengguna}
-          keyExtractor={(item, index) =>
-            item?.usr_id ? item.usr_id.toString() : index.toString()
-          }
-          renderItem={renderItem}
-        />
-      )}
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#e91e63"
+            style={styles.loader}
+          />
+        ) : (
+          <FlatList
+            data={pengguna}
+            renderItem={renderItem}
+            keyExtractor={(item) =>
+              item.id?.toString() || Math.random().toString()
+            }
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            scrollEnabled={false} // Karena sudah dalam ScrollView
+          />
+        )}
+      </ScrollView>
 
-      {/* Tombol Tambah Akun */}
+      {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate("TambahAkun")}
-      >
-        <Text style={styles.fabText}>＋</Text>
+        onPress={() => navigation.navigate("TambahAkun")}>
+        <Icon name="add" size={30} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -129,94 +151,116 @@ export default function KelolaAkun({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-    paddingTop: 60,
+    backgroundColor: "#f5f5f5",
   },
-  headerRow: {
+  header: {
+    backgroundColor: "#e91e63",
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
-    position: "relative",
   },
   backButton: {
-    zIndex: 1,
-    padding: 4,
+    marginRight: 15,
   },
-  headerCenter: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  judul: {
+  headerTitle: {
     fontSize: 20,
+    color: "#fff",
     fontWeight: "bold",
-    color: "#D6385E",
   },
-  subjudul: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 20,
+  content: {
+    flex: 1,
+    padding: 15,
   },
-  card: {
-    backgroundColor: "#fdfdfd",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 15,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  cardHeader: {
+  summaryContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 15,
+    elevation: 2,
   },
-  leftSection: {
-    flexDirection: "row",
+  summaryItem: {
     alignItems: "center",
     flex: 1,
   },
-  rightSection: {
-    alignItems: "flex-end",
-    marginLeft: 10,
+  summaryNumber: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#e91e63",
+  },
+  summaryLabel: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 15,
+    elevation: 2,
+  },
+  cardContent: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#ccc",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "#e91e63",
   },
-  infoContainer: {
-    marginLeft: 10,
+  textContainer: {
+    flex: 1,
+    marginLeft: 15,
   },
-  namaBold: {
+  nameText: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
+    marginBottom: 5,
   },
-  nama: {
-    fontSize: 16,
-    color: "#333",
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 3,
   },
-  detail: {
+  detailText: {
     fontSize: 14,
-    color: "#555",
-    marginTop: 2,
+    color: "#666",
+    marginLeft: 5,
+  },
+  statusContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  activeBadge: {
+    backgroundColor: "rgba(76, 175, 80, 0.2)",
+  },
+  inactiveBadge: {
+    backgroundColor: "rgba(252, 8, 20, 0.2)",
   },
   statusText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
   },
   fab: {
     position: "absolute",
-    right: 20,
-    bottom: 30,
-    backgroundColor: "#D6385E",
+    right: 25,
+    bottom: 25,
+    backgroundColor: "#e91e63",
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -224,9 +268,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 5,
   },
-  fabText: {
-    fontSize: 30,
-    color: "#fff",
-    fontWeight: "bold",
+  loader: {
+    marginTop: 50,
   },
 });

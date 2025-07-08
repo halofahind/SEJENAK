@@ -1,0 +1,60 @@
+{
+  "OnBoardingSlide1Title": "Get to Know Yourself\nMore Deeply",
+  "OnBoardingSlide1Desc": "We understand that campus life can be exhausting. Here, you can take time to reflect on your feelings, thoughts, and needs—free from judgment.",
+  "OnBoardingSlide2Title": "You Are Not\nAlone",
+  "OnBoardingSlide2Desc": "This app is your companion on the journey to mental wellness. From journaling to access to professional help—all in one safe and private space.",
+  "OnBoardingSlide3Title": "Take a\nBreather",
+  "OnBoardingSlide3Desc": "It’s time to give space for yourself. Begin your journey toward better mental health—one small step, one mindful moment at a time.",
+  "OnBoardingSlide4Title": "Welcome to\nSejenak",
+  "OnBoardingSlide4Desc": "This is your safe space to feel, reflect, and grow. No need to be perfect—just be you, one moment at a time.",
+  "OnBoardingSkipBtn": "Skip",
+  "OnBoardingNextBtn": "Next",
+  "OnBoardingStartBtn": "Let's Start",
+
+  "InfoSlide1Title": "This is an Information Title",
+  "InfoSlide1Desc": "This is a Description",
+
+  "LoginTitle": "Login",
+  "LoginUsernamePlaceholder": "Username",
+  "LoginPasswordPlaceholder": "Password",
+  "LoginButtonLogin": "Login",
+  "LoginRegisterLabel": "Don’t have an account?",
+  "LoginRegisterBtn": "Register",
+
+  "RegTitle": "Register",
+  "RegLoginLabel": "Already have an account?",
+  "RegLoginBtn": "Login",
+
+  "Loading": "Loading",
+
+  "EmailInputPh": "Email",
+  "UsernameInputPh": "Username",
+  "NameInputPh": "Full Name",
+  "PasswordInputPh": "Password",
+  "PasswordConfInputPh": "Confirm Password",
+  "DateInputPh": "Date (DD/MM/YYYY)",
+  "MGender": "Male",
+  "FGender": "Female",
+  "PhoneInputPh": "Phone number (e.g. 0812345678)",
+
+  "MainTabsHome": "Home",
+  "MainTabsJournal": "My Journal",
+  "MainTabsCounseling": "Counseling",
+  "MainTabsProfil": "Profile",
+
+  "ProfilGreetingLabel": "Hi, ",
+  "ProfilEditBtn": "Edit",
+  "ProfilMenuManageAcc": "Manage User Account",
+  "ProfilMenuPassChange": "Change Password",
+  "ProfilMenuSK": "Terms & Conditions",
+  "ProfilMenuPrivacy": "Privacy Policy",
+  "ProfilMenuCallMe": "Contact Us",
+  "ProfileMenuLangChange": "Change Language",
+  "ProfilLogOutBtn": "Logout",
+
+  "CounselingHeadTitle": "Counseling",
+  "CounselingHeadDesc": "Choose a topic and start talking about your issues safely and comfortably.",
+  "CounselingHistoryTitle": "Counseling History",
+  "CounselingHistoryEmpTitle": "No Counseling History Yet",
+  "CounselingHistoryEmpDesc": "Tap the 'Start Counseling' button to begin a new counseling session"
+}

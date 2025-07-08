@@ -81,13 +81,12 @@ const TopikForm = ({ navigation, route }) => {
     setLoading(true);
     try {
       const url = isEditMode
-        ? `${API_BASE_URL}/topik/${topik.tpk_id}` // Sertakan ID di URL
+        ? `${API_BASE_URL}/topik/${topik.tpk_id}`
         : `${API_BASE_URL}/topik`;
 
       const method = isEditMode ? "PUT" : "POST";
 
       const topikData = {
-        id: topik.tpk_id, // Pastikan mengirim ID
         nama: namaTopik,
         pesanPertama: pesanPertama,
         pesanTerakhir: pesanTerakhir,

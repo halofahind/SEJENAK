@@ -9,34 +9,20 @@ import Konseling from "../konseling/Konseling";
 import Profil from "../profil/Profil";
 import { BackHandler } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import "../../locales/i18n";
 
 const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
-  // useEffect(() => {
-  //   const backAction = () => {
-  //     Alert.alert("Keluar", "Yakin ingin keluar dari aplikasi?", [
-  //       { text: "Batal", style: "cancel" },
-  //       { text: "Keluar", onPress: () => BackHandler.exitApp() },
-  //     ]);
-  //     return true;
-  //   };
-
-  //   const backHandler = BackHandler.addEventListener(
-  //     "hardwareBackPress",
-  //     backAction
-  //   );
-
-  //   return () => backHandler.remove(); // ← ini yang benar
-  // }, []);
+  const { t, i18n } = useTranslation();
 
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
-      tabBar={(props) => <CustomTabBar {...props} />}
-    >
+      tabBar={(props) => <CustomTabBar {...props} />}>
       <Tab.Screen
-        name="Home"
+        name={t("MainTabsHome")}
         component={Home}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -49,7 +35,7 @@ export default function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Jurnalku"
+        name={t("MainTabsJournal")}
         component={Jurnalku}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -62,7 +48,7 @@ export default function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Konseling"
+        name={t("MainTabsCounseling")}
         component={Konseling}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -75,7 +61,7 @@ export default function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Profil"
+        name={t("MainTabsProfil")}
         component={Profil}
         options={{
           tabBarIcon: ({ focused }) => (
