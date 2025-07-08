@@ -15,12 +15,13 @@ import {
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import KebijakanPrivasi from "./KebijakanPrivasi";
 import i18n from "../../locales/i18n";
 import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../utils/constants";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import Iconf from "react-native-vector-icons/FontAwesome";
 
 export default function Profil({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
@@ -98,6 +99,8 @@ export default function Profil({ navigation }) {
           name: parsedData.nama || "",
           username: parsedData.username || "",
           email: parsedData.email || "",
+          hobi: parsedData.hobi || "",
+          about: parsedData.about || "",
           phone: parsedData.telepon || "",
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
@@ -124,9 +127,10 @@ export default function Profil({ navigation }) {
     name: "",
     username: "",
     email: "",
+    hobi: "",
     phone: "",
     gender: "",
-    address: "",
+    about: "",
     profilePic: "",
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -158,9 +162,10 @@ export default function Profil({ navigation }) {
             name: parsedData.nama || "",
             username: parsedData.username || "",
             email: parsedData.email || "",
+            hobi: parsedData.hobi || "",
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
-            address: parsedData.alamat || "",
+            about: parsedData.about || "",
             profilePic: profilePicSource,
           });
 
@@ -217,7 +222,7 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuManageAcc"),
       icon: "user",
-      type: "font-awesome",
+      type: "fontawesome",
       onPress: () => {
         navigation.navigate("KelolaAkun");
       },
@@ -225,7 +230,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuPassChange"),
       icon: "lock",
-      type: "font-awesome",
       onPress: () => {
         navigation.navigate("GantiPassword");
       },
@@ -233,7 +237,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuSK"),
       icon: "book",
-      type: "font-awesome",
       onPress: () => {
         navigation.navigate("SyaratKetentuan");
       },
@@ -241,7 +244,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuPrivacy"),
       icon: "shield",
-      type: "font-awesome",
       onPress: () => {
         navigation.navigate(KebijakanPrivasi);
       },
@@ -249,7 +251,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuCallMe"),
       icon: "whatsapp",
-      type: "font-awesome",
       onPress: () => {
         const nomorWA = "6282118028300";
         const pesan =
@@ -266,7 +267,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfileMenuLangChange"),
       icon: "language",
-      type: "font-awesome",
       onPress: () => setLanguageModalVisible(true),
     },
   ];
@@ -298,15 +298,25 @@ export default function Profil({ navigation }) {
             <View style={styles.userInfo}>
               <Text style={styles.nameText}>Hi, {user.name || "User"}</Text>
               <View style={styles.infoRow}>
-                <Icon name="gamepad" type="font-awesome" color="#fff" />
+                <Icon
+                  name="gamepad"
+                  type="font-awesome"
+                  color="#fff"
+                  size={20}
+                />
                 <Text style={styles.infoText}>
                   {user.hobi || "Hobi Belum Di isi"}
                 </Text>
               </View>
               <View style={styles.infoRow}>
-                <Icon name="circle-info" type="font-awesome" color="#fff" />
+                <Icon
+                  name="info-outline"
+                  type="font-awesome"
+                  color="#fff"
+                  size={20}
+                />
                 <Text style={styles.infoText}>
-                  {user.hobi || "Tentang Belum Di isi"}
+                  {user.about || "Tentang Belum Di isi"}
                 </Text>
               </View>
               {/* <View style={styles.infoRow}>

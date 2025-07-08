@@ -112,7 +112,7 @@ export default function Home({ navigation }) {
               ? { uri: parsedData.profilePic }
               : parsedData.profilePic;
         } else {
-          profilePicSource = require("../../assets/Home/1.png");
+          profilePicSource = require("../../assets/Profil/Profil.png");
         }
 
         setUser({

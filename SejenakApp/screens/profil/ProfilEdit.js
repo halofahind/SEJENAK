@@ -10,17 +10,23 @@ import {
   Alert,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 import * as FileSystem from "expo-file-system";
 
 export default function ProfilEdit({ navigation }) {
+  const [dob, setDob] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [user, setUser] = useState({
     id: "",
     role: "",
+    nim: "",
     name: "",
     username: "",
     password: "",
@@ -32,43 +38,10 @@ export default function ProfilEdit({ navigation }) {
     hobi: "",
     tentang: "",
     profilePic: "",
+    status: "",
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       const userData = await AsyncStorage.getItem("userData");
-  //       if (userData) {
-  //         const parsedData = JSON.parse(userData);
-  //         setUser({
-  //           id: parsedData.id || "",
-  //           role: parsedData.role || "",
-  //           name: parsedData.nama || "",
-  //           username: parsedData.username || "",
-  //           password: parsedData.password || "",
-  //           tanggalLahir: parsedData.tanggalLahir || "",
-  //           email: parsedData.email || "",
-  //           phone: parsedData.telepon || "",
-  //           gender: parsedData.gender || "",
-  //           address: parsedData.alamat || "",
-  //           hobi: parsedData.hobi || "",
-  //           tentang: parsedData.about || "", // Perhatikan ini "about"
-  //           profilePic: parsedData.usrFoto
-  //             ? { uri: parsedData.usrFoto }
-  //             : require("../../assets/Profil/Profil.png"),
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch user data:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   fetchUserData();
-  // }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -77,6 +50,11 @@ export default function ProfilEdit({ navigation }) {
         const userData = await AsyncStorage.getItem("userData");
         if (userData) {
           const parsedData = JSON.parse(userData);
+          let formattedDob = "";
+          if (parsedData.tanggalLahir) {
+            const dateObj = new Date(parsedData.tanggalLahir);
+            formattedDob = dateObj.toLocaleDateString("id-ID");
+          }
 
           // PERBAIKAN UTAMA DI SINI:
           let profilePicSource;
@@ -102,11 +80,13 @@ export default function ProfilEdit({ navigation }) {
           setUser({
             ...parsedData,
             name: parsedData.nama || "",
+            nim: parsedData.usrNim || "",
             phone: parsedData.telepon || "",
             address: parsedData.alamat || "",
-            tentang: parsedData.tentang || parsedData.about || "",
+            tentang: parsedData.about || "",
             profilePic: profilePicSource,
           });
+          setDob(formattedDob); // Set state dob dengan format tampilan
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -162,26 +142,25 @@ export default function ProfilEdit({ navigation }) {
     setIsSaving(true);
     try {
       let profilePicUrl = user.profilePic;
-
-      // Kalau foto baru (masih lokal)
+      // Handle existing photo (could be string URL or object)
       if (typeof profilePicUrl === "object" && profilePicUrl.uri) {
+        // Case 1: New local photo (needs upload)
         if (!profilePicUrl.uri.includes(API_BASE_URL)) {
-          try {
-            const uploadedUrl = await uploadImageToServer(profilePicUrl.uri);
-            const fileNameOnly = uploadedUrl.split("/").pop(); // ambil "profile_1_xxx.jpeg"
-            profilePicUrl = fileNameOnly;
-
-            setUser((prev) => ({
-              ...prev,
-              profilePic: `${API_BASE_URL}/uploads/${fileNameOnly}`,
-            }));
-          } catch (uploadError) {
-            console.error("Gagal upload foto:", uploadError);
-            profilePicUrl = null;
-          }
-        } else {
-          profilePicUrl = profilePicUrl.uri;
+          const uploadedUrl = await uploadImageToServer(profilePicUrl.uri);
+          const fileNameOnly = uploadedUrl.split("/").pop();
+          profilePicUrl = fileNameOnly;
         }
+        // Case 2: Existing server photo (extract filename)
+        else {
+          profilePicUrl = profilePicUrl.uri.split("/").pop();
+        }
+      }
+      // Case 3: Already just a filename string
+      else if (
+        typeof profilePicUrl === "string" &&
+        profilePicUrl.includes("/")
+      ) {
+        profilePicUrl = profilePicUrl.split("/").pop();
       }
 
       // Buat data yang akan dikirim
@@ -189,6 +168,7 @@ export default function ProfilEdit({ navigation }) {
         id: user.id,
         role: user.role,
         nama: user.name,
+        usrNim: user.nim,
         username: user.username,
         password: user.password,
         tanggalLahir: user.tanggalLahir,
@@ -196,7 +176,7 @@ export default function ProfilEdit({ navigation }) {
         telepon: user.phone,
         gender: user.gender,
         hobi: user.hobi || null,
-        tentang: user.tentang || null,
+        about: user.tentang || null,
         usrFoto: profilePicUrl,
       };
 
@@ -214,15 +194,16 @@ export default function ProfilEdit({ navigation }) {
       }
 
       // Simpan ke lokal (AsyncStorage)
-      const updatedUserData = {
-        ...userDataToSend,
-        profilePic: `${API_BASE_URL}/uploads/${profilePicUrl}`, // Untuk keperluan frontend, bebas pakai nama apa
-      };
-
-      await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData));
-
-      Alert.alert("Sukses", "Profil berhasil diperbarui");
-      navigation.goBack();
+      if (response.ok) {
+        const updatedUserData = {
+          ...userDataToSend,
+          profilePic: `${API_BASE_URL}/uploads/${profilePicUrl}`,
+        };
+        await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData));
+        navigation.goBack();
+      } else {
+        throw new Error(await response.text());
+      }
     } catch (err) {
       console.error("Gagal simpan profil:", err);
       Alert.alert("Error", err.message || "Gagal simpan profil");
@@ -276,24 +257,7 @@ export default function ProfilEdit({ navigation }) {
       handleImageSelected(result.assets[0].uri);
     }
   };
-  const getImageSource = (profilePic) => {
-    // Default image jika tidak ada
-    if (!profilePic) return require("../../assets/Home/1.png");
 
-    // Jika berupa string langsung (URI)
-    if (typeof profilePic === "string") {
-      // Pastikan string yang valid
-      return { uri: String(profilePic) };
-    }
-
-    // Jika berupa object dengan properti uri
-    if (profilePic.uri) {
-      return { uri: String(profilePic.uri) };
-    }
-
-    // Jika berupa require local image
-    return profilePic;
-  };
   const pickImageFromGallery = async () => {
     // Request permission for media library
     const galleryPermission =
@@ -346,173 +310,215 @@ export default function ProfilEdit({ navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.profileSection}>
-            <TouchableOpacity
-              onPress={showImagePickerOptions}
-              style={styles.profileImageContainer}>
-              {/* <Image
-                source={
-                  typeof user.profilePic === "string"
-                    ? { uri: user.profilePic }
-                    : user.profilePic.uri
-                    ? { uri: user.profilePic.uri }
-                    : user.profilePic
-                }
-                style={styles.profileImage}
-              /> */}
-              <Image
-                source={
-                  // Handle semua kemungkinan format:
-                  // 1. Object dengan uri (hasil dari image picker)
-                  // 2. String URL (dari server)
-                  // 3. Default require
-                  user.profilePic && user.profilePic.uri
-                    ? { uri: user.profilePic.uri }
-                    : typeof user.profilePic === "string"
-                    ? { uri: user.profilePic }
-                    : user.profilePic
-                }
-                style={styles.profileImage}
-                onError={(e) =>
-                  console.log("Gagal memuat gambar:", e.nativeEvent.error)
-                }
-                defaultSource={require("../../assets/Profil/Profil.png")}
-              />
-              <View style={styles.cameraIcon}>
-                <Icon name="camera" size={20} color="#fff" />
-              </View>
-              {isLoading && (
-                <View style={styles.loadingOverlay}>
-                  <ActivityIndicator size="large" color="#fff" />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled">
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <View style={styles.profileSection}>
+              <TouchableOpacity
+                onPress={showImagePickerOptions}
+                style={styles.profileImageContainer}>
+                <Image
+                  source={
+                    // Handle semua kemungkinan format:
+                    // 1. Object dengan uri (hasil dari image picker)
+                    // 2. String URL (dari server)
+                    // 3. Default require
+                    user.profilePic && user.profilePic.uri
+                      ? { uri: user.profilePic.uri }
+                      : typeof user.profilePic === "string"
+                      ? { uri: user.profilePic }
+                      : user.profilePic
+                  }
+                  style={styles.profileImage}
+                  onError={(e) =>
+                    console.log("Gagal memuat gambar:", e.nativeEvent.error)
+                  }
+                  defaultSource={require("../../assets/Profil/Profil.png")}
+                />
+                <View style={styles.cameraIcon}>
+                  <Icon name="camera" size={20} color="#fff" />
                 </View>
-              )}
-            </TouchableOpacity>
-            <View style={styles.userInfo}>
-              <Text style={styles.nameText}>Edit Profil</Text>
+                {isLoading && (
+                  <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#fff" />
+                  </View>
+                )}
+              </TouchableOpacity>
+              <View style={styles.userInfo}>
+                <Text style={styles.nameText}>Edit Profil</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* Form Section */}
-      <View style={styles.formContainer}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nama Lengkap</Text>
-          <TextInput
-            style={styles.input}
-            value={user.name}
-            onChangeText={(text) => setUser({ ...user, name: text })}
-            placeholder="Masukkan nama lengkap"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Username</Text>
-          <TextInput
-            style={styles.input}
-            value={user.username}
-            onChangeText={(text) => setUser({ ...user, username: text })}
-            placeholder="Masukkan username"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={user.email}
-            onChangeText={(text) => setUser({ ...user, email: text })}
-            placeholder="Masukkan email"
-            keyboardType="email-address"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nomor Telepon</Text>
-          <TextInput
-            style={styles.input}
-            value={user.phone}
-            onChangeText={(text) => setUser({ ...user, phone: text })}
-            placeholder="Masukkan nomor telepon"
-            keyboardType="phone-pad"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Jenis Kelamin</Text>
-          <View style={styles.genderContainer}>
+        {/* Form Section */}
+        <View style={styles.formContainer}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              value={user.email}
+              onChangeText={(text) => setUser({ ...user, email: text })}
+              placeholder="Masukkan email"
+              keyboardType="email-address"
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>NIM</Text>
+            <TextInput
+              style={styles.input}
+              value={user.nim}
+              onChangeText={(text) => setUser({ ...user, nim: text })}
+              placeholder="Masukkan NIM"
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nama Lengkap</Text>
+            <TextInput
+              style={styles.input}
+              value={user.name}
+              onChangeText={(text) => setUser({ ...user, name: text })}
+              placeholder="Masukkan nama lengkap"
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Tanggal Lahir</Text>
             <TouchableOpacity
-              style={[
-                styles.genderButton,
-                user.gender === "Laki-laki" && styles.genderSelected,
-              ]}
-              onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
-              <Text
-                style={[
-                  styles.genderText,
-                  user.gender === "Laki-laki" && styles.genderTextSelected,
-                ]}>
-                Laki-laki
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.genderButton,
-                user.gender === "Perempuan" && styles.genderSelected,
-              ]}
-              onPress={() => setUser({ ...user, gender: "Perempuan" })}>
-              <Text
-                style={[
-                  styles.genderText,
-                  user.gender === "Perempuan" && styles.genderTextSelected,
-                ]}>
-                Perempuan
+              onPress={() => !isLoading && setShowDatePicker(true)}
+              style={styles.input}
+              disabled={isLoading}>
+              <Text style={{ color: dob ? "#333" : "#999" }}>
+                {dob || "Pilih tanggal lahir (DD/MM/YYYY)"}
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+          {showDatePicker && (
+            <DateTimePicker
+              value={
+                user.tanggalLahir ? new Date(user.tanggalLahir) : new Date()
+              }
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              maximumDate={new Date()}
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) {
+                  // Format untuk tampilan
+                  const formattedDate =
+                    selectedDate.toLocaleDateString("id-ID");
+                  // Format untuk disimpan (YYYY-MM-DD)
+                  const isoDate = selectedDate.toISOString().split("T")[0];
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Hobi</Text>
-          <TextInput
-            style={styles.input}
-            value={user.hobi}
-            onChangeText={(text) => setUser({ ...user, hobi: text })}
-            placeholder="Masukkan hobi Anda"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Tentang Saya</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            value={user.tentang}
-            onChangeText={(text) => setUser({ ...user, tentang: text })}
-            placeholder="Ceritakan tentang diri Anda"
-            multiline
-            numberOfLines={4}
-          />
-        </View>
-      </View>
-
-      {/* Save Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
-          onPress={handleSave}
-          disabled={isSaving}>
-          {isSaving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.saveButtonText}>Simpan Perubahan</Text>
+                  setDob(formattedDate);
+                  setUser((prev) => ({
+                    ...prev,
+                    tanggalLahir: isoDate,
+                  }));
+                }
+              }}
+            />
           )}
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              value={user.username}
+              onChangeText={(text) => setUser({ ...user, username: text })}
+              placeholder="Masukkan username"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nomor Telepon</Text>
+            <TextInput
+              style={styles.input}
+              value={user.phone}
+              onChangeText={(text) => setUser({ ...user, phone: text })}
+              placeholder="Masukkan nomor telepon"
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Jenis Kelamin</Text>
+            <View style={styles.genderContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  user.gender === "Laki-laki" && styles.genderSelected,
+                ]}
+                onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
+                <Text
+                  style={[
+                    styles.genderText,
+                    user.gender === "Laki-laki" && styles.genderTextSelected,
+                  ]}>
+                  Laki-laki
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  user.gender === "Perempuan" && styles.genderSelected,
+                ]}
+                onPress={() => setUser({ ...user, gender: "Perempuan" })}>
+                <Text
+                  style={[
+                    styles.genderText,
+                    user.gender === "Perempuan" && styles.genderTextSelected,
+                  ]}>
+                  Perempuan
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Hobi</Text>
+            <TextInput
+              style={styles.input}
+              value={user.hobi}
+              onChangeText={(text) => setUser({ ...user, hobi: text })}
+              placeholder="Masukkan hobi Anda"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Tentang Saya</Text>
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              value={user.tentang}
+              onChangeText={(text) => setUser({ ...user, tentang: text })}
+              placeholder="Ceritakan tentang diri Anda"
+              multiline
+              numberOfLines={4}
+            />
+          </View>
+        </View>
+
+        {/* Save Button */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
+            onPress={handleSave}
+            disabled={isSaving}>
+            {isSaving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.saveButtonText}>Simpan Perubahan</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -520,6 +526,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
+  },
+  scrollContainer: {
+    paddingBottom: 100, // Memberi ruang untuk keyboard
+  },
+  formContainer: {
+    padding: 20,
+    paddingBottom: 50, // Ruang tambahan di bawah form
+  },
+  multilineInput: {
+    minHeight: 100,
+    maxHeight: 150, // Batas maksimal tinggi
+    textAlignVertical: "top",
+    paddingTop: 10, // Padding atas untuk textarea
   },
   loadingContainer: {
     flex: 1,
