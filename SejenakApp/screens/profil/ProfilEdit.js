@@ -313,7 +313,7 @@ export default function ProfilEdit({ navigation }) {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}>
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -45}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContainer}
@@ -453,7 +453,7 @@ export default function ProfilEdit({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.genderButton,
-                  user.gender === "Laki-laki" && styles.genderSelected,
+                  user.gender === "Laki-laki" && styles.genderSelectedMale,
                 ]}
                 onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
                 <Text
@@ -467,7 +467,7 @@ export default function ProfilEdit({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.genderButton,
-                  user.gender === "Perempuan" && styles.genderSelected,
+                  user.gender === "Perempuan" && styles.genderSelectedFemale,
                 ]}
                 onPress={() => setUser({ ...user, gender: "Perempuan" })}>
                 <Text
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   scrollContainer: {
-    paddingBottom: 100, // Memberi ruang untuk keyboard
+    paddingBottom: 60, // Memberi ruang untuk keyboard
   },
   formContainer: {
     padding: 20,
@@ -623,8 +623,11 @@ const styles = StyleSheet.create({
     width: "48%",
     alignItems: "center",
   },
-  genderSelected: {
+  genderSelectedFemale: {
     backgroundColor: "#e91e63",
+  },
+  genderSelectedMale: {
+    backgroundColor: "#2196F3",
   },
   genderText: {
     fontSize: 16,

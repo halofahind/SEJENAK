@@ -113,8 +113,6 @@ export default function Profil({ navigation }) {
       setRefreshing(false);
     }
   };
-
-  // Refresh otomatis saat screen focus
   useFocusEffect(
     React.useCallback(() => {
       refreshProfile();
@@ -221,8 +219,7 @@ export default function Profil({ navigation }) {
   const menuItems = [
     {
       title: t("ProfilMenuManageAcc"),
-      icon: "user",
-      type: "fontawesome",
+      icon: "person-outline",
       onPress: () => {
         navigation.navigate("KelolaAkun");
       },
