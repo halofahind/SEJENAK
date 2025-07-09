@@ -31,8 +31,10 @@ const Topik = ({ navigation }) => {
 
       const data = await response.json();
 
-      console.log(data);
-      setTopiks(data);
+      const aktifTopiks = data.filter((topik) => topik.status === "Aktif");
+
+      console.log(aktifTopiks);
+      setTopiks(aktifTopiks);
     } catch (error) {
       console.error("Error fetching topiks:", error.message);
     } finally {
@@ -115,25 +117,33 @@ const Topik = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topicContainer}>
-        <View style={styles.topicHeader}>
-          <View style={styles.chatIcon}>
-            <Text style={styles.chatIconText}>💬</Text>
-          </View>
-          <Text style={styles.topicTitle}>Pilih Topik</Text>
-          <Text style={styles.topicSubtitle}>
-            Permasalahan apa yang ingin Anda diskusikan?
-          </Text>
-        </View>
+      <View style={styles.header}>
+        <Text style={styles.title}>Pilih Topik</Text>
+        <Text style={styles.subtitle}>
+          Permasalahan apa yang ingin Anda diskusikan?
+        </Text>
+      </View>
 
-        <ScrollView style={styles.topicList}>
-          {topiks.map((topic, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.topicOption}
-              onPress={() => handleTopicSelect(topic)}
-              activeOpacity={0.7}
-            >
+      <ScrollView contentContainerStyle={styles.listContainer}>
+        {topiks.map((topic, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.card,
+              selectedTopic?.id === topic.id && styles.cardSelected,
+            ]}
+            onPress={() => handleTopicSelect(topic)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardContent}>
+              <Text
+                style={[
+                  styles.cardText,
+                  selectedTopic?.id === topic.id && styles.cardTextSelected,
+                ]}
+              >
+                {topic.nama}
+              </Text>
               <View
                 style={[
                   styles.radioButton,
@@ -144,31 +154,22 @@ const Topik = ({ navigation }) => {
                   <View style={styles.radioButtonInner} />
                 )}
               </View>
-              <Text
-                style={[
-                  styles.topicOptionText,
-                  selectedTopic?.id === topic.id &&
-                    styles.topicOptionTextSelected,
-                ]}
-              >
-                {topic.nama}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
-        <TouchableOpacity
-          style={[
-            styles.selectButton,
-            !selectedTopic && styles.selectButtonDisabled,
-          ]}
-          onPress={handlePilihTopik}
-          disabled={!selectedTopic}
-          activeOpacity={selectedTopic ? 0.8 : 1}
-        >
-          <Text style={styles.selectButtonText}>Pilih Topik</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={[
+          styles.selectButton,
+          !selectedTopic && styles.selectButtonDisabled,
+        ]}
+        onPress={handlePilihTopik}
+        disabled={!selectedTopic}
+        activeOpacity={selectedTopic ? 0.8 : 1}
+      >
+        <Text style={styles.selectButtonText}>Pilih Topik</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -178,54 +179,56 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8f9fa",
   },
-  topicContainer: {
-    flex: 1,
-    padding: 20,
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 16,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
-  topicHeader: {
-    alignItems: "center",
-    marginBottom: 40,
-    marginTop: 20,
-  },
-  chatIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#e91e63",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-    shadowColor: "#e91e63",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  chatIconText: {
-    fontSize: 24,
-  },
-  topicTitle: {
+  title: {
     fontSize: 20,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
+    fontWeight: "bold",
+    color: "#D7385E",
   },
-  topicSubtitle: {
+  subtitle: {
     fontSize: 14,
     color: "#666",
-    textAlign: "center",
+    marginTop: 4,
     lineHeight: 20,
   },
-  topicList: {
-    flex: 1,
-    paddingTop: 20,
+  listContainer: {
+    padding: 20,
+    paddingBottom: 100,
   },
-  topicOption: {
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardSelected: {
+    borderColor: "#D7385E",
+    borderWidth: 1,
+  },
+  cardContent: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 4,
-    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  cardTextSelected: {
+    color: "#D7385E",
+    fontWeight: "500",
   },
   radioButton: {
     width: 20,
@@ -233,34 +236,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#ddd",
-    marginRight: 16,
     alignItems: "center",
     justifyContent: "center",
   },
   radioButtonSelected: {
-    borderColor: "#e91e63",
+    borderColor: "#D7385E",
   },
   radioButtonInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#e91e63",
-  },
-  topicOptionText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  topicOptionTextSelected: {
-    color: "#e91e63",
-    fontWeight: "500",
+    backgroundColor: "#D7385E",
   },
   selectButton: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderRadius: 24,
     padding: 16,
     alignItems: "center",
-    marginTop: 20,
-    shadowColor: "#e91e63",
+    margin: 20,
+    shadowColor: "#D7385E",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

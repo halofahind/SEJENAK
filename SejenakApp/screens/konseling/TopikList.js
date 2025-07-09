@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -18,16 +18,18 @@ import {
 } from "react-native-gesture-handler";
 import { API_BASE_URL } from "../../utils/constants";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function TopikList({ navigation }) {
   const [topiks, setTopiks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchTopiks();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchTopiks();
+    }, [])
+  );
   const fetchTopiks = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/topiks`, {
@@ -58,11 +60,8 @@ export default function TopikList({ navigation }) {
           style: "destructive",
           onPress: async () => {
             try {
-              if (status === "Aktif") {
-                await axios.delete(`${API_BASE_URL}/topik/${id}`);
-              } else {
-                await axios.patch(`${API_BASE_URL}/topik/${id}`);
-              }
+              await axios.delete(`${API_BASE_URL}/topik/${id}`);
+
               fetchTopiks();
               Alert.alert(
                 "Berhasil",
@@ -150,27 +149,33 @@ export default function TopikList({ navigation }) {
               styles.hiddenButton,
               {
                 backgroundColor:
-                  item.status === "Aktif" ? "#ff4757" : "#4CAF50",
+                  item.status === "Aktif" || item.status === 1
+                    ? "#ff4757"
+                    : "#007bff",
               },
-            ]}>
+            ]}
+          >
             <TouchableOpacity
               onPress={() => {
                 closeSwipe();
                 handleDelete(item.id, item.nama, item.status);
               }}
               style={styles.actionButton}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+            >
               <Ionicons
                 name={
-                  item.status === "Aktif"
+                  item.status === "Aktif" || item.status === 1
                     ? "trash-outline"
-                    : "checkmark-outline"
+                    : "refresh-outline"
                 }
                 size={24}
                 color="white"
               />
-              <Text style={styles.actionText}>
-                {item.status === "Aktif" ? "Hapus" : "Aktifkan"}
+              <Text style={styles.deleteText}>
+                {item.status === "Aktif" || item.status === 1
+                  ? "Hapus"
+                  : "Pulihkan"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -180,14 +185,16 @@ export default function TopikList({ navigation }) {
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={onHandlerStateChange}
             activeOffsetX={[-20, 20]}
-            failOffsetY={[-10, 10]}>
+            failOffsetY={[-10, 10]}
+          >
             <Animated.View
               style={[
                 styles.rowFront,
                 {
                   transform: [{ translateX }],
                 },
-              ]}>
+              ]}
+            >
               <TouchableOpacity
                 style={styles.topikItem}
                 onPress={() => {
@@ -197,15 +204,30 @@ export default function TopikList({ navigation }) {
                     handleEditTopik(item);
                   }
                 }}
-                activeOpacity={0.8}>
+                activeOpacity={0.8}
+              >
                 <View style={styles.topikContent}>
                   <View style={styles.topikInfo}>
                     <Text style={styles.topikName}>{item.nama}</Text>
                     <Text style={styles.topikSubtitle}>
-                      {item.pesanPertama || "Belum ada pesan"}
+                      pembukaaan :{" "}
+                      {(item.pesanPertama || "Belum ada pesan")
+                        .split(" ")
+                        .slice(0, 10)
+                        .join(" ") +
+                        ((item.pesanPertama?.split(" ").length || 0) > 30
+                          ? "..."
+                          : "")}
                     </Text>
                     <Text style={styles.topikSubtitle}>
-                      {item.pesanTerakhir || "Belum ada pesan"}
+                      penutup :{" "}
+                      {(item.pesanTerakhir || "Belum ada pesan")
+                        .split(" ")
+                        .slice(0, 10)
+                        .join(" ") +
+                        ((item.pesanTerakhir?.split(" ").length || 0) > 30
+                          ? "..."
+                          : "")}
                     </Text>
                   </View>
                 </View>
@@ -217,7 +239,8 @@ export default function TopikList({ navigation }) {
                       backgroundColor:
                         item.status === "Aktif" ? "#e91e63" : "#6c757d",
                     },
-                  ]}>
+                  ]}
+                >
                   <Text style={styles.statusText}>
                     {item.status || "Aktif"}
                   </Text>
@@ -271,7 +294,8 @@ export default function TopikList({ navigation }) {
       <TouchableOpacity
         style={styles.fab}
         onPress={handleAddTopik}
-        activeOpacity={0.8}>
+        activeOpacity={0.8}
+      >
         <Ionicons name="add" size={40} color="white" />
       </TouchableOpacity>
     </SafeAreaView>
@@ -320,10 +344,10 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 0,
   },
   swipeableRowContainer: {
-    marginBottom: 200,
+    marginBottom: 70,
     position: "relative",
     height: 100, // Adjust based on your content height
   },
@@ -332,23 +356,25 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+    height: 150,
     width: 80,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#ff4757",
     borderRadius: 12,
   },
   actionButton: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "row",
   },
-  actionText: {
+  deleteText: {
     color: "white",
     fontSize: 12,
     fontWeight: "600",
     marginLeft: 4,
   },
+
   rowFront: {
     backgroundColor: "transparent",
   },

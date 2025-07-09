@@ -84,7 +84,7 @@ export default function ProfilEdit({ navigation }) {
             // Jika usrFoto ada, formatkan sebagai object {uri}
             const fullUrl = parsedData.usrFoto.includes("http")
               ? parsedData.usrFoto
-              : `${API_BASE_URL}/uploads/${parsedData.usrFoto}`;
+              : `${API_BASE_URL}/uploads/foto-profil/${parsedData.usrFoto}`;
             profilePicSource = { uri: fullUrl };
           } else if (parsedData.profilePic) {
             // Handle fallback ke profilePic jika ada
@@ -173,7 +173,7 @@ export default function ProfilEdit({ navigation }) {
 
             setUser((prev) => ({
               ...prev,
-              profilePic: `${API_BASE_URL}/uploads/${fileNameOnly}`,
+              profilePic: `${fileNameOnly}`,
             }));
           } catch (uploadError) {
             console.error("Gagal upload foto:", uploadError);
@@ -353,7 +353,8 @@ export default function ProfilEdit({ navigation }) {
           <View style={styles.profileSection}>
             <TouchableOpacity
               onPress={showImagePickerOptions}
-              style={styles.profileImageContainer}>
+              style={styles.profileImageContainer}
+            >
               {/* <Image
                 source={
                   typeof user.profilePic === "string"
@@ -450,12 +451,14 @@ export default function ProfilEdit({ navigation }) {
                 styles.genderButton,
                 user.gender === "Laki-laki" && styles.genderSelected,
               ]}
-              onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
+              onPress={() => setUser({ ...user, gender: "Laki-laki" })}
+            >
               <Text
                 style={[
                   styles.genderText,
                   user.gender === "Laki-laki" && styles.genderTextSelected,
-                ]}>
+                ]}
+              >
                 Laki-laki
               </Text>
             </TouchableOpacity>
@@ -464,12 +467,14 @@ export default function ProfilEdit({ navigation }) {
                 styles.genderButton,
                 user.gender === "Perempuan" && styles.genderSelected,
               ]}
-              onPress={() => setUser({ ...user, gender: "Perempuan" })}>
+              onPress={() => setUser({ ...user, gender: "Perempuan" })}
+            >
               <Text
                 style={[
                   styles.genderText,
                   user.gender === "Perempuan" && styles.genderTextSelected,
-                ]}>
+                ]}
+              >
                 Perempuan
               </Text>
             </TouchableOpacity>
@@ -504,7 +509,8 @@ export default function ProfilEdit({ navigation }) {
         <TouchableOpacity
           style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
           onPress={handleSave}
-          disabled={isSaving}>
+          disabled={isSaving}
+        >
           {isSaving ? (
             <ActivityIndicator color="#fff" />
           ) : (

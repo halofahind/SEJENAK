@@ -84,7 +84,7 @@ export default function Profil({ navigation }) {
         if (parsedData.usrFoto) {
           // Tambahkan timestamp untuk menghindari cache
           profilePicSource = {
-            uri: `${API_BASE_URL}/uploads/${
+            uri: `${API_BASE_URL}/uploads/foto-profil/${
               parsedData.usrFoto
             }?${new Date().getTime()}`,
           };
@@ -101,6 +101,8 @@ export default function Profil({ navigation }) {
           phone: parsedData.telepon || "",
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
+          hobi: parsedData.hobi || "",
+          tentang: parsedData.tentang || "",
           profilePic: profilePicSource,
         });
       }
@@ -142,9 +144,8 @@ export default function Profil({ navigation }) {
           // Perbaikan utama di sini:
           let profilePicSource;
           if (parsedData.usrFoto) {
-            // Jika ada usrFoto, gunakan sebagai URI
             profilePicSource = {
-              uri: `${API_BASE_URL}/uploads/${parsedData.usrFoto}`,
+              uri: `${API_BASE_URL}/uploads/foto-profil/${parsedData.usrFoto}`,
             };
           } else if (parsedData.profilePic) {
             // Jika ada profilePic (alternatif)
@@ -161,14 +162,10 @@ export default function Profil({ navigation }) {
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
+            hobi: parsedData.hobi || "",
+            tentang: parsedData.tentang || "",
             profilePic: profilePicSource,
           });
-
-          console.log("profilePic dari parsedData:", parsedData.usrFoto);
-          console.log(
-            "FULL URL IMAGE:",
-            `${API_BASE_URL}/uploads/${parsedData.usrFoto}`
-          );
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -289,7 +286,8 @@ export default function Profil({ navigation }) {
           colors={["#e91e63"]}
           tintColor="#e91e63"
         />
-      }>
+      }
+    >
       {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
@@ -306,7 +304,7 @@ export default function Profil({ navigation }) {
               <View style={styles.infoRow}>
                 <Icon name="circle-info" type="font-awesome" color="#fff" />
                 <Text style={styles.infoText}>
-                  {user.hobi || "Tentang Belum Di isi"}
+                  {user.tentang || "Tentang Belum Di isi"}
                 </Text>
               </View>
               {/* <View style={styles.infoRow}>
@@ -341,7 +339,8 @@ export default function Profil({ navigation }) {
           <TouchableOpacity
             key={index}
             style={styles.menuItem}
-            onPress={item.onPress}>
+            onPress={item.onPress}
+          >
             <Icon name={item.icon} type={item.type} color="#e91e63" />
             <Text style={styles.menuText}>{item.title}</Text>
             <Icon name="chevron-right" size={24} color="#ccc" />
@@ -360,7 +359,8 @@ export default function Profil({ navigation }) {
         animationType="slide"
         transparent={true}
         visible={languageModalVisible}
-        onRequestClose={() => setLanguageModalVisible(false)}>
+        onRequestClose={() => setLanguageModalVisible(false)}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Pilih Bahasa</Text>
@@ -372,7 +372,8 @@ export default function Profil({ navigation }) {
                   styles.languageButton,
                   currentLanguage === lang && styles.selectedLanguage,
                 ]}
-                onPress={() => changeLanguage(lang)}>
+                onPress={() => changeLanguage(lang)}
+              >
                 <Text style={styles.languageText}>
                   {lang === "id" ? "Bahasa Indonesia" : "English"}
                 </Text>
@@ -384,7 +385,8 @@ export default function Profil({ navigation }) {
 
             <TouchableOpacity
               style={styles.modalCloseButton}
-              onPress={() => setLanguageModalVisible(false)}>
+              onPress={() => setLanguageModalVisible(false)}
+            >
               <Text style={styles.modalCloseText}>Batal</Text>
             </TouchableOpacity>
           </View>

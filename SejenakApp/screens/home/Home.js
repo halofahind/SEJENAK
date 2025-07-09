@@ -16,6 +16,47 @@ import { API_BASE_URL } from "../../utils/constants";
 
 const screenWidth = Dimensions.get("window").width;
 
+const topiks = [
+  {
+    id: "1",
+    title: "Kenali Diri Lebih Baik",
+    image: require("../../assets/Home/1.png"),
+    backgroundColor: "#EF6A6A",
+  },
+  {
+    id: "2",
+    title: "Menjalin Relasi",
+    image: require("../../assets/Home/2.png"),
+    backgroundColor: "#F6A75A",
+  },
+  {
+    id: "3",
+    title: "Cerita Keseharian",
+    image: require("../../assets/Home/1.png"),
+    backgroundColor: "#697BC4",
+  },
+  {
+    id: "4",
+    title: "Tingkatkan Potensi Diri",
+    image: require("../../assets/Home/1.png"),
+    backgroundColor: "#11CBE0",
+  },
+  {
+    id: "5",
+    title: "Membangun Keberanian",
+    image: require("../../assets/Home/1.png"),
+    backgroundColor: "#B676AA",
+  },
+];
+
+const moods = [
+  { emoji: "😢", label: "Sangat Buruk" },
+  { emoji: "😞", label: "Buruk" },
+  { emoji: "😐", label: "Netral" },
+  { emoji: "😊", label: "Baik" },
+  { emoji: "😄", label: "Sangat Baik" },
+];
+
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -30,52 +71,6 @@ export default function Home({ navigation }) {
     profilePic: require("../../assets/Home/1.png"),
   });
 
-  // useEffect(() => {
-  //   const fetchMotivasi = async () => {
-  //     try {
-  //       const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
-  //       const list = res.data;
-
-  //       if (list.length > 0) {
-  //         const today = new Date();
-  //         const daySeed =
-  //           today.getFullYear() * 10000 +
-  //           (today.getMonth() + 1) * 100 +
-  //           today.getDate();
-  //         const index = daySeed % list.length;
-
-  //         setMotivasiHarian(list[index].motivasiText);
-  //       }
-  //     } catch (err) {
-  //       console.error("Gagal ambil motivasi:", err.message);
-  //     }
-  //   };
-
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const userData = await AsyncStorage.getItem("userData");
-  //       if (userData) {
-  //         const parsedData = JSON.parse(userData);
-  //         setUser({
-  //           name: parsedData.nama || "",
-  //           username: parsedData.username || "",
-  //           email: parsedData.email || "",
-  //           phone: parsedData.telepon || "",
-  //           gender: parsedData.gender || "",
-  //           address: parsedData.alamat || "",
-  //           profilePic: parsedData.profilePic
-  //             ? { uri: parsedData.profilePic }
-  //             : require("../../assets/Home/1.png"),
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch user data:", error);
-  //     }
-  //   };
-
-  //   fetchMotivasi();
-  //   fetchUserData();
-  // }, []);
   const loadData = useCallback(async () => {
     try {
       setRefreshing(true);
@@ -102,18 +97,13 @@ export default function Home({ navigation }) {
         let profilePicSource;
         if (parsedData.usrFoto) {
           profilePicSource = {
-            uri: parsedData.usrFoto.includes("http")
-              ? parsedData.usrFoto
-              : `${API_BASE_URL}/uploads/${parsedData.usrFoto}`,
+            uri: `${API_BASE_URL}/uploads/profil-foto/${parsedData.usrFoto}`,
           };
-        } else if (parsedData.profilePic) {
-          profilePicSource =
-            typeof parsedData.profilePic === "string"
-              ? { uri: parsedData.profilePic }
-              : parsedData.profilePic;
         } else {
           profilePicSource = require("../../assets/Home/1.png");
         }
+
+        console.log("Profile Pic Source:", profilePicSource.uri);
 
         setUser({
           name: parsedData.nama || "",
@@ -136,55 +126,13 @@ export default function Home({ navigation }) {
     loadData();
   }, [loadData]);
 
-  // Fungsi untuk refresh
   const onRefresh = useCallback(() => {
     loadData();
   }, [loadData]);
 
-  // Navigasi ke profil
   const navigateToProfile = () => {
     navigation.navigate("Profil");
   };
-  const topiks = [
-    {
-      id: "1",
-      title: "Kenali Diri Lebih Baik",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#EF6A6A",
-    },
-    {
-      id: "2",
-      title: "Menjalin Relasi",
-      image: require("../../assets/Home/2.png"),
-      backgroundColor: "#F6A75A",
-    },
-    {
-      id: "3",
-      title: "Cerita Keseharian",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#697BC4",
-    },
-    {
-      id: "4",
-      title: "Tingkatkan Potensi Diri",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#11CBE0",
-    },
-    {
-      id: "5",
-      title: "Membangun Keberanian",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#B676AA",
-    },
-  ];
-
-  const moods = [
-    { emoji: "😢", label: "Sangat Buruk" },
-    { emoji: "😞", label: "Buruk" },
-    { emoji: "😐", label: "Netral" },
-    { emoji: "😊", label: "Baik" },
-    { emoji: "😄", label: "Sangat Baik" },
-  ];
 
   return (
     <ScrollView
@@ -198,21 +146,21 @@ export default function Home({ navigation }) {
           colors={["#e91e63"]}
           tintColor="#e91e63"
         />
-      }>
+      }
+    >
       {/* === Profil & Notifikasi === */}
       <View style={styles.profileRow}>
         <View style={styles.profileContainer}>
           <Image
             source={
-              user.profilePic && user.profilePic.uri
+              user.profilePic?.uri
                 ? { uri: user.profilePic.uri }
-                : typeof user.profilePic === "string"
-                ? { uri: user.profilePic }
-                : user.profilePic
+                : require("../../assets/Home/1.png")
             }
             style={styles.profileImage}
             onError={() => console.log("Gagal memuat gambar profil")}
           />
+
           <View>
             <Text style={styles.userName}>Hai, {user.name}</Text>
             <Text style={styles.welcomeText}>
@@ -221,7 +169,8 @@ export default function Home({ navigation }) {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("NotifikasiScreen")}>
+          onPress={() => navigation.navigate("NotifikasiScreen")}
+        >
           <Icon name="notifications-none" size={28} color="#444" />
         </TouchableOpacity>
       </View>
@@ -234,7 +183,8 @@ export default function Home({ navigation }) {
             style={styles.moodItem}
             onPress={() =>
               navigation.navigate("MoodTracker", { selectedMood: mood })
-            }>
+            }
+          >
             <Text style={styles.moodEmoji}>{mood.emoji}</Text>
             <Text style={styles.moodLabel}>{mood.label}</Text>
           </TouchableOpacity>
@@ -281,7 +231,8 @@ export default function Home({ navigation }) {
                 navigation.navigate("DaftarJurnal", {
                   jenisjurnal: item,
                 })
-              }>
+              }
+            >
               <Image source={item.image} style={styles.image} />
               <Text style={styles.cardTitle}>{item.title}</Text>
             </TouchableOpacity>

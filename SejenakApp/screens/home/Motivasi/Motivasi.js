@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -18,15 +18,18 @@ import {
 } from "react-native-gesture-handler";
 import axios from "axios";
 import { API_BASE_URL } from "../../../utils/constants";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchMotivasi();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchMotivasi();
+    }, [])
+  );
 
   const fetchMotivasi = async () => {
     try {
