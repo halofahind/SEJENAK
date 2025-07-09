@@ -100,7 +100,7 @@ export default function Home({ navigation }) {
             uri: `${API_BASE_URL}/uploads/profil-foto/${parsedData.usrFoto}`,
           };
         } else {
-          profilePicSource = require("../../assets/Home/1.png");
+          profilePicSource = require("../../assets/Profil/Profil.png");
         }
 
         console.log("Profile Pic Source:", profilePicSource.uri);

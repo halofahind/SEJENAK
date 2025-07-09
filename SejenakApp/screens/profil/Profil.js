@@ -15,12 +15,13 @@ import {
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import KebijakanPrivasi from "./KebijakanPrivasi";
 import i18n from "../../locales/i18n";
 import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../utils/constants";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import Iconf from "react-native-vector-icons/FontAwesome";
 
 export default function Profil({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
@@ -98,6 +99,8 @@ export default function Profil({ navigation }) {
           name: parsedData.nama || "",
           username: parsedData.username || "",
           email: parsedData.email || "",
+          hobi: parsedData.hobi || "",
+          about: parsedData.about || "",
           phone: parsedData.telepon || "",
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
@@ -112,8 +115,6 @@ export default function Profil({ navigation }) {
       setRefreshing(false);
     }
   };
-
-  // Refresh otomatis saat screen focus
   useFocusEffect(
     React.useCallback(() => {
       refreshProfile();
@@ -126,9 +127,10 @@ export default function Profil({ navigation }) {
     name: "",
     username: "",
     email: "",
+    hobi: "",
     phone: "",
     gender: "",
-    address: "",
+    about: "",
     profilePic: "",
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -159,6 +161,7 @@ export default function Profil({ navigation }) {
             name: parsedData.nama || "",
             username: parsedData.username || "",
             email: parsedData.email || "",
+            hobi: parsedData.hobi || "",
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
@@ -213,8 +216,7 @@ export default function Profil({ navigation }) {
   const menuItems = [
     {
       title: t("ProfilMenuManageAcc"),
-      icon: "user",
-      type: "font-awesome",
+      icon: "person-outline",
       onPress: () => {
         navigation.navigate("KelolaAkun");
       },
@@ -222,7 +224,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuPassChange"),
       icon: "lock",
-      type: "font-awesome",
       onPress: () => {
         navigation.navigate("GantiPassword");
       },
@@ -230,7 +231,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuSK"),
       icon: "book",
-      type: "font-awesome",
       onPress: () => {
         navigation.navigate("SyaratKetentuan");
       },
@@ -238,7 +238,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuPrivacy"),
       icon: "shield",
-      type: "font-awesome",
       onPress: () => {
         navigation.navigate(KebijakanPrivasi);
       },
@@ -246,7 +245,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfilMenuCallMe"),
       icon: "whatsapp",
-      type: "font-awesome",
       onPress: () => {
         const nomorWA = "6282118028300";
         const pesan =
@@ -263,7 +261,6 @@ export default function Profil({ navigation }) {
     {
       title: t("ProfileMenuLangChange"),
       icon: "language",
-      type: "font-awesome",
       onPress: () => setLanguageModalVisible(true),
     },
   ];
@@ -296,13 +293,23 @@ export default function Profil({ navigation }) {
             <View style={styles.userInfo}>
               <Text style={styles.nameText}>Hi, {user.name || "User"}</Text>
               <View style={styles.infoRow}>
-                <Icon name="gamepad" type="font-awesome" color="#fff" />
+                <Icon
+                  name="gamepad"
+                  type="font-awesome"
+                  color="#fff"
+                  size={20}
+                />
                 <Text style={styles.infoText}>
                   {user.hobi || "Hobi Belum Di isi"}
                 </Text>
               </View>
               <View style={styles.infoRow}>
-                <Icon name="circle-info" type="font-awesome" color="#fff" />
+                <Icon
+                  name="info-outline"
+                  type="font-awesome"
+                  color="#fff"
+                  size={20}
+                />
                 <Text style={styles.infoText}>
                   {user.tentang || "Tentang Belum Di isi"}
                 </Text>
@@ -324,13 +331,12 @@ export default function Profil({ navigation }) {
                 />
                 <Text style={styles.infoText}>{user.email || "-"}</Text>
               </View> */}
+              <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                <Icon name="edit" size={16} color="#e91e63" />
+                <Text style={styles.editButtonText}>{t("ProfilEditBtn")}</Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Icon name="edit" size={16} color="#e91e63" />
-            <Text style={styles.editButtonText}>{t("ProfilEditBtn")}</Text>
-          </TouchableOpacity>
         </View>
       </View>
       {/* Menu Section */}
@@ -408,8 +414,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#e91e63",
-    borderBottomLeftRadius: 14,
-    borderBottomRightRadius: 14,
+
     paddingTop: 50,
     paddingBottom: 25,
     paddingHorizontal: 20,
@@ -423,15 +428,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 70,
     borderWidth: 3,
     borderColor: "#fff",
     marginRight: 15,
+    left: 20,
   },
   userInfo: {
     flex: 1,
+    left: 30,
   },
   nameText: {
     fontSize: 20,
@@ -452,15 +459,15 @@ const styles = StyleSheet.create({
   },
   editButton: {
     position: "static",
-    top: 10,
+    top: 20,
     right: 10,
     backgroundColor: "#fff",
     flexDirection: "row",
-    alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
     width: 90,
+    left: 30,
   },
   editButtonText: {
     color: "#e91e63",
@@ -470,9 +477,9 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     backgroundColor: "#fff",
-    marginTop: 20,
     marginHorizontal: 20,
-    borderRadius: 12,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
     paddingVertical: 5,
   },
   menuItem: {
@@ -499,6 +506,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 15,
     borderRadius: 25,
+    top: 100,
   },
   logoutText: {
     color: "#fff",

@@ -24,7 +24,6 @@ import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
 import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
-import NotifikasiScreen from "./screens/home/NotifikasiScreen";
 
 // Screens - Home
 import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPikiran";
@@ -130,7 +129,6 @@ export default function App() {
           <Stack.Screen name="MoodTracker" component={MoodTracker} />
           <Stack.Screen name="NextScreen" component={NextScreen} />
           <Stack.Screen name="Jurnal1" component={Jurnal1} />
-          <Stack.Screen name="NotifikasiScreen" component={NotifikasiScreen} />
 
           {/* Konseling */}
           <Stack.Screen name="Konseling" component={Konseling} />

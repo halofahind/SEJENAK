@@ -302,12 +302,10 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginTop: 20,
     backgroundColor: "#fff",
-    borderRadius: 16,
     padding: 0,
     margin: 0,
     flexDirection: "row",
     alignItems: "left",
-    elevation: 3,
   },
   doctorImage: {
     width: 100,
