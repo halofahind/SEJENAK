@@ -138,7 +138,11 @@ const Konseling = ({ navigation }) => {
         />
 
         <View style={styles.historyContent}>
-          <Text style={styles.historyTitle}>{item.topik.nama}</Text>
+          <Text style={styles.historyTitle}>
+            {item.topik.nama.length > 25
+              ? item.topik.nama.slice(0, 25) + "..."
+              : item.topik.nama}
+          </Text>
 
           <View style={[styles.badge, { backgroundColor: badgeColor }]}>
             <Text style={styles.badgeText}>{item.status}</Text>
@@ -154,12 +158,16 @@ const Konseling = ({ navigation }) => {
 
         <View style={styles.rightSection}>
           <Text style={styles.timeText}>
-            {dayjs(item.lastTime).format("HH:mm")}
+            {dayjs(item.lastTime).isSame(dayjs(), "day")
+              ? dayjs(item.lastTime).format("HH:mm")
+              : dayjs(item.lastTime).format("DD/MM/YYYY")}
           </Text>
           {/* <View style={styles.notificationBadge}>
             <Text style={styles.notificationText}>2</Text>
           </View> */}
         </View>
+
+        <View style={styles.bottomBorder} />
       </TouchableOpacity>
     );
   };
@@ -244,8 +252,8 @@ const styles = StyleSheet.create({
   },
   section: {
     flex: 1,
-    padding: 15,
-    paddingBottom: 50,
+    padding: 10,
+    paddingBottom: 10,
   },
   sectionTitle: {
     fontSize: 20,
@@ -259,10 +267,22 @@ const styles = StyleSheet.create({
     padding: 0,
     borderRadius: 12,
     backgroundColor: "#fff",
-    marginBottom: 20,
+    marginBottom: 10,
     alignItems: "center",
     elevation: 2,
+    position: "relative",
+    paddingBottom: 10, // beri ruang untuk garis
   },
+
+  bottomBorder: {
+    position: "absolute",
+    bottom: 0,
+    left: 60,
+    right: 0,
+    height: 1,
+    backgroundColor: "#ccc",
+  },
+
   avatarImage: {
     width: 48,
     height: 48,
@@ -273,7 +293,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   historyTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
   },
   badge: {

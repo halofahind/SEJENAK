@@ -47,6 +47,7 @@ const JurnalKelolaForm = ({ navigation, route }) => {
               id: item.id,
               jenis: item.jenis || "",
               isi: item.isi || "",
+              placeHolder: item.placeHolder || "",
             }));
           setDetails(
             activeDetails.length > 0
@@ -86,7 +87,10 @@ const JurnalKelolaForm = ({ navigation, route }) => {
   };
 
   const handleAddDetail = () => {
-    setDetails([...details, { jenis: "", isi: "" }]);
+    setDetails((prev) => [
+      ...prev,
+      { isi: "", jenis: "pertanyaan", placeHolder: "" },
+    ]);
   };
 
   const handleRemoveDetail = (index) => {
@@ -96,26 +100,53 @@ const JurnalKelolaForm = ({ navigation, route }) => {
   };
 
   const validateForm = () => {
+    let valid = true;
     const newErrors = {};
+
     if (!formData.judul.trim()) {
-      newErrors.judul = "Judul tidak boleh kosong";
-    } else if (formData.judul.length > 30) {
-      newErrors.judul = "Judul maksimal 30 karakter";
+      newErrors.judul = "Judul wajib diisi.";
+      valid = false;
     }
 
     if (!formData.desc.trim()) {
-      newErrors.desc = "Deskripsi tidak boleh kosong";
-    } else if (formData.desc.length > 100) {
-      newErrors.desc = "Deskripsi maksimal 100 karakter";
+      newErrors.desc = "Deskripsi wajib diisi.";
+      valid = false;
     }
 
-    if (!formData.tujuan.trim()) newErrors.tujuan = "Tujuan tidak boleh kosong";
-    if (!formData.kenapa.trim()) newErrors.kenapa = "Kenapa tidak boleh kosong";
-    if (!formData.penutup.trim())
-      newErrors.penutup = "Penutup tidak boleh kosong";
+    if (!formData.tujuan.trim()) {
+      newErrors.tujuan = "Tujuan wajib diisi.";
+      valid = false;
+    }
+
+    if (!formData.kenapa.trim()) {
+      newErrors.kenapa = "Alasan wajib diisi.";
+      valid = false;
+    }
+
+    if (!formData.penutup.trim()) {
+      newErrors.penutup = "Penutup wajib diisi.";
+      valid = false;
+    }
+
+    for (let i = 0; i < details.length; i++) {
+      const item = details[i];
+      if (!item.isi.trim()) {
+        Alert.alert(`Detail ${i + 1}`, "Isi tidak boleh kosong.");
+        valid = false;
+        break;
+      }
+      if (item.jenis === "pertanyaan" && !item.placeHolder.trim()) {
+        Alert.alert(
+          `Detail ${i + 1}`,
+          "Placeholder untuk pertanyaan wajib diisi."
+        );
+        valid = false;
+        break;
+      }
+    }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return valid;
   };
 
   const handleSubmit = async () => {
@@ -239,13 +270,13 @@ const JurnalKelolaForm = ({ navigation, route }) => {
               value={formData.judul}
               onChangeText={(text) => handleChange("judul", text)}
               placeholder="Masukkan judul jurnal"
-              maxLength={30}
+              maxLength={50}
               editable={!isDisabled}
             />
             {errors.judul && (
               <Text style={styles.errorText}>{errors.judul}</Text>
             )}
-            <Text style={styles.charCount}>{formData.judul.length}/30</Text>
+            <Text style={styles.charCount}>{formData.judul.length}/50</Text>
           </View>
 
           <View style={styles.inputGroup}>
@@ -326,7 +357,7 @@ const JurnalKelolaForm = ({ navigation, route }) => {
                 }}
               >
                 <Text style={{ fontWeight: "bold", marginBottom: 10 }}>
-                  Pertanyaan {index + 1}
+                  Detail {index + 1}
                 </Text>
 
                 <TextInput
@@ -341,7 +372,7 @@ const JurnalKelolaForm = ({ navigation, route }) => {
                 />
 
                 <View style={{ flexDirection: "row", marginBottom: 10 }}>
-                  {["Pertanyaan", "Kutipan"].map((option) => (
+                  {["pertanyaan", "kutipan"].map((option) => (
                     <TouchableOpacity
                       key={option}
                       onPress={() => handleDetailChange(index, "jenis", option)}
@@ -384,6 +415,19 @@ const JurnalKelolaForm = ({ navigation, route }) => {
                     </TouchableOpacity>
                   ))}
                 </View>
+
+                {item.jenis === "pertanyaan" && (
+                  <TextInput
+                    style={[styles.input, { marginTop: 10 }]}
+                    placeholder="Tulis placeholder pertanyaan"
+                    value={item.placeHolder}
+                    onChangeText={(text) =>
+                      handleDetailChange(index, "placeHolder", text)
+                    }
+                    editable={!isDisabled}
+                    multiline
+                  />
+                )}
 
                 {/* Delete Icon */}
                 {details.length > 1 && !isDisabled && (

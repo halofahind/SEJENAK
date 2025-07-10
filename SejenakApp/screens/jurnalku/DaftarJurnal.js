@@ -8,10 +8,12 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { API_BASE_URL } from "../../utils/constants";
 import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
@@ -20,29 +22,74 @@ export default function DaftarJurnal({ route, navigation }) {
   const [carouselData, setCarouselData] = useState([]);
   const [topikList, setTopikList] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [progressData, setProgressData] = useState({});
   const flatListRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`${API_BASE_URL}/jurnalAktif?id=${jenisjurnal.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const mappedData = data.map((item, index) => ({
+      const fetchData = async () => {
+        try {
+          const jurnalRes = await fetch(
+            `${API_BASE_URL}/jurnalAktif?id=${jenisjurnal.id}`
+          );
+          const jurnalData = await jurnalRes.json();
+
+          const mappedData = jurnalData.map((item) => ({
             id: item.id.toString(),
             title: item.judul,
-            desc: item.kenapa,
+            desc: item.desc,
+            tujuan: item.tujuan,
+            kenapa: item.kenapa,
+            penutup: item.penutup,
             image: require("../../assets/Home/1.png"),
             pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
-            navigateTo: "BerdamaiDenganPikiran",
           }));
 
           setCarouselData(mappedData);
-          setTopikList(mappedData); // Jika memang semua item juga dipakai untuk Topik
-        })
-        .catch((error) => {
+          setTopikList(mappedData);
+
+          const userData = await AsyncStorage.getItem("userData");
+          if (!userData) return;
+
+          const { id: userId } = JSON.parse(userData);
+
+          const trxRes = await fetch(
+            `${API_BASE_URL}/transaksiJurnal?id=${userId}`
+          );
+          const trxData = await trxRes.json();
+
+          let progressMap = {};
+
+          for (let trx of trxData) {
+            if (trx.status === "Belum Selesai") {
+              const detailRes = await fetch(
+                `${API_BASE_URL}/transaksiJurnalDetail?id=${trx.id}`
+              );
+              const detailData = await detailRes.json();
+
+              const total = detailData.length;
+              const answered = detailData.filter(
+                (d) => d.jawaban !== null
+              ).length;
+              const progress = total === 0 ? 0 : answered / total;
+
+              progressMap[trx.jurnalId] = {
+                progress,
+                transaksi: trx,
+                total,
+                answered,
+              };
+            }
+          }
+
+          setProgressData(progressMap);
+        } catch (error) {
           console.error("Error fetching data:", error);
-        });
-    }, [jenisjurnal.id]) // <-- tambahkan dependency jika dipakai di dalam
+        }
+      };
+
+      fetchData();
+    }, [jenisjurnal.id])
   );
 
   const handleScroll = (event) => {
@@ -52,14 +99,12 @@ export default function DaftarJurnal({ route, navigation }) {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>{jenisjurnal.title}</Text>
-
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("ListJurnal", { jenisjurnal: jenisjurnal })
@@ -69,67 +114,94 @@ export default function DaftarJurnal({ route, navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Carousel */}
-      <FlatList
-        ref={flatListRef}
-        data={carouselData}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        renderItem={({ item }) => (
-          <View style={styles.carousel}>
-            <Image source={item.image} style={styles.carouselImage} />
-            <View style={styles.carouselTextBox}>
-              <Text style={styles.carouselTitle}>{item.title}</Text>
-              <Text style={styles.carouselDesc}>{item.desc}</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{item.pages}</Text>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <FlatList
+          ref={flatListRef}
+          data={carouselData}
+          keyExtractor={(item) => item.id}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={handleScroll}
+          renderItem={({ item }) => (
+            <View style={styles.carousel}>
+              <Image source={item.image} style={styles.carouselImage} />
+              <View style={styles.carouselTextBox}>
+                <Text style={styles.carouselTitle}>{item.title}</Text>
+                <Text style={styles.carouselDesc}>{item.desc}</Text>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{item.pages}</Text>
+                </View>
               </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
 
-      {/* Dot Indicator */}
-      <View style={styles.dots}>
-        {carouselData.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.dot,
-              {
-                backgroundColor: currentIndex === index ? "#D84059" : "#ccc",
-              },
-            ]}
-          />
-        ))}
-      </View>
+        <View style={styles.dots}>
+          {carouselData.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor: currentIndex === index ? "#D84059" : "#ccc",
+                },
+              ]}
+            />
+          ))}
+        </View>
 
-      {/* Detail Section */}
-      <Text style={styles.detailTitle}>Detail Topik Jurnal</Text>
-      <Text style={styles.detailDesc}>
-        Kumpulan konten dari topik journal pilihanmu!
-      </Text>
+        <Text style={styles.detailTitle}>Detail Topik Jurnal</Text>
+        <Text style={styles.detailDesc}>
+          Kumpulan konten dari topik journal pilihanmu!
+        </Text>
 
-      <View style={styles.grid}>
-        {topikList.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.card}
-            onPress={() => {
-              if (item.navigateTo) {
-                navigation.navigate(item.navigateTo, { topik: item });
-              }
-            }}
-          >
-            <Image source={item.image} style={styles.cardImage} />
-            <Text style={styles.cardTitle}>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+        <View style={styles.grid}>
+          {topikList.map((item) => {
+            const progressEntry = progressData[item.id];
+
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.card}
+                onPress={() =>
+                  navigation.navigate("JurnalDetail", {
+                    jurnal: item,
+                    isLanjutan: !!progressEntry,
+                    existingTransaksi: progressEntry?.transaksi || null,
+                  })
+                }
+              >
+                <Image source={item.image} style={styles.cardImage} />
+                <Text style={styles.cardTitle}>{item.title}</Text>
+
+                {progressEntry && (
+                  <View style={styles.progressBarContainer}>
+                    <View style={styles.progressBar}>
+                      <View
+                        style={[
+                          styles.progressBarFill,
+                          {
+                            width: `${Math.round(
+                              progressEntry.progress * 100
+                            )}%`,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.progressText}>
+                      {`${progressEntry.answered}/${
+                        progressEntry.total
+                      } (${Math.round(progressEntry.progress * 100)}%)`}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -138,10 +210,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
   },
   header: {
+    marginHorizontal: 20,
+    marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -238,5 +310,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     textAlign: "center",
+    marginBottom: 6,
+  },
+  progressBarContainer: {
+    marginTop: 8,
+    alignItems: "center",
+  },
+
+  progressBar: {
+    height: 6,
+    width: "100%",
+    backgroundColor: "#ddd",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+
+  progressBarFill: {
+    height: 6,
+    backgroundColor: "#E9748F",
+  },
+
+  progressText: {
+    fontSize: 10,
+    color: "#444",
+    marginTop: 4,
   },
 });

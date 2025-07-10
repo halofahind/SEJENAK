@@ -62,12 +62,8 @@ const Topik = ({ navigation }) => {
         },
         userId: userId,
         tglMulai: new Date().toISOString(),
-        tglSelesai: null, // opsional kalau belum selesai
+        tglSelesai: null,
         status: "Sedang Berjalan",
-        createdBy: "user",
-        createdDate: new Date().toISOString(),
-        modifBy: null,
-        modifDate: null,
       };
 
       try {

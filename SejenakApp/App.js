@@ -50,6 +50,10 @@ import SyaratKetentuan from "./screens/profil/SyaratKetentuan";
 import KebijakanPrivasi from "./screens/profil/KebijakanPrivasi";
 import JurnalList from "./screens/jurnalku/kelolaJurnal/JurnalList";
 import JurnalKelolaForm from "./screens/jurnalku/kelolaJurnal/JurnalKelolaForm";
+import JurnalDetail from "./screens/jurnalku/JurnalDetail";
+import JurnalDetailPertanyaan from "./screens/jurnalku/JurnalDetailPertanyaan";
+import JurnalPenutup from "./screens/jurnalku/JurnalPenutup";
+import Jurnalku from "./screens/jurnalku/Jurnalku";
 
 // Stack navigator
 const Stack = createNativeStackNavigator();
@@ -127,12 +131,10 @@ export default function App() {
             name="UpdateMotivasi"
             component={UpdateMotivasiScreen}
           />
-          <Stack.Screen name="Pertanyaan1" component={Pertanyaan1} />
+
           <Stack.Screen name="MoodSummary" component={MoodSummary} />
           <Stack.Screen name="MoodTracker" component={MoodTracker} />
           <Stack.Screen name="NextScreen" component={NextScreen} />
-
-          <Stack.Screen name="Jurnal" component={Jurnal} />
 
           {/* Konseling */}
           <Stack.Screen name="Konseling" component={Konseling} />
@@ -154,9 +156,17 @@ export default function App() {
           <Stack.Screen name="KebijakanPrivasi" component={KebijakanPrivasi} />
 
           {/* Jurnal */}
+
           <Stack.Screen name="DaftarJurnal" component={DaftarJurnal} />
           <Stack.Screen name="ListJurnal" component={JurnalList} />
           <Stack.Screen name="JurnalKelolaForm" component={JurnalKelolaForm} />
+          <Stack.Screen name="JurnalDetail" component={JurnalDetail} />
+          <Stack.Screen
+            name="JurnalDetailPertanyaan"
+            component={JurnalDetailPertanyaan}
+          />
+          <Stack.Screen name="JurnalPenutup" component={JurnalPenutup} />
+          <Stack.Screen name="Jurnalku" component={Jurnalku} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

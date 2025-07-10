@@ -19,6 +19,7 @@ import {
 import axios from "axios";
 import { API_BASE_URL } from "../../../utils/constants";
 import { useFocusEffect } from "@react-navigation/native";
+import { Icon } from "react-native-elements";
 
 export default function JurnalList({ route, navigation }) {
   const { jenisjurnal } = route.params;
@@ -198,8 +199,17 @@ export default function JurnalList({ route, navigation }) {
               >
                 <View style={styles.cardContent}>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.cardTitle}>{item.judul}</Text>
-                    <Text style={styles.cardText}>{item.desc}</Text>
+                    <Text style={styles.cardTitle}>
+                      {item.judul.length > 40
+                        ? item.judul.substring(0, 40) + "..."
+                        : item.judul}
+                    </Text>
+
+                    <Text style={styles.cardText}>
+                      {item.desc.length > 50
+                        ? item.desc.substring(0, 50) + "..."
+                        : item.desc}
+                    </Text>
                   </View>
                   <View
                     style={[
@@ -236,6 +246,9 @@ export default function JurnalList({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
         <Text style={styles.title}>{jenisjurnal.title}</Text>
       </View>
 
@@ -273,17 +286,20 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f9fa" },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
     backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    paddingTop: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   title: {
-    fontSize: 20,
+    marginLeft: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#D7385E",
+    color: "#333",
   },
+
   listContainer: {
     padding: 20,
     paddingBottom: 100,
@@ -303,7 +319,7 @@ const styles = StyleSheet.create({
   swipeableRowContainer: {
     marginBottom: 12,
     position: "relative",
-    height: 90,
+    height: 105,
   },
   hiddenButton: {
     position: "absolute",

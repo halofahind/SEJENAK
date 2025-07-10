@@ -1,4 +1,3 @@
-import React from "react";
 import {
   View,
   Text,
@@ -9,72 +8,50 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const data = [
-  {
-    id: "1",
-    title: "Berdamai dengan Pikiran",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "2",
-    title: "Berdamai dengan Kesalahan di masa lalu",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "3",
-    title: "Bertumbuh dalam Duka",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "4",
-    title: "It’s Okay Not To Be Okay",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "5",
-    title: "Belajar Memaafkan Diri Sendiri",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "6",
-    title: "Melepaskan Rasa Bersalah",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "7",
-    title: "Menemukan Makna dalam Luka",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "8",
-    title: "Perjalanan Menuju Pemulihan",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "9",
-    title: "Mengelola Emosi dengan Sehat",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-  {
-    id: "10",
-    title: "Menerima Ketidaksempurnaan",
-    image: require("../../assets/Jurnalku/2.png"),
-    date: "Ditulis pada 14:27",
-  },
-];
+import React, { useCallback, useEffect, useState } from "react";
+
+import axios from "axios";
+
+import { API_BASE_URL } from "../../utils/constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Jurnalku() {
+  const [data, setData] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const userData = await AsyncStorage.getItem("userData");
+          const parsedUserData = JSON.parse(userData);
+
+          const response = await axios.get(
+            `${API_BASE_URL}/transaksiJurnalSelesai?id=${parsedUserData.id}`
+          );
+
+          const formattedData = response.data.map((item) => ({
+            id: item.transaksi.id.toString(),
+            title: item.jurnal.judul,
+            image: require("../../assets/Jurnalku/2.png"),
+            date: `Ditulis pada ${new Date(
+              item.jurnal.createDate
+            ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+          }));
+
+          setData(formattedData);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Journalku</Text>
@@ -107,8 +84,17 @@ export default function Jurnalku() {
             <Ionicons name="ellipsis-vertical" size={20} color="#555" />
           </View>
         )}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="document-text-outline" size={48} color="#ccc" />
+            <Text style={styles.emptyText}>Belum ada jurnal</Text>
+            <Text style={styles.emptySubtext}>
+              Mulai isi jurnal harianmu dengan mengunjungi menu beranda
+            </Text>
+          </View>
+        }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -176,5 +162,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#222",
+  },
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 200,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#999",
+    marginTop: 16,
+    fontWeight: "500",
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#bbb",
+    marginTop: 8,
+    textAlign: "center",
+    lineHeight: 20,
   },
 });
