@@ -304,7 +304,7 @@ export default function ProfilEdit({ navigation }) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#e91e63" />
+        <ActivityIndicator size="large" color="#D7385E" />
       </View>
     );
   }
@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderBottomLeftRadius: 14,
     borderBottomRightRadius: 14,
     paddingTop: 50,
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 5,
     right: 5,
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderRadius: 15,
     padding: 5,
   },
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   genderSelectedFemale: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
   },
   genderSelectedMale: {
     backgroundColor: "#2196F3",
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   saveButton: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",

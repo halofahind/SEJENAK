@@ -1,14 +1,10 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import CustomTabBar from "../../components/CurvedBottomTab";
-import { useEffect } from "react";
 import Home from "../home/Home";
 import Jurnalku from "../jurnalku/Jurnalku";
 import Konseling from "../konseling/Konseling";
 import Profil from "../profil/Profil";
-import { BackHandler } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import "../../locales/i18n";
 
@@ -20,7 +16,8 @@ export default function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
-      tabBar={(props) => <CustomTabBar {...props} />}>
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
       <Tab.Screen
         name={t("MainTabsHome")}
         component={Home}

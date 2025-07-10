@@ -141,7 +141,6 @@ export default function DetailAkun({ route, navigation }) {
         {renderField("Nama Lengkap", "nama")}
         {renderField("NIM", "usrNim")}
         {renderField("Username", "username")}
-        {renderField("Password", "password", true)}
         {renderField("Role", "role")}
         {renderField("Status", "usrStatus")}
         {renderField("Email", "email")}
@@ -341,7 +340,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  genderButton: {  
+  genderButton: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",

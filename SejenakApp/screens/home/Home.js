@@ -77,7 +77,7 @@ export default function Home({ navigation }) {
 
       // Load motivasi
       const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
-      const list = res.data;
+      const list = res.data.filter((item) => item.status === "Aktif");
       if (list.length > 0) {
         const today = new Date();
         const daySeed =
@@ -97,7 +97,9 @@ export default function Home({ navigation }) {
         let profilePicSource;
         if (parsedData.usrFoto) {
           profilePicSource = {
-            uri: `${API_BASE_URL}/uploads/profil-foto/${parsedData.usrFoto}`,
+            uri: `${API_BASE_URL}/uploads/foto-profil/${
+              parsedData.usrFoto
+            }?${new Date().getTime()}`,
           };
         } else {
           profilePicSource = require("../../assets/Profil/Profil.png");
@@ -135,121 +137,125 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: "#fff", marginTop: 40 }}
-      contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#e91e63"]}
-          tintColor="#e91e63"
-        />
-      }
-    >
-      {/* === Profil & Notifikasi === */}
-      <View style={styles.profileRow}>
-        <View style={styles.profileContainer}>
-          <Image
-            source={
-              user.profilePic?.uri
-                ? { uri: user.profilePic.uri }
-                : require("../../assets/Home/1.png")
-            }
-            style={styles.profileImage}
-            onError={() => console.log("Gagal memuat gambar profil")}
+    <View style={styles.container}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#fff", marginTop: 40 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#D7385E"]}
+            tintColor="#D7385E"
           />
+        }
+      >
+        {/* === Profil & Notifikasi === */}
+        <View style={styles.profileRow}>
+          <View style={styles.profileContainer}>
+            <Image
+              source={
+                user.profilePic?.uri
+                  ? { uri: user.profilePic.uri }
+                  : require("../../assets/Home/1.png")
+              }
+              style={styles.profileImage}
+              onError={() => console.log("Gagal memuat gambar profil")}
+            />
 
-          <View>
-            <Text style={styles.userName}>Hai, {user.name}</Text>
-            <Text style={styles.welcomeText}>
-              Bagaimana perasaanmu hari ini?
-            </Text>
+            <View>
+              <Text style={styles.userName}>Hai, {user.name}</Text>
+              <Text style={styles.welcomeText}>
+                Bagaimana perasaanmu hari ini?
+              </Text>
+            </View>
           </View>
-        </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("NotifikasiScreen")}
-        >
-          <Icon name="notifications-none" size={28} color="#444" />
-        </TouchableOpacity>
-      </View>
-
-      {/* === Mood Pilihan === */}
-      <View style={styles.moodOptions}>
-        {moods.map((mood, index) => (
           <TouchableOpacity
-            key={index}
-            style={styles.moodItem}
-            onPress={() =>
-              navigation.navigate("MoodTracker", { selectedMood: mood })
-            }
+            onPress={() => navigation.navigate("NotifikasiScreen")}
           >
-            <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-            <Text style={styles.moodLabel}>{mood.label}</Text>
+            <Icon name="notifications-none" size={28} color="#444" />
           </TouchableOpacity>
-        ))}
-      </View>
+        </View>
 
-      <View style={styles.divider} />
-
-      {/* === Quotes === */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.manageQuotes}>Quotes hari ini</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("MotivasiScreen")}>
-          <Text style={styles.manageQuotes}>Kelola quotes</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.quoteBox}>
-        <Text style={styles.quoteText}>
-          {motivasiHarian
-            ? `“${motivasiHarian}”`
-            : "Memuat motivasi hari ini..."}
-        </Text>
-      </View>
-
-      {/* === Topik === */}
-      <Text style={styles.sectionTitle}>Topik Journal</Text>
-      <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
-
-      <View style={styles.topikWrapper}>
-        {topiks.map((item, index) => {
-          const isLastItem = index === topiks.length - 1;
-          const isOddCount = topiks.length % 2 === 1;
-          const shouldFullWidth = isOddCount && isLastItem;
-
-          return (
+        {/* === Mood Pilihan === */}
+        <View style={styles.moodOptions}>
+          {moods.map((mood, index) => (
             <TouchableOpacity
-              key={item.id}
-              style={[
-                styles.card,
-                { backgroundColor: item.backgroundColor },
-                shouldFullWidth && { width: screenWidth - 40 },
-              ]}
+              key={index}
+              style={styles.moodItem}
               onPress={() =>
-                navigation.navigate("DaftarJurnal", {
-                  jenisjurnal: item,
-                })
+                navigation.navigate("MoodTracker", { selectedMood: mood })
               }
             >
-              <Image source={item.image} style={styles.image} />
-              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+              <Text style={styles.moodLabel}>{mood.label}</Text>
             </TouchableOpacity>
-          );
-        })}
-      </View>
-    </ScrollView>
+          ))}
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* === Quotes === */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.manageQuotes}>Quotes hari ini</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("MotivasiScreen")}
+          >
+            <Icon name="edit" size={28} color="#444" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.quoteBox}>
+          <Text style={styles.quoteText}>
+            {motivasiHarian
+              ? `“${motivasiHarian}”`
+              : "Memuat motivasi hari ini..."}
+          </Text>
+        </View>
+
+        {/* === Topik === */}
+        <Text style={styles.sectionTitle}>Topik Journal</Text>
+        <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
+
+        <View style={styles.topikWrapper}>
+          {topiks.map((item, index) => {
+            const isLastItem = index === topiks.length - 1;
+            const isOddCount = topiks.length % 2 === 1;
+            const shouldFullWidth = isOddCount && isLastItem;
+
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.card,
+                  { backgroundColor: item.backgroundColor },
+                  shouldFullWidth && { width: screenWidth - 40 },
+                ]}
+                onPress={() =>
+                  navigation.navigate("DaftarJurnal", {
+                    jenisjurnal: item,
+                  })
+                }
+              >
+                <Image source={item.image} style={styles.image} />
+                <Text style={styles.cardTitle}>{item.title}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 0,
     backgroundColor: "#ffffff",
     flex: 1,
-    marginTop: 40,
-    paddingBottom: 100,
+
+    paddingBottom: 50,
   },
   profileRow: {
     flexDirection: "row",

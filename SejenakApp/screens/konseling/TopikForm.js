@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../utils/constants";
 
 const TopikForm = ({ navigation, route }) => {
@@ -268,7 +267,7 @@ const TopikForm = ({ navigation, route }) => {
           <TouchableOpacity
             style={[
               styles.submitButton,
-              { backgroundColor: isEditMode ? "#4CAF50" : "#e91e63" },
+              { backgroundColor: isEditMode ? "#4CAF50" : "#D7385E" },
               loading && styles.submitButtonDisabled,
             ]}
             onPress={handleSubmit}
@@ -304,7 +303,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 40,
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     padding: 15,
     borderBottomRightRadius: 60,
   },
@@ -335,7 +334,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   required: {
-    color: "#e91e63",
+    color: "#D7385E",
   },
   input: {
     borderWidth: 1,
@@ -347,7 +346,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   inputError: {
-    borderColor: "#e91e63",
+    borderColor: "#D7385E",
     backgroundColor: "#fff5f5",
   },
   textArea: {
@@ -355,7 +354,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   errorText: {
-    color: "#e91e63",
+    color: "#D7385E",
     fontSize: 12,
     marginTop: 4,
     marginLeft: 4,

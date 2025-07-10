@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,9 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { API_BASE_URL } from "../../utils/constants";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
@@ -21,26 +22,28 @@ export default function DaftarJurnal({ route, navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/jurnalAktif?id=${jenisjurnal.id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const mappedData = data.map((item, index) => ({
-          id: item.id.toString(),
-          title: item.judul,
-          desc: item.kenapa,
-          image: require("../../assets/Home/1.png"),
-          pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
-          navigateTo: "BerdamaiDenganPikiran",
-        }));
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`${API_BASE_URL}/jurnalAktif?id=${jenisjurnal.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const mappedData = data.map((item, index) => ({
+            id: item.id.toString(),
+            title: item.judul,
+            desc: item.kenapa,
+            image: require("../../assets/Home/1.png"),
+            pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
+            navigateTo: "BerdamaiDenganPikiran",
+          }));
 
-        setCarouselData(mappedData);
-        setTopikList(mappedData); // Jika memang semua item juga dipakai untuk Topik
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+          setCarouselData(mappedData);
+          setTopikList(mappedData); // Jika memang semua item juga dipakai untuk Topik
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }, [jenisjurnal.id]) // <-- tambahkan dependency jika dipakai di dalam
+  );
 
   const handleScroll = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -56,7 +59,14 @@ export default function DaftarJurnal({ route, navigation }) {
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>{jenisjurnal.title}</Text>
-        <View style={{ width: 24 }} />
+
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("ListJurnal", { jenisjurnal: jenisjurnal })
+          }
+        >
+          <Icon name="edit" size={28} color="#444" />
+        </TouchableOpacity>
       </View>
 
       {/* Carousel */}

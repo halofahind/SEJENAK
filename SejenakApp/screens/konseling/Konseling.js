@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   FlatList,
+  Alert,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
 import dayjs from "dayjs";
@@ -90,6 +91,19 @@ const Konseling = ({ navigation }) => {
   };
 
   const handleStartCounseling = () => {
+    const ongoing = konselings.some(
+      (item) => item.status === "Sedang Berjalan"
+    );
+
+    if (ongoing) {
+      Alert.alert(
+        "Konseling Masih Berjalan",
+        "Anda masih memiliki sesi konseling yang belum selesai. Selesaikan terlebih dahulu sebelum memulai yang baru."
+      );
+      return; // Tidak lanjut ke halaman Topik
+    }
+
+    // Jika tidak ada konseling yang sedang berjalan, navigasi ke Topik
     navigation.navigate("Topik");
   };
 
@@ -115,7 +129,8 @@ const Konseling = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.historyItem}
-        onPress={() => handleHistoryPress(item)}>
+        onPress={() => handleHistoryPress(item)}
+      >
         <Image
           style={styles.avatarImage}
           source={require("../../assets/User/user-pr.png")}
@@ -171,7 +186,8 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "admin" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleAddTopik}>
+                onPress={handleAddTopik}
+              >
                 <Text style={styles.primaryButtonText}>Kelola Topik</Text>
               </TouchableOpacity>
             )}
@@ -179,7 +195,8 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "user" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleStartCounseling}>
+                onPress={handleStartCounseling}
+              >
                 <Text style={styles.primaryButtonText}>Mulai Konseling</Text>
               </TouchableOpacity>
             )}
@@ -286,7 +303,7 @@ const styles = StyleSheet.create({
     color: "#999",
   },
   notificationBadge: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     width: 20,
     height: 20,
     borderRadius: 10,
@@ -326,7 +343,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   primaryButton: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderRadius: 24,
     paddingVertical: 12,
     paddingHorizontal: 32,

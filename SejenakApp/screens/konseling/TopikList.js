@@ -237,7 +237,7 @@ export default function TopikList({ navigation }) {
                     styles.statusBadge,
                     {
                       backgroundColor:
-                        item.status === "Aktif" ? "#e91e63" : "#6c757d",
+                        item.status === "Aktif" ? "#D7385E" : "#6c757d",
                     },
                   ]}
                 >
@@ -259,7 +259,7 @@ export default function TopikList({ navigation }) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#e91e63" />
+          <ActivityIndicator size="large" color="#D7385E" />
           <Text style={styles.loadingText}>Memuat data...</Text>
         </View>
       </SafeAreaView>
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#e91e63",
+    color: "#D7385E",
   },
   fab: {
     position: "absolute",
@@ -347,9 +347,9 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   swipeableRowContainer: {
-    marginBottom: 70,
+    marginBottom: 10,
     position: "relative",
-    height: 100, // Adjust based on your content height
+    height: 150,
   },
   hiddenButton: {
     position: "absolute",
@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
+    height: "100%",
   },
   topikContent: {
     flexDirection: "row",

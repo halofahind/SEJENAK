@@ -134,16 +134,52 @@ export default function TambahAkun({ navigation }) {
           <Text style={styles.registerTitle}>Tambah Pengguna</Text>
 
           {[
-            { icon: "mail-outline", placeholder: "Email", key: "email", keyboardType: "email-address" },
-            { icon: "person-outline", placeholder: "Username", key: "username" },
+            {
+              icon: "mail-outline",
+              placeholder: "Email",
+              key: "email",
+              keyboardType: "email-address",
+            },
+            {
+              icon: "person-outline",
+              placeholder: "Username",
+              key: "username",
+            },
             { icon: "badge", placeholder: "NIM", key: "usrNim" },
-            { icon: "person-outline", placeholder: "Nama Lengkap", key: "nama" },
-            { icon: "lock-outline", placeholder: "Password", key: "password", secure: true },
-            { icon: "verified-user", placeholder: "Role (Admin / Mahasiswa)", key: "role" },
-            { icon: "check-circle", placeholder: "Status (Aktif / Tidak Aktif)", key: "usrStatus" },
-            { icon: "phone", placeholder: "Nomor Telepon", key: "telepon", keyboardType: "phone-pad" },
+            {
+              icon: "person-outline",
+              placeholder: "Nama Lengkap",
+              key: "nama",
+            },
+            {
+              icon: "lock-outline",
+              placeholder: "Password",
+              key: "password",
+              secure: true,
+            },
+            {
+              icon: "verified-user",
+              placeholder: "Role (admin / user)",
+              key: "role",
+            },
+            {
+              icon: "check-circle",
+              placeholder: "Status (Aktif / Tidak Aktif)",
+              key: "usrStatus",
+            },
+            {
+              icon: "phone",
+              placeholder: "Nomor Telepon",
+              key: "telepon",
+              keyboardType: "phone-pad",
+            },
             { icon: "sports-tennis", placeholder: "Hobi", key: "hobi" },
-            { icon: "info", placeholder: "Tentang Diri", key: "about", multiline: true },
+            {
+              icon: "info",
+              placeholder: "Tentang Diri",
+              key: "about",
+              multiline: true,
+            },
           ].map((field, i) => (
             <View style={styles.inputWrapper} key={i}>
               <Icon name={field.icon} size={20} color="#333" />
@@ -186,7 +222,10 @@ export default function TambahAkun({ navigation }) {
                 setShowDatePicker(false);
                 if (selectedDate) {
                   const day = String(selectedDate.getDate()).padStart(2, "0");
-                  const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+                  const month = String(selectedDate.getMonth() + 1).padStart(
+                    2,
+                    "0"
+                  );
                   const year = selectedDate.getFullYear();
                   const formattedDate = `${day}/${month}/${year}`;
                   handleChange("tanggalLahir", formattedDate);

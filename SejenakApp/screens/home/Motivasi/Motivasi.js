@@ -80,7 +80,7 @@ export default function MotivasiScreen({ navigation }) {
     status === "Aktif" || status === 1 ? "Aktif" : "Tidak Aktif";
 
   const getStatusColor = (status) =>
-    status === "Aktif" || status === 1 ? "#e91e63" : "#6c757d";
+    status === "Aktif" || status === 1 ? "#D7385E" : "#6c757d";
 
   const SwipeableRow = ({ item }) => {
     const translateX = useRef(new Animated.Value(0)).current;
@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
+    height: "100%",
   },
   cardContent: {
     flexDirection: "row",
@@ -376,7 +377,7 @@ const styles = StyleSheet.create({
   swipeableRowContainer: {
     marginBottom: 12,
     position: "relative",
-    height: 80, // pastikan tingginya konsisten
+    height: 80,
   },
 
   hiddenButton: {

@@ -34,7 +34,7 @@ import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
 import MoodSummary from "./screens/home/Mood/DetailMood/MoodSummary";
 import MoodTracker from "./screens/home/Mood/MoodTracker";
 import NextScreen from "./screens/home/Mood/NextScreen";
-import Jurnal1 from "./screens/home/JurnalSelesai/Jurnal1";
+import Jurnal from "./screens/home/JurnalSelesai/Jurnal1";
 
 // Screens - Konseling
 import Konseling from "./screens/konseling/Konseling";
@@ -48,6 +48,8 @@ import DaftarJurnal from "./screens/jurnalku/DaftarJurnal";
 import ProfilEdit from "./screens/profil/ProfilEdit";
 import SyaratKetentuan from "./screens/profil/SyaratKetentuan";
 import KebijakanPrivasi from "./screens/profil/KebijakanPrivasi";
+import JurnalList from "./screens/jurnalku/kelolaJurnal/JurnalList";
+import JurnalKelolaForm from "./screens/jurnalku/kelolaJurnal/JurnalKelolaForm";
 
 // Stack navigator
 const Stack = createNativeStackNavigator();
@@ -105,7 +107,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
-          screenOptions={{ headerShown: false }}>
+          screenOptions={{ headerShown: false }}
+        >
           {/* Start */}
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
@@ -128,7 +131,8 @@ export default function App() {
           <Stack.Screen name="MoodSummary" component={MoodSummary} />
           <Stack.Screen name="MoodTracker" component={MoodTracker} />
           <Stack.Screen name="NextScreen" component={NextScreen} />
-          <Stack.Screen name="Jurnal1" component={Jurnal1} />
+
+          <Stack.Screen name="Jurnal" component={Jurnal} />
 
           {/* Konseling */}
           <Stack.Screen name="Konseling" component={Konseling} />
@@ -151,15 +155,10 @@ export default function App() {
 
           {/* Jurnal */}
           <Stack.Screen name="DaftarJurnal" component={DaftarJurnal} />
+          <Stack.Screen name="ListJurnal" component={JurnalList} />
+          <Stack.Screen name="JurnalKelolaForm" component={JurnalKelolaForm} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    color: "#ffffff",
-  },
-});

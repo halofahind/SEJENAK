@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   header: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#e91e63",
+    color: "#D7385E",
     marginTop: 15,
     marginBottom: 10,
   },
