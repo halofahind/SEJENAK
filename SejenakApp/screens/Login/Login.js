@@ -80,7 +80,7 @@ export default function Login({ navigation }) {
           "lastLogin",
           JSON.stringify({
             username: email,
-            password: password, // ⚠️ hati-hati nyimpan password ya, ini cuma contoh
+            password: password,
           })
         );
         const userData = await response.json();
