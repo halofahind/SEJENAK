@@ -27,6 +27,7 @@ export default function DaftarJurnal({ route, navigation }) {
   const [progressData, setProgressData] = useState({});
   const flatListRef = useRef(null);
   const { t, i18n } = useTranslation();
+  const [user, setUser] = useState({ role: "user" });
 
   useFocusEffect(
     useCallback(() => {
@@ -54,6 +55,9 @@ export default function DaftarJurnal({ route, navigation }) {
 
           const userData = await AsyncStorage.getItem("userData");
           if (!userData) return;
+          setUser(userData);
+
+          console.log(userData);
 
           const { id: userId } = JSON.parse(userData);
 
@@ -123,13 +127,17 @@ export default function DaftarJurnal({ route, navigation }) {
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>{jenisjurnal.title}</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("ListJurnal", { jenisjurnal: jenisjurnal })
-          }
-        >
-          <Icon name="edit" size={28} color="#444" />
-        </TouchableOpacity>
+        {user?.role === "admin" ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("ListJurnal", { jenisjurnal: jenisjurnal })
+            }
+          >
+            <Icon name="edit" size={28} color="#444" />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 28 }} />
+        )}
       </View>
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

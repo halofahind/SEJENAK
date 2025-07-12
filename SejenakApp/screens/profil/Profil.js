@@ -98,8 +98,6 @@ export default function Profil({ navigation }) {
           profilePicSource = require("../../assets/Profil/Profil.png");
         }
 
-        console.log("Profil Source:", profilePicSource.uri);
-
         setUser({
           name: parsedData.nama || "",
           username: parsedData.username || "",
@@ -112,6 +110,7 @@ export default function Profil({ navigation }) {
           hobi: parsedData.hobi || "",
           tentang: parsedData.tentang || "",
           profilePic: profilePicSource,
+          role: parsedData.role || "user",
         });
       }
     } catch (error) {
@@ -138,6 +137,7 @@ export default function Profil({ navigation }) {
     gender: "",
     about: "",
     profilePic: "",
+    role: "user",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -174,6 +174,7 @@ export default function Profil({ navigation }) {
             hobi: parsedData.hobi || "",
             tentang: parsedData.tentang || "",
             profilePic: profilePicSource,
+            role: parsedData.user || "user",
           });
         }
       } catch (error) {
@@ -220,14 +221,20 @@ export default function Profil({ navigation }) {
       ]
     );
   };
+
+  console.log(user);
   const menuItems = [
-    {
-      title: t("ProfilMenuManageAcc"),
-      icon: "person-outline",
-      onPress: () => {
-        navigation.navigate("KelolaAkun");
-      },
-    },
+    ...(user?.role === "admin"
+      ? [
+          {
+            title: t("ProfilMenuManageAcc"),
+            icon: "person-outline",
+            onPress: () => {
+              navigation.navigate("KelolaAkun");
+            },
+          },
+        ]
+      : []),
     {
       title: t("ProfilMenuPassChange"),
       icon: "lock",

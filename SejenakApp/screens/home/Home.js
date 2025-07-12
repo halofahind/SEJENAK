@@ -27,24 +27,24 @@ const topiks = [
     id: "2",
     title: "Menjalin Relasi",
     image: require("../../assets/Home/2.png"),
-    backgroundColor: "#F6A75A",
+    backgroundColor: "#697BC4",
   },
   {
     id: "3",
     title: "Cerita Keseharian",
-    image: require("../../assets/Home/1.png"),
-    backgroundColor: "#697BC4",
+    image: require("../../assets/Home/3-Perempuan.png"),
+    backgroundColor: "#11CBE0",
   },
   {
     id: "4",
     title: "Tingkatkan Potensi Diri",
-    image: require("../../assets/Home/1.png"),
-    backgroundColor: "#11CBE0",
+    image: require("../../assets/Home/4.png"),
+    backgroundColor: "#F6A75A",
   },
   {
     id: "5",
     title: "Membangun Keberanian",
-    image: require("../../assets/Home/1.png"),
+    image: require("../../assets/Home/5.png"),
     backgroundColor: "#B676AA",
   },
 ];
@@ -88,8 +88,8 @@ export default function Home({ navigation }) {
         setMotivasiHarian(list[index].motivasiText);
       }
 
-      // Load user data
       const userData = await AsyncStorage.getItem("userData");
+
       if (userData) {
         const parsedData = JSON.parse(userData);
 
@@ -104,8 +104,6 @@ export default function Home({ navigation }) {
         } else {
           profilePicSource = require("../../assets/Profil/Profil.png");
         }
-
-        console.log("Profile Pic Source:", profilePicSource.uri);
 
         setUser({
           name: parsedData.nama || "",
@@ -199,19 +197,28 @@ export default function Home({ navigation }) {
         {/* === Quotes === */}
         <View style={styles.headerContainer}>
           <Text style={styles.manageQuotes}>Quotes hari ini</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("MotivasiScreen")}
-          >
-            <Icon name="edit" size={28} color="#444" />
-          </TouchableOpacity>
+          {user.role === "admin" && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("MotivasiScreen")}
+            >
+              <Icon name="edit" size={28} color="#444" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.quoteBox}>
-          <Text style={styles.quoteText}>
-            {motivasiHarian
-              ? `“${motivasiHarian}”`
-              : "Memuat motivasi hari ini..."}
-          </Text>
+          <View style={styles.quoteTextContainer}>
+            <Text style={styles.quoteText}>
+              {motivasiHarian
+                ? `“${motivasiHarian}”`
+                : "Memuat motivasi hari ini..."}
+            </Text>
+          </View>
+          <Image
+            source={require("../../assets/Home/hug.png")}
+            style={styles.quoteImage}
+            resizeMode="contain"
+          />
         </View>
 
         {/* === Topik === */}
@@ -321,16 +328,33 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   quoteBox: {
+    flexDirection: "row",
     backgroundColor: "#FCD6D9",
-    padding: 12,
     borderRadius: 10,
     marginBottom: 20,
+    padding: 12,
+    alignItems: "center",
   },
+
+  quoteTextContainer: {
+    flex: 3, // 75% area
+    paddingRight: 10,
+  },
+
   quoteText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#444",
     fontStyle: "italic",
+    flexWrap: "wrap",
+    textAlign: "left",
   },
+
+  quoteImage: {
+    flex: 1, // 25% area
+    height: 80,
+    width: 80,
+  },
+
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -349,7 +373,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   card: {
-    width: "47%",
+    width: "48%",
     borderRadius: 12,
     paddingVertical: 20,
     paddingHorizontal: 10,
@@ -357,8 +381,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: "100%",
+    height: 110,
     resizeMode: "contain",
     marginBottom: 10,
   },
