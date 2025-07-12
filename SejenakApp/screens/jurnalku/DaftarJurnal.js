@@ -25,6 +25,7 @@ const imageMap = {
   "3.png": require("../../assets/Home/3.png"),
   "4.png": require("../../assets/Home/4.png"),
   "5.png": require("../../assets/Home/5.png"),
+  "default.png": require("../../assets/Home/1.png"), // fallback image
 };
 
 export default function DaftarJurnal({ route, navigation }) {
@@ -54,7 +55,7 @@ export default function DaftarJurnal({ route, navigation }) {
             tujuan: item.tujuan,
             kenapa: item.kenapa,
             penutup: item.penutup,
-            image: imageMap[item.foto], // ✅ sudah aman
+            image: imageMap[item.foto] ?? imageMap["default.png"],
             pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
           }));
 
