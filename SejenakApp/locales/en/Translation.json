@@ -56,5 +56,23 @@
   "CounselingHeadDesc": "Choose a topic and start talking about your issues safely and comfortably.",
   "CounselingHistoryTitle": "Counseling History",
   "CounselingHistoryEmpTitle": "No Counseling History Yet",
-  "CounselingHistoryEmpDesc": "Tap the 'Start Counseling' button to begin a new counseling session"
+  "CounselingHistoryEmpDesc": "Tap the 'Start Counseling' button to begin a new counseling session",
+
+  "Greeting": "Hi, {{name}}",
+  "WelcomeMessage": "How are you feeling today?",
+  "QuotesTitle": "Quote of the day",
+  "QuotesManage": "Manage quotes",
+  "QuotesLoading": "Loading today's quote...",
+  "JournalTopicTitle": "Journal Topics",
+  "JournalTopicSubtitle": "Choose a topic and get started!",
+  "MoodVeryBad": "Very Bad",
+  "MoodBad": "Bad",
+  "MoodNeutral": "Neutral",
+  "MoodGood": "Good",
+  "MoodVeryGood": "Very Good",
+  "Topic1": "Get to Know Yourself",
+  "Topic2": "Build Relationships",
+  "Topic3": "Everyday Stories",
+  "Topic4": "Develop Your Potential",
+  "Topic5": "Build Courage"
 }
