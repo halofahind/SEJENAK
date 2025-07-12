@@ -19,6 +19,14 @@ import { useTranslation } from "react-i18next";
 
 const { width } = Dimensions.get("window");
 
+const imageMap = {
+  "1.png": require("../../assets/Home/1.png"),
+  "2.png": require("../../assets/Home/2.png"),
+  "3.png": require("../../assets/Home/3.png"),
+  "4.png": require("../../assets/Home/4.png"),
+  "5.png": require("../../assets/Home/5.png"),
+};
+
 export default function DaftarJurnal({ route, navigation }) {
   const { jenisjurnal } = route.params;
   const [carouselData, setCarouselData] = useState([]);
@@ -46,7 +54,7 @@ export default function DaftarJurnal({ route, navigation }) {
             tujuan: item.tujuan,
             kenapa: item.kenapa,
             penutup: item.penutup,
-            image: require("../../assets/Home/1.png"),
+            image: imageMap[item.foto], // ✅ sudah aman
             pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
           }));
 
@@ -56,8 +64,6 @@ export default function DaftarJurnal({ route, navigation }) {
           const userData = await AsyncStorage.getItem("userData");
           if (!userData) return;
           setUser(userData);
-
-          console.log(userData);
 
           const { id: userId } = JSON.parse(userData);
 

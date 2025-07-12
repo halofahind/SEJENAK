@@ -32,7 +32,7 @@ const topiks = [
   {
     id: "3",
     title: "Cerita Keseharian",
-    image: require("../../assets/Home/3-Perempuan.png"),
+    image: require("../../assets/Home/3.png"),
     backgroundColor: "#11CBE0",
   },
   {

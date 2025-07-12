@@ -222,7 +222,6 @@ export default function Profil({ navigation }) {
     );
   };
 
-  console.log(user);
   const menuItems = [
     ...(user?.role === "admin"
       ? [
