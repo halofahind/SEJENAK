@@ -45,56 +45,58 @@ export default function Login({ navigation }) {
   }, []);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Username dan password wajib diisi.");
-      return;
-    }
+    navigation.replace("MainTabs");
 
-    setIsLoading(true);
+    // if (!email.trim() || !password.trim()) {
+    //   Alert.alert("Error", "Username dan password wajib diisi.");
+    //   return;
+    // }
 
-    try {
-      const loginData = {
-        username: email.trim(),
-        password: password.trim(),
-      };
-      console.log("Login data sent:", loginData);
+    // setIsLoading(true);
 
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
+    // try {
+    //   const loginData = {
+    //     username: email.trim(),
+    //     password: password.trim(),
+    //   };
+    //   console.log("Login data sent:", loginData);
 
-      console.log("Login data sent:", loginData);
-      console.log("Response status:", response.status);
+    //   const response = await fetch(`${API_BASE_URL}/login`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(loginData),
+    //   });
 
-      // return;
-      if (response.ok) {
-        const userData = await response.json();
-        await AsyncStorage.setItem("userData", JSON.stringify(userData));
+    //   console.log("Login data sent:", loginData);
+    //   console.log("Response status:", response.status);
 
-        SessionManager.start(navigation); // mulai session timer
-        navigation.replace("MainTabs");
+    //   // return;
+    //   if (response.ok) {
+    //     const userData = await response.json();
+    //     await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
-        console.log("Login success:", userData);
-      } else if (response.status === 401) {
-        const errorText = await response.text();
-        Alert.alert(
-          "Login Gagal",
-          errorText || "Username atau password salah."
-        );
-      } else {
-        const errorText = await response.text();
-        Alert.alert("Server Error", errorText || `Kode: ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
-    } finally {
-      setIsLoading(false);
-    }
+    //     SessionManager.start(navigation); // mulai session timer
+    //     navigation.replace("MainTabs");
+
+    //     console.log("Login success:", userData);
+    //   } else if (response.status === 401) {
+    //     const errorText = await response.text();
+    //     Alert.alert(
+    //       "Login Gagal",
+    //       errorText || "Username atau password salah."
+    //     );
+    //   } else {
+    //     const errorText = await response.text();
+    //     Alert.alert("Server Error", errorText || `Kode: ${response.status}`);
+    //   }
+    // } catch (error) {
+    //   console.error("Login error:", error);
+    //   Alert.alert("Koneksi Gagal", "Periksa koneksi dan coba lagi.");
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   useEffect(() => {

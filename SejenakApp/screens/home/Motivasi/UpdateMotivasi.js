@@ -41,7 +41,7 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://192.168.1.7:8080/motivasi/update/${item.motivasiId}`,
+        `http://192.168.53.121:8080/motivasi/update/${item.motivasiId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

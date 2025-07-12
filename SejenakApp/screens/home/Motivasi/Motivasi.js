@@ -22,7 +22,7 @@ export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const BASE_URL = "http://192.168.1.7:8080/motivasi";
+  const BASE_URL = "http://192.168.53.121:8080/motivasi";
 
   useEffect(() => {
     fetchMotivasi();

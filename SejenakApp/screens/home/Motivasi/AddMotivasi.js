@@ -32,7 +32,7 @@ export default function AddMotivasiScreen({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.1.7:8080/motivasi/add", {
+      const response = await fetch("http://192.168.53.121:8080/motivasi/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
