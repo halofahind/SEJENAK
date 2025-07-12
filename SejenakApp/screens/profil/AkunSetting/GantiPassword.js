@@ -9,8 +9,10 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { Icon } from "react-native-elements";
+// import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
 import { API_BASE_URL } from "../../../utils/constants";
 export default function GantiPassword({ navigation }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -100,7 +102,8 @@ export default function GantiPassword({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}>
+          style={styles.backButton}
+        >
           <Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Ganti Password</Text>
@@ -128,7 +131,7 @@ export default function GantiPassword({ navigation }) {
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="Masukkan password baru (min. 8 karakter)"
+              placeholder="Masukkan password baru "
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
@@ -162,7 +165,8 @@ export default function GantiPassword({ navigation }) {
           <TouchableOpacity
             style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleSubmit}
-            disabled={isLoading}>
+            disabled={isLoading}
+          >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
@@ -181,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -203,6 +207,7 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 20,
+    padding: 10,
   },
   label: {
     fontSize: 16,
@@ -216,8 +221,8 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#f5f5f5",
     borderRadius: 10,
-    paddingHorizontal: 45,
-    paddingVertical: 12,
+    paddingHorizontal: 40,
+    paddingVertical: 14,
     fontSize: 16,
     color: "#333",
     borderWidth: 1,
@@ -227,15 +232,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 15,
     top: 12,
+    color: "#D7385E",
   },
   buttonContainer: {
     marginTop: 30,
   },
   button: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
+    top: 330,
   },
   buttonDisabled: {
     backgroundColor: "#c0c0c0",

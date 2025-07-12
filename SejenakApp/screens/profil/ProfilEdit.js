@@ -62,7 +62,7 @@ export default function ProfilEdit({ navigation }) {
             // Jika usrFoto ada, formatkan sebagai object {uri}
             const fullUrl = parsedData.usrFoto.includes("http")
               ? parsedData.usrFoto
-              : `${API_BASE_URL}/uploads/${parsedData.usrFoto}`;
+              : `${API_BASE_URL}/uploads/foto-profil/${parsedData.usrFoto}`;
             profilePicSource = { uri: fullUrl };
           } else if (parsedData.profilePic) {
             // Handle fallback ke profilePic jika ada
@@ -304,7 +304,7 @@ export default function ProfilEdit({ navigation }) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#e91e63" />
+        <ActivityIndicator size="large" color="#D7385E" />
       </View>
     );
   }
@@ -313,18 +313,21 @@ export default function ProfilEdit({ navigation }) {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}>
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -45}
+    >
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.profileSection}>
               <TouchableOpacity
                 onPress={showImagePickerOptions}
-                style={styles.profileImageContainer}>
+                style={styles.profileImageContainer}
+              >
                 <Image
                   source={
                     // Handle semua kemungkinan format:
@@ -394,7 +397,8 @@ export default function ProfilEdit({ navigation }) {
             <TouchableOpacity
               onPress={() => !isLoading && setShowDatePicker(true)}
               style={styles.input}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               <Text style={{ color: dob ? "#333" : "#999" }}>
                 {dob || "Pilih tanggal lahir (DD/MM/YYYY)"}
               </Text>
@@ -453,28 +457,32 @@ export default function ProfilEdit({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.genderButton,
-                  user.gender === "Laki-laki" && styles.genderSelected,
+                  user.gender === "Laki-laki" && styles.genderSelectedMale,
                 ]}
-                onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
+                onPress={() => setUser({ ...user, gender: "Laki-laki" })}
+              >
                 <Text
                   style={[
                     styles.genderText,
                     user.gender === "Laki-laki" && styles.genderTextSelected,
-                  ]}>
+                  ]}
+                >
                   Laki-laki
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.genderButton,
-                  user.gender === "Perempuan" && styles.genderSelected,
+                  user.gender === "Perempuan" && styles.genderSelectedFemale,
                 ]}
-                onPress={() => setUser({ ...user, gender: "Perempuan" })}>
+                onPress={() => setUser({ ...user, gender: "Perempuan" })}
+              >
                 <Text
                   style={[
                     styles.genderText,
                     user.gender === "Perempuan" && styles.genderTextSelected,
-                  ]}>
+                  ]}
+                >
                   Perempuan
                 </Text>
               </TouchableOpacity>
@@ -509,7 +517,8 @@ export default function ProfilEdit({ navigation }) {
           <TouchableOpacity
             style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
             onPress={handleSave}
-            disabled={isSaving}>
+            disabled={isSaving}
+          >
             {isSaving ? (
               <ActivityIndicator color="#fff" />
             ) : (
@@ -528,7 +537,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   scrollContainer: {
-    paddingBottom: 100, // Memberi ruang untuk keyboard
+    paddingBottom: 60, // Memberi ruang untuk keyboard
   },
   formContainer: {
     padding: 20,
@@ -546,7 +555,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderBottomLeftRadius: 14,
     borderBottomRightRadius: 14,
     paddingTop: 50,
@@ -573,7 +582,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 5,
     right: 5,
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderRadius: 15,
     padding: 5,
   },
@@ -623,8 +632,11 @@ const styles = StyleSheet.create({
     width: "48%",
     alignItems: "center",
   },
-  genderSelected: {
-    backgroundColor: "#e91e63",
+  genderSelectedFemale: {
+    backgroundColor: "#D7385E",
+  },
+  genderSelectedMale: {
+    backgroundColor: "#2196F3",
   },
   genderText: {
     fontSize: 16,
@@ -638,7 +650,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   saveButton: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",

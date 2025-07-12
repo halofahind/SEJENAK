@@ -98,7 +98,6 @@ export default function DetailAkun({ route, navigation }) {
         {renderField("Nama Lengkap", "nama")}
         {renderField("NIM", "usrNim")}
         {renderField("Username", "username")}
-        {renderField("Password", "password", true)}
         {renderField("Role", "role")}
         {renderField("Status", "usrStatus")}
         {renderField("Email", "email")}

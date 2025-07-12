@@ -92,13 +92,15 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
               key={route.key}
               onPress={onPress}
               activeOpacity={1}
-              style={styles.tabButton}>
+              style={styles.tabButton}
+            >
               <View style={styles.iconArea}>
                 <View
                   style={[
                     styles.iconWrapper,
                     isFocused && styles.activeIconWrapper,
-                  ]}>
+                  ]}
+                >
                   {options.tabBarIcon({
                     focused: isFocused,
                     color: isFocused ? "#000" : "#aaa",
@@ -111,7 +113,8 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
                     top: isFocused ? 25 : 15,
                     fontSize: 12,
                     color: isFocused ? "#D84059" : "#aaa",
-                  }}>
+                  }}
+                >
                   {route.name}
                 </Text>
               </View>
@@ -142,6 +145,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 100,
     paddingBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   tabButton: {
     flex: 1,
@@ -168,6 +175,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     justifyContent: "center",
     alignItems: "center",
+    borderColor: "#fff",
+    borderWidth: 3,
   },
   iconArea: {
     alignItems: "center",

@@ -169,7 +169,7 @@ export default function Daftar({ navigation }) {
       const formattedDob = formatDateForBackend(dob);
 
       const userData = {
-        role: "Mahasiswa",
+        role: "user",
         username: username?.trim() || null,
         password: password || null,
         nama: nama?.trim() || null,
@@ -281,7 +281,8 @@ export default function Daftar({ navigation }) {
               validationType === "success"
                 ? styles.validationBoxSuccess
                 : styles.validationBoxError,
-            ]}>
+            ]}
+          >
             <Icon
               name={validationType === "success" ? "check-circle" : "error"}
               size={20}
@@ -291,7 +292,8 @@ export default function Daftar({ navigation }) {
             <Text style={styles.validationText}>{validationMessage}</Text>
             <TouchableOpacity
               onPress={closeValidationMessage}
-              style={styles.closeButton}>
+              style={styles.closeButton}
+            >
               <Icon name="close" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -302,7 +304,8 @@ export default function Daftar({ navigation }) {
         style={[
           styles.registerBox,
           { marginBottom: keyboardHeight > 0 ? keyboardHeight - 20 : 0 },
-        ]}>
+        ]}
+      >
         <ScrollView
           ref={scrollViewRef}
           showsVerticalScrollIndicator={false}
@@ -312,7 +315,8 @@ export default function Daftar({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}>
+          bounces={false}
+        >
           <View style={styles.innerContent}>
             <Image
               source={require("../../assets/OnBoarding/o2.png")}
@@ -416,7 +420,8 @@ export default function Daftar({ navigation }) {
               <TouchableOpacity
                 onPress={() => !isLoading && setShowDatePicker(true)}
                 style={{ flex: 1 }}
-                disabled={isLoading}>
+                disabled={isLoading}
+              >
                 <Text style={[styles.input, !dob && { color: "#999" }]}>
                   {dob ? dob : "Tanggal Lahir (DD/MM/YYYY)"}
                 </Text>
@@ -448,7 +453,8 @@ export default function Daftar({ navigation }) {
                   gender === "Laki-laki" && styles.genderButtonLaki,
                 ]}
                 onPress={() => !isLoading && setGender("Laki-laki")}
-                disabled={isLoading}>
+                disabled={isLoading}
+              >
                 <Icon
                   name="male"
                   size={18}
@@ -458,7 +464,8 @@ export default function Daftar({ navigation }) {
                   style={[
                     styles.genderButtonText,
                     gender === "Laki-laki" && styles.genderButtonTextActive,
-                  ]}>
+                  ]}
+                >
                   Laki-laki
                 </Text>
               </TouchableOpacity>
@@ -469,7 +476,8 @@ export default function Daftar({ navigation }) {
                   gender === "Perempuan" && styles.genderButtonPerempuan,
                 ]}
                 onPress={() => !isLoading && setGender("Perempuan")}
-                disabled={isLoading}>
+                disabled={isLoading}
+              >
                 <Icon
                   name="female"
                   size={18}
@@ -479,7 +487,8 @@ export default function Daftar({ navigation }) {
                   style={[
                     styles.genderButtonText,
                     gender === "Perempuan" && styles.genderButtonTextActive,
-                  ]}>
+                  ]}
+                >
                   Perempuan
                 </Text>
               </TouchableOpacity>
@@ -508,7 +517,8 @@ export default function Daftar({ navigation }) {
                 isLoading && styles.registerButtonDisabled,
               ]}
               onPress={handleRegister}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
@@ -525,7 +535,8 @@ export default function Daftar({ navigation }) {
                   fontWeight: "bold",
                   opacity: isLoading ? 0.5 : 1,
                 }}
-                onPress={() => !isLoading && navigation.navigate("Login")}>
+                onPress={() => !isLoading && navigation.navigate("Login")}
+              >
                 Login
               </Text>
             </Text>

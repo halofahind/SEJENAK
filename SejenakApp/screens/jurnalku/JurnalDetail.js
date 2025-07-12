@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import {
   View,
@@ -8,8 +9,11 @@ import {
   SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { API_BASE_URL } from "../../utils/constants";
 
-export default function BerdamaiDenganMasaLalu({ navigation }) {
+export default function JurnalDetail({ route, navigation }) {
+  const { jurnal, isLanjutan, existingTransaksi, jenisjurnal } = route.params;
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header Merah Muda dengan Gambar & Tombol Kembali */}
@@ -21,7 +25,7 @@ export default function BerdamaiDenganMasaLalu({ navigation }) {
           <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Image
-          source={require("../../../assets/Home/1.png")}
+          source={require("../../assets/Home/1.png")}
           style={styles.headerImage}
         />
       </View>
@@ -29,29 +33,69 @@ export default function BerdamaiDenganMasaLalu({ navigation }) {
       {/* Isi Konten */}
       <View style={styles.body}>
         <View style={styles.content}>
-          <Text style={styles.title}>Berdamai dengan Kesalahan di Masalalu</Text>
-          <Text style={styles.subtitle}>Journal 11 Halaman</Text>
+          <Text style={styles.title}>{jurnal.title}</Text>
+          <Text style={styles.subtitle}>Journal – 11 Halaman</Text>
 
           <Text style={styles.sectionTitle}>Apa tujuan journal ini?</Text>
-          <Text style={styles.text}>
-            Kamu dapat menulis segala masalah yang kamu hadapi dan yang masih
-            mengganggu pikiranmu
-          </Text>
+          <Text style={styles.text}>{jurnal.tujuan}</Text>
 
           <Text style={styles.sectionTitle}>Kenapa melakukan ini?</Text>
-          <Text style={styles.text}>
-            Dengan menuliskan pikiranmu, kamu dapat memahami dirimu lebih dalam,
-            membantu melepaskan beban yang mengganggu, dan menemukan ketenangan
-            di dalam prosesnya.
-          </Text>
+          <Text style={styles.text}>{jurnal.kenapa}</Text>
         </View>
 
         {/* Tombol Mulai */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("Pertanyaan1")}
+          onPress={async () => {
+            let transaksi = existingTransaksi;
+
+            try {
+              const userData = await AsyncStorage.getItem("userData");
+              if (!userData) {
+                console.error("User belum login.");
+                return;
+              }
+
+              const parsedUser = JSON.parse(userData);
+              const userId = parsedUser.id;
+
+              if (!isLanjutan) {
+                const response = await fetch(
+                  `${API_BASE_URL}/transaksiJurnal`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      userId: userId,
+                      jurnalId: parseInt(jurnal.id),
+                      date: "",
+                    }),
+                  }
+                );
+
+                if (!response.ok) {
+                  throw new Error("Gagal membuat transaksi jurnal");
+                }
+
+                transaksi = await response.json();
+              }
+
+              navigation.navigate("JurnalDetailPertanyaan", {
+                jurnal,
+                transaksi,
+                isLanjutan,
+                jenisjurnal,
+              });
+            } catch (error) {
+              console.error("Gagal memproses transaksi jurnal:", error);
+            }
+          }}
         >
-          <Text style={styles.buttonText}>Mulai Journal</Text>
+          <Text style={styles.buttonText}>
+            {isLanjutan ? "Lanjutkan Journal" : "Mulai Journal"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

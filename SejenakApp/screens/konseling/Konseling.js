@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   FlatList,
+  Alert,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
 import dayjs from "dayjs";
@@ -90,6 +91,19 @@ const Konseling = ({ navigation }) => {
   };
 
   const handleStartCounseling = () => {
+    const ongoing = konselings.some(
+      (item) => item.status === "Sedang Berjalan"
+    );
+
+    if (ongoing) {
+      Alert.alert(
+        "Konseling Masih Berjalan",
+        "Anda masih memiliki sesi konseling yang belum selesai. Selesaikan terlebih dahulu sebelum memulai yang baru."
+      );
+      return; // Tidak lanjut ke halaman Topik
+    }
+
+    // Jika tidak ada konseling yang sedang berjalan, navigasi ke Topik
     navigation.navigate("Topik");
   };
 
@@ -115,7 +129,8 @@ const Konseling = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.historyItem}
-        onPress={() => handleHistoryPress(item)}>
+        onPress={() => handleHistoryPress(item)}
+      >
         <Image
           style={styles.avatarImage}
           source={require("../../assets/User/user-pr.png")}
@@ -123,7 +138,11 @@ const Konseling = ({ navigation }) => {
         />
 
         <View style={styles.historyContent}>
-          <Text style={styles.historyTitle}>{item.topik.nama}</Text>
+          <Text style={styles.historyTitle}>
+            {item.topik.nama.length > 25
+              ? item.topik.nama.slice(0, 25) + "..."
+              : item.topik.nama}
+          </Text>
 
           <View style={[styles.badge, { backgroundColor: badgeColor }]}>
             <Text style={styles.badgeText}>{item.status}</Text>
@@ -139,12 +158,16 @@ const Konseling = ({ navigation }) => {
 
         <View style={styles.rightSection}>
           <Text style={styles.timeText}>
-            {dayjs(item.lastTime).format("HH:mm")}
+            {dayjs(item.lastTime).isSame(dayjs(), "day")
+              ? dayjs(item.lastTime).format("HH:mm")
+              : dayjs(item.lastTime).format("DD/MM/YYYY")}
           </Text>
           {/* <View style={styles.notificationBadge}>
             <Text style={styles.notificationText}>2</Text>
           </View> */}
         </View>
+
+        <View style={styles.bottomBorder} />
       </TouchableOpacity>
     );
   };
@@ -171,7 +194,8 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "admin" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleAddTopik}>
+                onPress={handleAddTopik}
+              >
                 <Text style={styles.primaryButtonText}>Kelola Topik</Text>
               </TouchableOpacity>
             )}
@@ -179,7 +203,8 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "user" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleStartCounseling}>
+                onPress={handleStartCounseling}
+              >
                 <Text style={styles.primaryButtonText}>Mulai Konseling</Text>
               </TouchableOpacity>
             )}
@@ -212,6 +237,7 @@ const Konseling = ({ navigation }) => {
                   </Text>
                 </View>
               }
+              ListFooterComponent={<View style={{ height: 80 }} />}
             />
           )}
         </View>
@@ -227,8 +253,8 @@ const styles = StyleSheet.create({
   },
   section: {
     flex: 1,
-    padding: 15,
-    paddingBottom: 50,
+    padding: 10,
+    paddingBottom: 10,
   },
   sectionTitle: {
     fontSize: 20,
@@ -242,10 +268,22 @@ const styles = StyleSheet.create({
     padding: 0,
     borderRadius: 12,
     backgroundColor: "#fff",
-    marginBottom: 20,
+    marginBottom: 10,
     alignItems: "center",
     elevation: 2,
+    position: "relative",
+    paddingBottom: 10, // beri ruang untuk garis
   },
+
+  bottomBorder: {
+    position: "absolute",
+    bottom: 0,
+    left: 60,
+    right: 0,
+    height: 1,
+    backgroundColor: "#ccc",
+  },
+
   avatarImage: {
     width: 48,
     height: 48,
@@ -256,7 +294,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   historyTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
   },
   badge: {
@@ -286,7 +324,7 @@ const styles = StyleSheet.create({
     color: "#999",
   },
   notificationBadge: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     width: 20,
     height: 20,
     borderRadius: 10,
@@ -302,12 +340,10 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginTop: 20,
     backgroundColor: "#fff",
-    borderRadius: 16,
     padding: 0,
     margin: 0,
     flexDirection: "row",
     alignItems: "left",
-    elevation: 3,
   },
   doctorImage: {
     width: 100,
@@ -328,7 +364,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   primaryButton: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     borderRadius: 24,
     paddingVertical: 12,
     paddingHorizontal: 32,
