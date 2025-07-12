@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { BackHandler } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function JurnalPenutup({ route, navigation }) {
   const { jurnal, transaksi } = route.params;
@@ -31,6 +33,32 @@ export default function JurnalPenutup({ route, navigation }) {
 
     getUserData();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: "MainTabs",
+              state: {
+                routes: [{ name: "Jurnalku" }],
+              },
+            },
+          ],
+        });
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [navigation])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,7 +97,9 @@ export default function JurnalPenutup({ route, navigation }) {
 
         <TouchableOpacity
           style={styles.secondaryButton}
-          onPress={() => console.log("Review Journal")}
+          onPress={() =>
+            navigation.navigate("JurnalkuDetailSelesai", { jurnal: jurnal })
+          }
         >
           <Text style={styles.secondaryText}>Review Journal</Text>
         </TouchableOpacity>

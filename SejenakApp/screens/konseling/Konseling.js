@@ -237,6 +237,7 @@ const Konseling = ({ navigation }) => {
                   </Text>
                 </View>
               }
+              ListFooterComponent={<View style={{ height: 80 }} />}
             />
           )}
         </View>

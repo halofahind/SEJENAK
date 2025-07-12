@@ -26,15 +26,12 @@ import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
 
 // Screens - Home
-import BerdamaiDenganPikiran from "./screens/home/DetailTopik/BerdamaiDenganPikiran";
 import MotivasiScreen from "./screens/home/Motivasi/Motivasi";
 import AddMotivasiScreen from "./screens/home/Motivasi/AddMotivasi";
 import UpdateMotivasiScreen from "./screens/home/Motivasi/UpdateMotivasi";
-import Pertanyaan1 from "./screens/home/Pertanyaan/Pertanyaan1";
 import MoodSummary from "./screens/home/Mood/DetailMood/MoodSummary";
 import MoodTracker from "./screens/home/Mood/MoodTracker";
 import NextScreen from "./screens/home/Mood/NextScreen";
-import Jurnal from "./screens/home/JurnalSelesai/Jurnal1";
 
 // Screens - Konseling
 import Konseling from "./screens/konseling/Konseling";
@@ -54,6 +51,7 @@ import JurnalDetail from "./screens/jurnalku/JurnalDetail";
 import JurnalDetailPertanyaan from "./screens/jurnalku/JurnalDetailPertanyaan";
 import JurnalPenutup from "./screens/jurnalku/JurnalPenutup";
 import Jurnalku from "./screens/jurnalku/Jurnalku";
+import JurnalDetailSelesai from "./screens/jurnalku/JurnalkuDetailSelesai";
 
 // Stack navigator
 const Stack = createNativeStackNavigator();
@@ -121,10 +119,7 @@ export default function App() {
           <Stack.Screen name="MainTabs" component={MainTabs} />
 
           {/* Home */}
-          <Stack.Screen
-            name="BerdamaiDenganPikiran"
-            component={BerdamaiDenganPikiran}
-          />
+
           <Stack.Screen name="MotivasiScreen" component={MotivasiScreen} />
           <Stack.Screen name="AddMotivasi" component={AddMotivasiScreen} />
           <Stack.Screen
@@ -167,6 +162,10 @@ export default function App() {
           />
           <Stack.Screen name="JurnalPenutup" component={JurnalPenutup} />
           <Stack.Screen name="Jurnalku" component={Jurnalku} />
+          <Stack.Screen
+            name="JurnalkuDetailSelesai"
+            component={JurnalDetailSelesai}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

@@ -23,7 +23,7 @@ const quoteImages = [
 ];
 
 export default function JurnalDetailPertanyaan({ route, navigation }) {
-  const { jurnal, transaksi } = route.params;
+  const { jurnal, transaksi, jenisjurnal } = route.params;
   const [currentPage, setCurrentPage] = useState(0);
   const [pages, setPages] = useState([]);
   const [answers, setAnswers] = useState({});
@@ -127,7 +127,12 @@ export default function JurnalDetailPertanyaan({ route, navigation }) {
       <StatusBar barStyle="dark-content" />
       <View style={styles.headerPink}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "DaftarJurnal", params: { jenisjurnal } }],
+            })
+          }
           style={styles.backButton}
         >
           <Icon name="close" size={24} color="#fff" />

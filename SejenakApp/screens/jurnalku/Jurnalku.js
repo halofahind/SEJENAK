@@ -8,17 +8,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import axios from "axios";
-
 import { API_BASE_URL } from "../../utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Jurnalku() {
+export default function Jurnalku({ navigation }) {
   const [data, setData] = useState([]);
+  const [sortType, setSortType] = useState("tanggal");
 
   useFocusEffect(
     useCallback(() => {
@@ -35,9 +35,17 @@ export default function Jurnalku() {
             id: item.transaksi.id.toString(),
             title: item.jurnal.judul,
             image: require("../../assets/Jurnalku/2.png"),
-            date: `Ditulis pada ${new Date(
-              item.jurnal.createDate
-            ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+            dateObj: new Date(item.transaksi.date),
+            date: `Ditulis pada ${new Date(item.transaksi.date).toLocaleString(
+              [],
+              {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            )}`,
           }));
 
           setData(formattedData);
@@ -50,6 +58,18 @@ export default function Jurnalku() {
     }, [])
   );
 
+  const toggleSort = () => {
+    setSortType((prev) => (prev === "tanggal" ? "abjad" : "tanggal"));
+  };
+
+  const sortedData = [...data].sort((a, b) => {
+    if (sortType === "tanggal") {
+      return b.dateObj - a.dateObj; // terbaru ke lama
+    } else {
+      return a.title.localeCompare(b.title); // A-Z
+    }
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -61,28 +81,37 @@ export default function Jurnalku() {
       {/* Filter */}
       <View style={styles.filterRow}>
         <Text style={styles.filterLabel}>Tampilkan Berdasarkan</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText}>Tanggal</Text>
+        <TouchableOpacity style={styles.filterButton} onPress={toggleSort}>
+          <Text style={styles.filterText}>
+            {sortType === "tanggal" ? "Tanggal" : "Abjad"}
+          </Text>
           <Ionicons name="chevron-down" size={16} color="#555" />
         </TouchableOpacity>
       </View>
 
       {/* List */}
       <FlatList
-        data={data}
+        data={sortedData}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 80 }}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={item.image} style={styles.cardImage} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.cardDate}>{item.date}</Text>
-              <Text style={styles.cardTitle} numberOfLines={1}>
-                {item.title}
-              </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("JurnalkuDetailSelesai", {
+                jurnal: item,
+              })
+            }
+          >
+            <View style={styles.card}>
+              <Image source={item.image} style={styles.cardImage} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.cardDate}>{item.date}</Text>
+                <Text style={styles.cardTitle} numberOfLines={1}>
+                  {item.title}
+                </Text>
+              </View>
             </View>
-            <Ionicons name="ellipsis-vertical" size={20} color="#555" />
-          </View>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -93,6 +122,7 @@ export default function Jurnalku() {
             </Text>
           </View>
         }
+        ListFooterComponent={<View style={{ height: 80 }} />}
       />
     </SafeAreaView>
   );
@@ -130,11 +160,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     backgroundColor: "#F0F0F0",
-    borderRadius: 12,
+    borderRadius: 20,
   },
   filterText: {
     marginRight: 4,
     color: "#555",
+    fontSize: 14,
   },
   card: {
     flexDirection: "row",
@@ -157,13 +188,13 @@ const styles = StyleSheet.create({
   cardDate: {
     fontSize: 12,
     color: "#999",
+    marginBottom: 7,
   },
   cardTitle: {
     fontSize: 14,
     fontWeight: "bold",
     color: "#222",
   },
-
   emptyContainer: {
     flex: 1,
     justifyContent: "center",

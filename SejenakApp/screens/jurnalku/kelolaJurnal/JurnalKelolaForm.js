@@ -21,7 +21,6 @@ const JurnalKelolaForm = ({ navigation, route }) => {
   const [details, setDetails] = useState([{ jenis: "", isi: "" }]);
   const isDisabled = journal?.status === "Tidak Aktif";
 
-  console.log("Journal Data:", journal);
   const [formData, setFormData] = useState({
     jjlId: jenisjurnal.id || "",
     judul: "",
@@ -168,8 +167,12 @@ const JurnalKelolaForm = ({ navigation, route }) => {
         body: JSON.stringify(formData),
       });
 
+      const responseData = await response.json();
+
+      console.log(responseData);
+
       if (response.ok) {
-        const jurnalId = isEditMode ? journal.id : await response.json().id;
+        const jurnalId = isEditMode ? journal.id : responseData.id;
 
         const detailResponse = await fetch(
           `${API_BASE_URL}/saveOrUpdateDetail/${jurnalId}`,

@@ -15,6 +15,8 @@ import { API_BASE_URL } from "../../utils/constants";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { useTranslation } from "react-i18next";
+
 const { width } = Dimensions.get("window");
 
 export default function DaftarJurnal({ route, navigation }) {
@@ -24,6 +26,7 @@ export default function DaftarJurnal({ route, navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progressData, setProgressData] = useState({});
   const flatListRef = useRef(null);
+  const { t, i18n } = useTranslation();
 
   useFocusEffect(
     useCallback(() => {
@@ -36,6 +39,7 @@ export default function DaftarJurnal({ route, navigation }) {
 
           const mappedData = jurnalData.map((item) => ({
             id: item.id.toString(),
+            idJenis: item.jjlId,
             title: item.judul,
             desc: item.desc,
             tujuan: item.tujuan,
@@ -101,7 +105,21 @@ export default function DaftarJurnal({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "MainTabs",
+                  state: {
+                    routes: [{ name: t("MainTabsHome") }],
+                  },
+                },
+              ],
+            })
+          }
+        >
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>{jenisjurnal.title}</Text>
@@ -169,6 +187,7 @@ export default function DaftarJurnal({ route, navigation }) {
                     jurnal: item,
                     isLanjutan: !!progressEntry,
                     existingTransaksi: progressEntry?.transaksi || null,
+                    jenisjurnal: jenisjurnal,
                   })
                 }
               >

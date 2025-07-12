@@ -12,11 +12,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { API_BASE_URL } from "../../utils/constants";
 
 export default function JurnalDetail({ route, navigation }) {
-  const { jurnal, isLanjutan, existingTransaksi } = route.params;
-
-  console.log("Jurnal Detail:", jurnal);
-  console.log("Lanjutan?", isLanjutan);
-  console.log("Transaksi Aktif:", existingTransaksi);
+  const { jurnal, isLanjutan, existingTransaksi, jenisjurnal } = route.params;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -74,7 +70,7 @@ export default function JurnalDetail({ route, navigation }) {
                     body: JSON.stringify({
                       userId: userId,
                       jurnalId: parseInt(jurnal.id),
-                      date: new Date().toISOString().split("T")[0],
+                      date: "",
                     }),
                   }
                 );
@@ -90,6 +86,7 @@ export default function JurnalDetail({ route, navigation }) {
                 jurnal,
                 transaksi,
                 isLanjutan,
+                jenisjurnal,
               });
             } catch (error) {
               console.error("Gagal memproses transaksi jurnal:", error);
