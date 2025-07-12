@@ -64,7 +64,7 @@ export default function DaftarJurnal({ route, navigation }) {
 
           const userData = await AsyncStorage.getItem("userData");
           if (!userData) return;
-          setUser(userData);
+          setUser(JSON.parse(userData));
 
           const { id: userId } = JSON.parse(userData);
 
@@ -134,7 +134,7 @@ export default function DaftarJurnal({ route, navigation }) {
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>{jenisjurnal.title}</Text>
-        {user?.role === "admin" ? (
+        {user.role === "admin" ? (
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("ListJurnal", { jenisjurnal: jenisjurnal })

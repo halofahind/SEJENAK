@@ -69,6 +69,7 @@ export default function Home({ navigation }) {
     gender: "",
     address: "",
     profilePic: require("../../assets/Home/1.png"),
+    role: "user",
   });
 
   const loadData = useCallback(async () => {
@@ -113,6 +114,7 @@ export default function Home({ navigation }) {
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
           profilePic: profilePicSource,
+          role: parsedData.role,
         });
       }
     } catch (error) {
