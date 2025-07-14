@@ -61,7 +61,6 @@ export default function Login({ navigation }) {
         username: email.trim(),
         password: password.trim(),
       };
-      console.log("Login data sent:", loginData);
 
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
@@ -80,7 +79,6 @@ export default function Login({ navigation }) {
           "lastLogin",
           JSON.stringify({
             username: email,
-            password: password,
           })
         );
         const userData = await response.json();

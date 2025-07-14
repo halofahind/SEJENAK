@@ -46,7 +46,8 @@ export default function KelolaAkun({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("DetailAkun", { data: item })}>
+      onPress={() => navigation.navigate("DetailAkun", { data: item })}
+    >
       <View style={styles.cardContent}>
         <Image
           source={
@@ -76,7 +77,8 @@ export default function KelolaAkun({ navigation }) {
               item.usrStatus === "Aktif"
                 ? styles.activeBadge
                 : styles.inactiveBadge,
-            ]}>
+            ]}
+          >
             <Text style={styles.statusText}>{item.usrStatus || "-"}</Text>
           </View>
           <Icon name="chevron-right" size={24} color="#ccc" />
@@ -91,7 +93,8 @@ export default function KelolaAkun({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}>
+          style={styles.backButton}
+        >
           <Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Kelola Akun Pengguna</Text>
@@ -121,7 +124,7 @@ export default function KelolaAkun({ navigation }) {
         {loading ? (
           <ActivityIndicator
             size="large"
-            color="#e91e63"
+            color="#D7385E"
             style={styles.loader}
           />
         ) : (
@@ -141,7 +144,8 @@ export default function KelolaAkun({ navigation }) {
       {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate("TambahAkun")}>
+        onPress={() => navigation.navigate("TambahAkun")}
+      >
         <Icon name="add" size={30} color="#fff" />
       </TouchableOpacity>
     </View>
@@ -154,7 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
   summaryNumber: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#e91e63",
+    color: "#D7385E",
   },
   summaryLabel: {
     fontSize: 14,
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: "#e91e63",
+    borderColor: "#D7385E",
   },
   textContainer: {
     flex: 1,
@@ -260,7 +264,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 25,
     bottom: 25,
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     width: 60,
     height: 60,
     borderRadius: 30,

@@ -1,59 +1,73 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
+  StyleSheet,
+  SafeAreaView,
   FlatList,
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-  SafeAreaView,
+  Animated,
 } from "react-native";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  PanGestureHandler,
+  State,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import axios from "axios";
-import styles from "./styles"; // ganti dengan file styles kamu
-import { API_BASE_URL } from "../config"; // ganti sesuai lokasi config kamu
+import { API_BASE_URL } from "../../../utils/constants";
+import { useFocusEffect } from "@react-navigation/native";
+import { Icon } from "react-native-elements";
 
-export default function JurnalList({ navigation }) {
-  const [materis, setMateris] = useState([]);
+export default function JurnalList({ route, navigation }) {
+  const { jenisjurnal } = route.params;
+  const [jurnalList, setJurnalList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchMateris();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchJurnal();
+    }, [])
+  );
 
-  const fetchMateris = async () => {
+  const fetchJurnal = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/jurnals`);
-      const data = await response.json();
-      setMateris(data);
+      const response = await axios.get(
+        `${API_BASE_URL}/jurnalbyjenis?id=${jenisjurnal.id}`
+      );
+      setJurnalList(response.data);
     } catch (error) {
-      console.error("Error fetching materis:", error.message);
+      console.error("Gagal ambil jurnal:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  const handleDelete = async (id, nama) => {
+  const handleDelete = (id, status) => {
+    let confirmationText = status === "Aktif" ? "Hapus" : "Pulihkan";
     Alert.alert(
-      "Hapus Materi",
-      `Apakah Anda yakin ingin menghapus materi "${nama}"?`,
+      `${confirmationText} Jurnal`,
+      `Yakin ingin ${confirmationText.toLowerCase()} jurnal ini?`,
       [
         { text: "Batal", style: "cancel" },
         {
-          text: "Hapus",
+          text: confirmationText,
           style: "destructive",
           onPress: async () => {
             try {
-              await axios.delete(`${API_BASE_URL}/materi/${id}`);
-              fetchMateris();
-              Alert.alert("Berhasil", "Materi berhasil dihapus");
+              await axios.delete(`${API_BASE_URL}/jurnal/${id}`);
+              fetchJurnal();
+              Alert.alert(
+                "Berhasil",
+                `Jurnal berhasil di${confirmationText.toLowerCase()}`
+              );
             } catch (error) {
-              console.error("Error deleting materi:", error);
-              Alert.alert("Error", "Gagal menghapus materi");
+              console.error("Gagal hapus jurnal:", error.message);
+              Alert.alert("Gagal", "Terjadi kesalahan saat menghapus jurnal");
             }
           },
         },
@@ -61,35 +75,37 @@ export default function JurnalList({ navigation }) {
     );
   };
 
-  const handleEditMateri = (materi) => {
-    const materiData = {
-      mtr_judul: materi.judul,
-      mtr_deskripsi: materi.deskripsi,
-      mtr_id: materi.id,
-    };
-
-    navigation.navigate("MateriForm", {
-      materi: materiData,
+  const handleEditJurnal = (jurnal) => {
+    navigation.navigate("JurnalKelolaForm", {
+      jenisjurnal: jenisjurnal,
+      journal: jurnal,
       mode: "edit",
-      title: "Edit Materi",
+      title: "Form Jurnal",
     });
   };
 
-  const handleAddMateri = () => {
-    navigation.navigate("MateriForm", {
+  const handleAddJurnal = () => {
+    navigation.navigate("JurnalKelolaForm", {
+      jenisjurnal: jenisjurnal,
       mode: "add",
-      title: "Tambah Materi",
+      title: "Form Jurnal",
     });
   };
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchMateris();
+    fetchJurnal();
   };
 
-  const SwipeableRow = ({ item, onDelete, onEdit }) => {
-    const translateX = new Animated.Value(0);
-    const [isDeleting, setIsDeleting] = useState(false);
+  const getStatusText = (status) =>
+    status === "Aktif" || status === 1 ? "Aktif" : "Tidak Aktif";
+
+  const getStatusColor = (status) =>
+    status === "Aktif" || status === 1 ? "#D7385E" : "#6c757d";
+
+  const SwipeableRow = ({ item }) => {
+    const translateX = useRef(new Animated.Value(0)).current;
+    const [isOpen, setIsOpen] = useState(false);
 
     const onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: translateX } }],
@@ -100,78 +116,128 @@ export default function JurnalList({ navigation }) {
       if (event.nativeEvent.state === State.END) {
         const { translationX } = event.nativeEvent;
 
-        if (translationX < -100) {
+        if (translationX < -80) {
           Animated.timing(translateX, {
-            toValue: -200,
+            toValue: -80,
             duration: 200,
             useNativeDriver: true,
-          }).start(() => {
-            setIsDeleting(true);
-            setTimeout(() => {
-              onDelete(item.id, item.judul);
-              setIsDeleting(false);
-            }, 100);
-          });
+          }).start(() => setIsOpen(true));
         } else {
           Animated.spring(translateX, {
             toValue: 0,
             useNativeDriver: true,
-          }).start();
+          }).start(() => setIsOpen(false));
         }
       }
     };
 
+    const closeSwipe = () => {
+      Animated.timing(translateX, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => setIsOpen(false));
+    };
+
     return (
-      <View style={styles.swipeContainer}>
-        <View style={styles.deleteBackground}>
-          <Ionicons name="trash-outline" size={24} color="white" />
-          <Text style={styles.deleteText}>Hapus</Text>
-        </View>
-        <PanGestureHandler
-          onGestureEvent={onGestureEvent}
-          onHandlerStateChange={onHandlerStateChange}
-        >
-          <Animated.View
+      <GestureHandlerRootView>
+        <View style={styles.swipeableRowContainer}>
+          <View
             style={[
-              styles.rowFront,
-              { transform: [{ translateX }], opacity: isDeleting ? 0.5 : 1 },
+              styles.hiddenButton,
+              {
+                backgroundColor:
+                  item.status === "Aktif" || item.status === 1
+                    ? "#ff4757"
+                    : "#007bff",
+              },
             ]}
           >
             <TouchableOpacity
-              style={styles.item}
-              onPress={() => onEdit(item)}
+              onPress={() => {
+                closeSwipe();
+                handleDelete(item.id, item.status);
+              }}
+              style={styles.actionButton}
               activeOpacity={0.7}
             >
-              <View style={styles.itemContent}>
-                <Text style={styles.itemTitle}>{item.judul}</Text>
-                <Text style={styles.itemSubtitle}>
-                  {item.deskripsi || "Tidak ada deskripsi"}
-                </Text>
-              </View>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>Aktif</Text>
-              </View>
+              <Ionicons
+                name={
+                  item.status === "Aktif" || item.status === 1
+                    ? "trash-outline"
+                    : "refresh-outline"
+                }
+                size={24}
+                color="white"
+              />
+              <Text style={styles.deleteText}>
+                {item.status === "Aktif" || item.status === 1
+                  ? "Hapus"
+                  : "Pulihkan"}
+              </Text>
             </TouchableOpacity>
-          </Animated.View>
-        </PanGestureHandler>
-      </View>
+          </View>
+
+          <PanGestureHandler
+            onGestureEvent={onGestureEvent}
+            onHandlerStateChange={onHandlerStateChange}
+            activeOffsetX={[-20, 20]}
+            failOffsetY={[-10, 10]}
+          >
+            <Animated.View
+              style={[
+                styles.rowFront,
+                {
+                  transform: [{ translateX }],
+                },
+              ]}
+            >
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => handleEditJurnal(item)}
+                activeOpacity={0.8}
+              >
+                <View style={styles.cardContent}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.cardTitle}>
+                      {item.judul.length > 40
+                        ? item.judul.substring(0, 40) + "..."
+                        : item.judul}
+                    </Text>
+
+                    <Text style={styles.cardText}>
+                      {item.desc.length > 50
+                        ? item.desc.substring(0, 50) + "..."
+                        : item.desc}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: getStatusColor(item.status) },
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {getStatusText(item.status)}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
+          </PanGestureHandler>
+        </View>
+      </GestureHandlerRootView>
     );
   };
 
-  const renderMateriItem = ({ item }) => (
-    <SwipeableRow
-      item={item}
-      onDelete={handleDelete}
-      onEdit={handleEditMateri}
-    />
-  );
+  const renderItem = ({ item }) => <SwipeableRow item={item} />;
 
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#e91e63" />
-          <Text style={styles.loadingText}>Memuat data...</Text>
+          <ActivityIndicator size="large" color="#D7385E" />
+          <Text style={styles.loadingText}>Memuat jurnal...</Text>
         </View>
       </SafeAreaView>
     );
@@ -180,12 +246,15 @@ export default function JurnalList({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Daftar Materi</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{jenisjurnal.title}</Text>
       </View>
 
       <FlatList
-        data={materis}
-        renderItem={renderMateriItem}
+        data={jurnalList}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         refreshing={refreshing}
@@ -193,10 +262,10 @@ export default function JurnalList({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="book-outline" size={48} color="#ccc" />
-            <Text style={styles.emptyText}>Belum ada materi tersedia</Text>
+            <Ionicons name="document-text-outline" size={48} color="#ccc" />
+            <Text style={styles.emptyText}>Belum ada jurnal</Text>
             <Text style={styles.emptySubtext}>
-              Tap tombol "Tambah" untuk menambahkan materi baru
+              Tap tombol + untuk menambahkan jurnal baru
             </Text>
           </View>
         }
@@ -204,36 +273,42 @@ export default function JurnalList({ navigation }) {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={handleAddMateri}
+        onPress={() => handleAddJurnal()}
         activeOpacity={0.8}
       >
-        <Ionicons name="add" size={40} color="white" />
+        <Ionicons name="add" size={36} color="#fff" />
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
+  container: { flex: 1, backgroundColor: "#f8f9fa" },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-    paddingTop: 40,
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  title: {
+    marginLeft: 20,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+
+  listContainer: {
+    padding: 20,
+    paddingBottom: 100,
   },
   fab: {
     position: "absolute",
     right: 20,
     bottom: 30,
-    backgroundColor: "#D6385E",
+    backgroundColor: "#D7385E",
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -241,34 +316,73 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 5,
   },
-  fabText: {
-    fontSize: 30,
-    color: "#fff",
-    fontWeight: "bold",
+  swipeableRowContainer: {
+    marginBottom: 12,
+    position: "relative",
+    height: 105,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#e91e63",
-  },
-  addButton: {
-    flexDirection: "row",
+  hiddenButton: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 80,
+    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#e91e63",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    shadowColor: "#e91e63",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: 12,
   },
-  addButtonText: {
+  actionButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteText: {
     color: "white",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
-    marginLeft: 4,
+    marginTop: 4,
+  },
+  rowFront: {
+    backgroundColor: "transparent",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+    height: "100%",
+  },
+  cardContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#222",
+    marginBottom: 4,
+  },
+  cardText: {
+    fontSize: 14,
+    color: "#555",
+    lineHeight: 20,
+  },
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+    marginLeft: 10,
+  },
+  statusText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "500",
   },
   loadingContainer: {
     flex: 1,
@@ -280,84 +394,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
   },
-  listContainer: {
-    padding: 20,
-    paddingBottom: 100,
-  },
-  swipeContainer: {
-    marginBottom: 12,
-    position: "relative",
-  },
-  deleteBackground: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: "#ff4757",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 100,
-    borderRadius: 12,
-    flexDirection: "row",
-  },
-  deleteText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "600",
-    marginLeft: 4,
-  },
-  rowFront: {
-    backgroundColor: "transparent",
-  },
-  topikItem: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  topikContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  topikInfo: {
-    flex: 1,
-  },
-  topikName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 2,
-  },
-  topikSubtitle: {
-    fontSize: 13,
-    color: "#888",
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  statusBadge: {
-    backgroundColor: "#e91e63",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "500",
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 210,
+    paddingTop: 200,
   },
   emptyText: {
     fontSize: 18,
@@ -371,19 +412,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "center",
     lineHeight: 20,
-  },
-  instructionContainer: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(0,0,0,0.8)",
-    borderRadius: 8,
-    padding: 12,
-  },
-  instructionText: {
-    color: "white",
-    fontSize: 12,
-    textAlign: "center",
   },
 });

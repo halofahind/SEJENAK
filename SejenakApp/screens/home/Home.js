@@ -16,6 +16,47 @@ import { API_BASE_URL } from "../../utils/constants";
 
 const screenWidth = Dimensions.get("window").width;
 
+const topiks = [
+  {
+    id: "1",
+    title: "Kenali Diri Lebih Baik",
+    image: require("../../assets/Home/1.png"),
+    backgroundColor: "#EF6A6A",
+  },
+  {
+    id: "2",
+    title: "Menjalin Relasi",
+    image: require("../../assets/Home/2.png"),
+    backgroundColor: "#697BC4",
+  },
+  {
+    id: "3",
+    title: "Cerita Keseharian",
+    image: require("../../assets/Home/3.png"),
+    backgroundColor: "#11CBE0",
+  },
+  {
+    id: "4",
+    title: "Tingkatkan Potensi Diri",
+    image: require("../../assets/Home/4.png"),
+    backgroundColor: "#F6A75A",
+  },
+  {
+    id: "5",
+    title: "Membangun Keberanian",
+    image: require("../../assets/Home/5.png"),
+    backgroundColor: "#B676AA",
+  },
+];
+
+const moods = [
+  { emoji: "😢", label: "Sangat Buruk" },
+  { emoji: "😞", label: "Buruk" },
+  { emoji: "😐", label: "Netral" },
+  { emoji: "😊", label: "Baik" },
+  { emoji: "😄", label: "Sangat Baik" },
+];
+
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -28,61 +69,16 @@ export default function Home({ navigation }) {
     gender: "",
     address: "",
     profilePic: require("../../assets/Home/1.png"),
+    role: "user",
   });
 
-  // useEffect(() => {
-  //   const fetchMotivasi = async () => {
-  //     try {
-  //       const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
-  //       const list = res.data;
-
-  //       if (list.length > 0) {
-  //         const today = new Date();
-  //         const daySeed =
-  //           today.getFullYear() * 10000 +
-  //           (today.getMonth() + 1) * 100 +
-  //           today.getDate();
-  //         const index = daySeed % list.length;
-
-  //         setMotivasiHarian(list[index].motivasiText);
-  //       }
-  //     } catch (err) {
-  //       console.error("Gagal ambil motivasi:", err.message);
-  //     }
-  //   };
-
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const userData = await AsyncStorage.getItem("userData");
-  //       if (userData) {
-  //         const parsedData = JSON.parse(userData);
-  //         setUser({
-  //           name: parsedData.nama || "",
-  //           username: parsedData.username || "",
-  //           email: parsedData.email || "",
-  //           phone: parsedData.telepon || "",
-  //           gender: parsedData.gender || "",
-  //           address: parsedData.alamat || "",
-  //           profilePic: parsedData.profilePic
-  //             ? { uri: parsedData.profilePic }
-  //             : require("../../assets/Home/1.png"),
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch user data:", error);
-  //     }
-  //   };
-
-  //   fetchMotivasi();
-  //   fetchUserData();
-  // }, []);
   const loadData = useCallback(async () => {
     try {
       setRefreshing(true);
 
       // Load motivasi
       const res = await axios.get(`${API_BASE_URL}/motivasi/get`);
-      const list = res.data;
+      const list = res.data.filter((item) => item.status === "Aktif");
       if (list.length > 0) {
         const today = new Date();
         const daySeed =
@@ -93,8 +89,8 @@ export default function Home({ navigation }) {
         setMotivasiHarian(list[index].motivasiText);
       }
 
-      // Load user data
       const userData = await AsyncStorage.getItem("userData");
+
       if (userData) {
         const parsedData = JSON.parse(userData);
 
@@ -102,15 +98,10 @@ export default function Home({ navigation }) {
         let profilePicSource;
         if (parsedData.usrFoto) {
           profilePicSource = {
-            uri: parsedData.usrFoto.includes("http")
-              ? parsedData.usrFoto
-              : `${API_BASE_URL}/uploads/${parsedData.usrFoto}`,
+            uri: `${API_BASE_URL}/uploads/foto-profil/${
+              parsedData.usrFoto
+            }?${new Date().getTime()}`,
           };
-        } else if (parsedData.profilePic) {
-          profilePicSource =
-            typeof parsedData.profilePic === "string"
-              ? { uri: parsedData.profilePic }
-              : parsedData.profilePic;
         } else {
           profilePicSource = require("../../assets/Profil/Profil.png");
         }
@@ -123,6 +114,7 @@ export default function Home({ navigation }) {
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
           profilePic: profilePicSource,
+          role: parsedData.role,
         });
       }
     } catch (error) {
@@ -136,169 +128,143 @@ export default function Home({ navigation }) {
     loadData();
   }, [loadData]);
 
-  // Fungsi untuk refresh
   const onRefresh = useCallback(() => {
     loadData();
   }, [loadData]);
 
-  // Navigasi ke profil
   const navigateToProfile = () => {
     navigation.navigate("Profil");
   };
-  const topiks = [
-    {
-      id: "1",
-      title: "Kenali Diri Lebih Baik",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#EF6A6A",
-    },
-    {
-      id: "2",
-      title: "Menjalin Relasi",
-      image: require("../../assets/Home/2.png"),
-      backgroundColor: "#F6A75A",
-    },
-    {
-      id: "3",
-      title: "Cerita Keseharian",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#697BC4",
-    },
-    {
-      id: "4",
-      title: "Tingkatkan Potensi Diri",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#11CBE0",
-    },
-    {
-      id: "5",
-      title: "Membangun Keberanian",
-      image: require("../../assets/Home/1.png"),
-      backgroundColor: "#B676AA",
-    },
-  ];
-
-  const moods = [
-    { emoji: "😢", label: "Sangat Buruk" },
-    { emoji: "😞", label: "Buruk" },
-    { emoji: "😐", label: "Netral" },
-    { emoji: "😊", label: "Baik" },
-    { emoji: "😄", label: "Sangat Baik" },
-  ];
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: "#fff", marginTop: 40 }}
-      contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#e91e63"]}
-          tintColor="#e91e63"
-        />
-      }>
-      {/* === Profil & Notifikasi === */}
-      <View style={styles.profileRow}>
-        <View style={styles.profileContainer}>
-          <Image
-            source={
-              user.profilePic && user.profilePic.uri
-                ? { uri: user.profilePic.uri }
-                : typeof user.profilePic === "string"
-                ? { uri: user.profilePic }
-                : user.profilePic
-            }
-            style={styles.profileImage}
-            onError={() => console.log("Gagal memuat gambar profil")}
+    <View style={styles.container}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#fff", marginTop: 40 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#D7385E"]}
+            tintColor="#D7385E"
           />
-          <View>
-            <Text style={styles.userName}>Hai, {user.name}</Text>
-            <Text style={styles.welcomeText}>
-              Bagaimana perasaanmu hari ini?
+        }
+      >
+        {/* === Profil & Notifikasi === */}
+        <View style={styles.profileRow}>
+          <View style={styles.profileContainer}>
+            <Image
+              source={
+                user.profilePic?.uri
+                  ? { uri: user.profilePic.uri }
+                  : require("../../assets/Home/1.png")
+              }
+              style={styles.profileImage}
+              onError={() => console.log("Gagal memuat gambar profil")}
+            />
+
+            <View>
+              <Text style={styles.userName}>Hai, {user.name}</Text>
+              <Text style={styles.welcomeText}>
+                Bagaimana perasaanmu hari ini?
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("NotifikasiScreen")}
+          >
+            <Icon name="notifications-none" size={28} color="#444" />
+          </TouchableOpacity>
+        </View>
+
+        {/* === Mood Pilihan === */}
+        <View style={styles.moodOptions}>
+          {moods.map((mood, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.moodItem}
+              onPress={() =>
+                navigation.navigate("MoodTracker", { selectedMood: mood })
+              }
+            >
+              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+              <Text style={styles.moodLabel}>{mood.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* === Quotes === */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.manageQuotes}>Quotes hari ini</Text>
+          {user.role === "admin" && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("MotivasiScreen")}
+            >
+              <Icon name="edit" size={28} color="#444" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.quoteBox}>
+          <View style={styles.quoteTextContainer}>
+            <Text style={styles.quoteText}>
+              {motivasiHarian
+                ? `“${motivasiHarian}”`
+                : "Memuat motivasi hari ini..."}
             </Text>
           </View>
+          <Image
+            source={require("../../assets/Home/hug.png")}
+            style={styles.quoteImage}
+            resizeMode="contain"
+          />
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("NotifikasiScreen")}>
-          <Icon name="notifications-none" size={28} color="#444" />
-        </TouchableOpacity>
-      </View>
 
-      {/* === Mood Pilihan === */}
-      <View style={styles.moodOptions}>
-        {moods.map((mood, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.moodItem}
-            onPress={() =>
-              navigation.navigate("MoodTracker", { selectedMood: mood })
-            }>
-            <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-            <Text style={styles.moodLabel}>{mood.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* === Topik === */}
+        <Text style={styles.sectionTitle}>Topik Journal</Text>
+        <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
 
-      <View style={styles.divider} />
+        <View style={styles.topikWrapper}>
+          {topiks.map((item, index) => {
+            const isLastItem = index === topiks.length - 1;
+            const isOddCount = topiks.length % 2 === 1;
+            const shouldFullWidth = isOddCount && isLastItem;
 
-      {/* === Quotes === */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.manageQuotes}>Quotes hari ini</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("MotivasiScreen")}>
-          <Text style={styles.manageQuotes}>Kelola quotes</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.quoteBox}>
-        <Text style={styles.quoteText}>
-          {motivasiHarian
-            ? `“${motivasiHarian}”`
-            : "Memuat motivasi hari ini..."}
-        </Text>
-      </View>
-
-      {/* === Topik === */}
-      <Text style={styles.sectionTitle}>Topik Journal</Text>
-      <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
-
-      <View style={styles.topikWrapper}>
-        {topiks.map((item, index) => {
-          const isLastItem = index === topiks.length - 1;
-          const isOddCount = topiks.length % 2 === 1;
-          const shouldFullWidth = isOddCount && isLastItem;
-
-          return (
-            <TouchableOpacity
-              key={item.id}
-              style={[
-                styles.card,
-                { backgroundColor: item.backgroundColor },
-                shouldFullWidth && { width: screenWidth - 40 },
-              ]}
-              onPress={() =>
-                navigation.navigate("DaftarJurnal", {
-                  jenisjurnal: item,
-                })
-              }>
-              <Image source={item.image} style={styles.image} />
-              <Text style={styles.cardTitle}>{item.title}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </ScrollView>
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.card,
+                  { backgroundColor: item.backgroundColor },
+                  shouldFullWidth && { width: screenWidth - 40 },
+                ]}
+                onPress={() =>
+                  navigation.navigate("DaftarJurnal", {
+                    jenisjurnal: item,
+                  })
+                }
+              >
+                <Image source={item.image} style={styles.image} />
+                <Text style={styles.cardTitle}>{item.title}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 0,
     backgroundColor: "#ffffff",
     flex: 1,
-    marginTop: 40,
-    paddingBottom: 100,
+
+    paddingBottom: 50,
   },
   profileRow: {
     flexDirection: "row",
@@ -364,16 +330,33 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   quoteBox: {
+    flexDirection: "row",
     backgroundColor: "#FCD6D9",
-    padding: 12,
     borderRadius: 10,
     marginBottom: 20,
+    padding: 12,
+    alignItems: "center",
   },
+
+  quoteTextContainer: {
+    flex: 3, // 75% area
+    paddingRight: 10,
+  },
+
   quoteText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#444",
     fontStyle: "italic",
+    flexWrap: "wrap",
+    textAlign: "left",
   },
+
+  quoteImage: {
+    flex: 1, // 25% area
+    height: 80,
+    width: 80,
+  },
+
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -392,7 +375,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   card: {
-    width: "47%",
+    width: "48%",
     borderRadius: 12,
     paddingVertical: 20,
     paddingHorizontal: 10,
@@ -400,8 +383,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: "100%",
+    height: 110,
     resizeMode: "contain",
     marginBottom: 10,
   },

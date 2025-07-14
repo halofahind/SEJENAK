@@ -102,7 +102,8 @@ export default function GantiPassword({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}>
+          style={styles.backButton}
+        >
           <Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Ganti Password</Text>
@@ -164,7 +165,8 @@ export default function GantiPassword({ navigation }) {
           <TouchableOpacity
             style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleSubmit}
-            disabled={isLoading}>
+            disabled={isLoading}
+          >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
@@ -183,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -230,13 +232,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 15,
     top: 12,
-    color: "#e91e63",
+    color: "#D7385E",
   },
   buttonContainer: {
     marginTop: 30,
   },
   button: {
-    backgroundColor: "#e91e63",
+    backgroundColor: "#D7385E",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",

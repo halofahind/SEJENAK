@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -18,15 +18,18 @@ import {
 } from "react-native-gesture-handler";
 import axios from "axios";
 import { API_BASE_URL } from "../../../utils/constants";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchMotivasi();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchMotivasi();
+    }, [])
+  );
 
   const fetchMotivasi = async () => {
     try {
@@ -77,7 +80,7 @@ export default function MotivasiScreen({ navigation }) {
     status === "Aktif" || status === 1 ? "Aktif" : "Tidak Aktif";
 
   const getStatusColor = (status) =>
-    status === "Aktif" || status === 1 ? "#e91e63" : "#6c757d";
+    status === "Aktif" || status === 1 ? "#D7385E" : "#6c757d";
 
   const SwipeableRow = ({ item }) => {
     const translateX = useRef(new Animated.Value(0)).current;
@@ -317,6 +320,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
+    height: "100%",
   },
   cardContent: {
     flexDirection: "row",
@@ -373,7 +377,7 @@ const styles = StyleSheet.create({
   swipeableRowContainer: {
     marginBottom: 12,
     position: "relative",
-    height: 80, // pastikan tingginya konsisten
+    height: 80,
   },
 
   hiddenButton: {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
@@ -12,9 +12,10 @@ import {
   Linking,
   Modal,
   RefreshControl,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 
-import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import KebijakanPrivasi from "./KebijakanPrivasi";
 import i18n from "../../locales/i18n";
@@ -22,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../utils/constants";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Iconf from "react-native-vector-icons/FontAwesome";
+import Tanaman from "../../assets/Profil/tanaman.png";
 
 export default function Profil({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
@@ -74,6 +76,7 @@ export default function Profil({ navigation }) {
       },
     ]);
   };
+
   const refreshProfile = async () => {
     setRefreshing(true);
     try {
@@ -85,7 +88,7 @@ export default function Profil({ navigation }) {
         if (parsedData.usrFoto) {
           // Tambahkan timestamp untuk menghindari cache
           profilePicSource = {
-            uri: `${API_BASE_URL}/uploads/${
+            uri: `${API_BASE_URL}/uploads/foto-profil/${
               parsedData.usrFoto
             }?${new Date().getTime()}`,
           };
@@ -104,7 +107,10 @@ export default function Profil({ navigation }) {
           phone: parsedData.telepon || "",
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
+          hobi: parsedData.hobi || "",
+          tentang: parsedData.tentang || "",
           profilePic: profilePicSource,
+          role: parsedData.role || "user",
         });
       }
     } catch (error) {
@@ -113,8 +119,9 @@ export default function Profil({ navigation }) {
       setRefreshing(false);
     }
   };
+
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       refreshProfile();
     }, [])
   );
@@ -130,6 +137,7 @@ export default function Profil({ navigation }) {
     gender: "",
     about: "",
     profilePic: "",
+    role: "user",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -144,9 +152,8 @@ export default function Profil({ navigation }) {
           // Perbaikan utama di sini:
           let profilePicSource;
           if (parsedData.usrFoto) {
-            // Jika ada usrFoto, gunakan sebagai URI
             profilePicSource = {
-              uri: `${API_BASE_URL}/uploads/${parsedData.usrFoto}`,
+              uri: `${API_BASE_URL}/uploads/foto-profil/${parsedData.usrFoto}`,
             };
           } else if (parsedData.profilePic) {
             // Jika ada profilePic (alternatif)
@@ -163,15 +170,12 @@ export default function Profil({ navigation }) {
             hobi: parsedData.hobi || "",
             phone: parsedData.telepon || "",
             gender: parsedData.gender || "",
-            about: parsedData.about || "",
+            address: parsedData.alamat || "",
+            hobi: parsedData.hobi || "",
+            tentang: parsedData.tentang || "",
             profilePic: profilePicSource,
+            role: parsedData.user || "user",
           });
-
-          console.log("profilePic dari parsedData:", parsedData.usrFoto);
-          console.log(
-            "FULL URL IMAGE:",
-            `${API_BASE_URL}/uploads/${parsedData.usrFoto}`
-          );
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -186,6 +190,7 @@ export default function Profil({ navigation }) {
   const handleEdit = () => {
     navigation.navigate("ProfilEdit");
   };
+
   const handleLogout = async () => {
     Alert.alert(
       "Konfirmasi Keluar",
@@ -216,14 +221,19 @@ export default function Profil({ navigation }) {
       ]
     );
   };
+
   const menuItems = [
-    {
-      title: t("ProfilMenuManageAcc"),
-      icon: "person-outline",
-      onPress: () => {
-        navigation.navigate("KelolaAkun");
-      },
-    },
+    ...(user?.role === "admin"
+      ? [
+          {
+            title: t("ProfilMenuManageAcc"),
+            icon: "person-outline",
+            onPress: () => {
+              navigation.navigate("KelolaAkun");
+            },
+          },
+        ]
+      : []),
     {
       title: t("ProfilMenuPassChange"),
       icon: "lock",
@@ -271,29 +281,25 @@ export default function Profil({ navigation }) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#e91e63" />
+        <ActivityIndicator size="large" color="#D7385E" />
       </View>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={refreshProfile}
-          colors={["#e91e63"]}
-          tintColor="#e91e63"
-        />
-      }>
+    <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
+        <Image
+          source={Tanaman}
+          style={styles.decorativeImage}
+          resizeMode="contain"
+        />
         <View style={styles.headerContent}>
           <View style={styles.profileSection}>
             <Image source={user.profilePic} style={styles.profileImage} />
             <View style={styles.userInfo}>
-              <Text style={styles.nameText}>Hi, {user.name || "User"}</Text>
+              <Text style={styles.nameText}>{user.name || "User"}</Text>
               <View style={styles.infoRow}>
                 <Icon
                   name="gamepad"
@@ -313,90 +319,94 @@ export default function Profil({ navigation }) {
                   size={20}
                 />
                 <Text style={styles.infoText}>
-                  {user.about || "Tentang Belum Di isi"}
+                  {user.tentang || "Tentang Belum Di isi"}
                 </Text>
               </View>
-              {/* <View style={styles.infoRow}>
-                <Icon name="id-card" type="font-awesome" color="#fff" />
-                <Text style={styles.infoText}>{user.username}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Icon name="phone" type="font-awesome" color="#fff" />
-                <Text style={styles.infoText}>{user.phone || "-"}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Icon
-                  name="envelope"
-                  type="font-awesome"
-                  size={16}
-                  color="#fff"
-                />
-                <Text style={styles.infoText}>{user.email || "-"}</Text>
-              </View> */}
+
               <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-                <Icon name="edit" size={16} color="#e91e63" />
+                <Icon name="edit" size={16} color="#D7385E" />
                 <Text style={styles.editButtonText}>{t("ProfilEditBtn")}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </View>
-      {/* Menu Section */}
-      <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.menuItem}
-            onPress={item.onPress}>
-            <Icon name={item.icon} type={item.type} color="#e91e63" />
-            <Text style={styles.menuText}>{item.title}</Text>
-            <Icon name="chevron-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-        ))}
-      </View>
-      {/* Logout Button */}
-      <View style={styles.logoutContainer}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Icon name="logout" size={20} color="#fff" />
-          <Text style={styles.logoutText}>{t("ProfilLogOutBtn")}</Text>
-        </TouchableOpacity>
-      </View>
-      {/* Language Selection Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={languageModalVisible}
-        onRequestClose={() => setLanguageModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Pilih Bahasa</Text>
-
-            {["id", "en"].map((lang) => (
-              <TouchableOpacity
-                key={lang}
-                style={[
-                  styles.languageButton,
-                  currentLanguage === lang && styles.selectedLanguage,
-                ]}
-                onPress={() => changeLanguage(lang)}>
-                <Text style={styles.languageText}>
-                  {lang === "id" ? "Bahasa Indonesia" : "English"}
-                </Text>
-                {currentLanguage === lang && (
-                  <Icon name="check" color="#e91e63" size={20} />
-                )}
-              </TouchableOpacity>
-            ))}
-
+      <ScrollView
+      // refreshControl={
+      //   <RefreshControl
+      //     refreshing={refreshing}
+      //     onRefresh={refreshProfile}
+      //     colors={["#D7385E"]}
+      //     tintColor="#D7385E"
+      //   />
+      // }
+      >
+        <View style={styles.menuContainer}>
+          {menuItems.map((item, index) => (
             <TouchableOpacity
-              style={styles.modalCloseButton}
-              onPress={() => setLanguageModalVisible(false)}>
-              <Text style={styles.modalCloseText}>Batal</Text>
+              key={index}
+              style={styles.menuItem}
+              onPress={item.onPress}
+            >
+              <Icon
+                name={item.icon}
+                size={24}
+                type={item.type}
+                color="#5E5E5D"
+              />
+              <Text style={styles.menuText}>{item.title}</Text>
+              <Icon name="chevron-right" size={24} color="#ccc" />
             </TouchableOpacity>
-          </View>
+          ))}
         </View>
-      </Modal>
-    </ScrollView>
+
+        <View style={styles.logoutContainer}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleLogout}>
+            <Icon name="logout" size={20} color="#fff" />
+            <Text style={styles.logoutText}>{t("ProfilLogOutBtn")}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Language Selection Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={languageModalVisible}
+          onRequestClose={() => setLanguageModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Pilih Bahasa</Text>
+
+              {["id", "en"].map((lang) => (
+                <TouchableOpacity
+                  key={lang}
+                  style={[
+                    styles.languageButton,
+                    currentLanguage === lang && styles.selectedLanguage,
+                  ]}
+                  onPress={() => changeLanguage(lang)}
+                >
+                  <Text style={styles.languageText}>
+                    {lang === "id" ? "Bahasa Indonesia" : "English"}
+                  </Text>
+                  {currentLanguage === lang && (
+                    <Icon name="check" color="#D7385E" size={20} />
+                  )}
+                </TouchableOpacity>
+              ))}
+
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => setLanguageModalVisible(false)}
+              >
+                <Text style={styles.modalCloseText}>Batal</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -410,12 +420,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  header: {
-    backgroundColor: "#e91e63",
+  decorativeImage: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 150,
+    height: 150,
+  },
 
-    paddingTop: 50,
+  header: {
+    backgroundColor: "#D7385E",
+    paddingTop: 70,
     paddingBottom: 25,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   headerContent: {
     position: "relative",
@@ -423,7 +440,6 @@ const styles = StyleSheet.create({
   profileSection: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
   },
   profileImage: {
     width: 100,
@@ -431,8 +447,8 @@ const styles = StyleSheet.create({
     borderRadius: 70,
     borderWidth: 3,
     borderColor: "#fff",
-    marginRight: 15,
-    left: 20,
+    marginRight: 0,
+    left: 10,
   },
   userInfo: {
     flex: 1,
@@ -443,11 +459,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     marginBottom: 8,
+    marginRight: 20,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 10,
   },
   infoText: {
     fontSize: 14,
@@ -457,7 +474,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     position: "static",
-    top: 20,
+    top: 25,
     right: 10,
     backgroundColor: "#fff",
     flexDirection: "row",
@@ -468,7 +485,7 @@ const styles = StyleSheet.create({
     left: 30,
   },
   editButtonText: {
-    color: "#e91e63",
+    color: "#D7385E",
     marginLeft: 5,
     fontSize: 14,
     fontWeight: "500",
@@ -479,32 +496,37 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     paddingVertical: 5,
+    paddingHorizontal: 5,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 18,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
   menuText: {
+    textAlign: "left",
+    flex: 1,
+    marginLeft: 15,
     fontSize: 16,
     color: "#333",
     fontWeight: "500",
   },
   logoutContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    zIndex: 10,
   },
-  logoutButton: {
-    backgroundColor: "#e91e63",
-    flexDirection: "row",
+  primaryButton: {
+    backgroundColor: "#D7385E",
+    borderRadius: 24,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 15,
-    borderRadius: 25,
-    top: 100,
+    marginBottom: 10,
+    flexDirection: "row",
   },
   logoutText: {
     color: "#fff",
@@ -551,7 +573,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalCloseText: {
-    color: "#e91e63",
+    color: "#D7385E",
     fontSize: 16,
     fontWeight: "500",
   },
