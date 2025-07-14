@@ -257,7 +257,7 @@ export default function Profil({ navigation }) {
     },
     {
       title: t("ProfilMenuCallMe"),
-      icon: "whatsapp",
+      icon: "messages",
       onPress: () => {
         const nomorWA = "6282118028300";
         const pesan =
@@ -346,8 +346,7 @@ export default function Profil({ navigation }) {
             <TouchableOpacity
               key={index}
               style={styles.menuItem}
-              onPress={item.onPress}
-            >
+              onPress={item.onPress}>
               <Icon
                 name={item.icon}
                 size={24}
@@ -372,8 +371,7 @@ export default function Profil({ navigation }) {
           animationType="slide"
           transparent={true}
           visible={languageModalVisible}
-          onRequestClose={() => setLanguageModalVisible(false)}
-        >
+          onRequestClose={() => setLanguageModalVisible(false)}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pilih Bahasa</Text>
@@ -385,8 +383,7 @@ export default function Profil({ navigation }) {
                     styles.languageButton,
                     currentLanguage === lang && styles.selectedLanguage,
                   ]}
-                  onPress={() => changeLanguage(lang)}
-                >
+                  onPress={() => changeLanguage(lang)}>
                   <Text style={styles.languageText}>
                     {lang === "id" ? "Bahasa Indonesia" : "English"}
                   </Text>
@@ -398,8 +395,7 @@ export default function Profil({ navigation }) {
 
               <TouchableOpacity
                 style={styles.modalCloseButton}
-                onPress={() => setLanguageModalVisible(false)}
-              >
+                onPress={() => setLanguageModalVisible(false)}>
                 <Text style={styles.modalCloseText}>Batal</Text>
               </TouchableOpacity>
             </View>

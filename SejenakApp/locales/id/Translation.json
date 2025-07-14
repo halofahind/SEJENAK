@@ -54,5 +54,7 @@
   "CounselingHeadDesc": "Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan nyaman",
   "CounselingHistoryTitle": "Riwayat Konseling",
   "CounselingHistoryEmpTitle": "Belum Ada Riwayat Konseling",
-  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru"
+  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru",
+  "CounselingBtnStartCouns": "Mulai Konseling",
+  "CounselingBtnManageTopic": "Kelola Topik"
 }

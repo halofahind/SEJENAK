@@ -313,21 +313,18 @@ export default function ProfilEdit({ navigation }) {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -45}
-    >
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -45}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
+        keyboardShouldPersistTaps="handled">
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.profileSection}>
               <TouchableOpacity
                 onPress={showImagePickerOptions}
-                style={styles.profileImageContainer}
-              >
+                style={styles.profileImageContainer}>
                 <Image
                   source={
                     // Handle semua kemungkinan format:
@@ -397,8 +394,7 @@ export default function ProfilEdit({ navigation }) {
             <TouchableOpacity
               onPress={() => !isLoading && setShowDatePicker(true)}
               style={styles.input}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               <Text style={{ color: dob ? "#333" : "#999" }}>
                 {dob || "Pilih tanggal lahir (DD/MM/YYYY)"}
               </Text>
@@ -410,7 +406,7 @@ export default function ProfilEdit({ navigation }) {
                 user.tanggalLahir ? new Date(user.tanggalLahir) : new Date()
               }
               mode="date"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
+              display={"default"}
               maximumDate={new Date()}
               onChange={(event, selectedDate) => {
                 setShowDatePicker(false);
@@ -459,14 +455,12 @@ export default function ProfilEdit({ navigation }) {
                   styles.genderButton,
                   user.gender === "Laki-laki" && styles.genderSelectedMale,
                 ]}
-                onPress={() => setUser({ ...user, gender: "Laki-laki" })}
-              >
+                onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
                 <Text
                   style={[
                     styles.genderText,
                     user.gender === "Laki-laki" && styles.genderTextSelected,
-                  ]}
-                >
+                  ]}>
                   Laki-laki
                 </Text>
               </TouchableOpacity>
@@ -475,14 +469,12 @@ export default function ProfilEdit({ navigation }) {
                   styles.genderButton,
                   user.gender === "Perempuan" && styles.genderSelectedFemale,
                 ]}
-                onPress={() => setUser({ ...user, gender: "Perempuan" })}
-              >
+                onPress={() => setUser({ ...user, gender: "Perempuan" })}>
                 <Text
                   style={[
                     styles.genderText,
                     user.gender === "Perempuan" && styles.genderTextSelected,
-                  ]}
-                >
+                  ]}>
                   Perempuan
                 </Text>
               </TouchableOpacity>
@@ -517,8 +509,7 @@ export default function ProfilEdit({ navigation }) {
           <TouchableOpacity
             style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
             onPress={handleSave}
-            disabled={isSaving}
-          >
+            disabled={isSaving}>
             {isSaving ? (
               <ActivityIndicator color="#fff" />
             ) : (
