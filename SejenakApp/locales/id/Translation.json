@@ -33,7 +33,18 @@
   "DateInputPh": "Tanggal (DD/MM/YYYY)",
   "MGender": "Laki-laki",
   "FGender": "Perempuan",
+  "PhoneInputLb": "Nomor telepon (contoh: 0812345678)",
+  "EmailInputLb": "E-mail",
+  "UsernameInputLb": "Nama Pengguna",
+  "NameInputLb": "Nama Lengkap",
+  "PasswordInputLb": "Kata Sandi",
+  "PasswordConfInputLb": "Konfirmasi Kata Sandi",
+  "DateInputLb": "Tanggal (DD/MM/YYYY)",
+  "GenderLb": "Jenis Kelamin",
   "PhoneInputPh": "Nomor telepon (contoh: 0812345678)",
+
+  "ConfirmBtn": "Konfirmasi",
+  "CancelBtn": "Batal",
 
   "MainTabsHome": "Beranda",
   "MainTabsJournal": "Jurnalku",
@@ -50,6 +61,9 @@
   "ProfileMenuLangChange": "Ganti Bahasa",
   "ProfilLogOutBtn": "Keluar",
 
+  "ProfilEditTitle": "Ubah Profil",
+  "ProfilEditSaveBtn": "Simpan Perubahan",
+
   "CounselingHeadTitle": "Konseling",
   "CounselingHeadDesc": "Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan nyaman",
   "CounselingHistoryTitle": "Riwayat Konseling",
@@ -60,5 +74,7 @@
 
   "TopicSelectTitle": "Pilih Topik",
   "TopicSelectSubTitle": "Permasalahan apa yang ingin anda diskusikan?",
-  "TopicSelectBtn": "Pilih Topik"
+  "TopicSelectBtn": "Pilih Topik",
+
+  "DetailCounsHeadTitle": "Topik"
 }

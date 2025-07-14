@@ -14,7 +14,10 @@ import {
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
+import { Image } from "react-native-elements";
 
+import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function getIndonesiaISOTime() {
@@ -27,6 +30,7 @@ const DetailKonseling = ({ navigation, route }) => {
   const { topic, msg1, msg2, isHistory, status, konId } = route.params;
   const [currentRole, setCurrentRole] = useState("user");
   const [message, setMessage] = useState("");
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -226,20 +230,26 @@ const DetailKonseling = ({ navigation, route }) => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-      >
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
         <View style={{ flex: 1 }}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-              <Text style={styles.backButtonText}>←</Text>
+              <Text style={styles.backButtonText}>
+                <Icon name="chevron-left" size={30} />
+              </Text>
             </TouchableOpacity>
             <View style={styles.adminInfo}>
-              <View style={styles.adminAvatar}>
-                <Text style={styles.adminAvatarText}>👤</Text>
-              </View>
+              <Image
+                style={styles.avatarImage}
+                source={require("../../assets/User/user-pr.png")}
+                resizeMode="cover"
+              />
               <View style={styles.adminDetails}>
-                <Text style={styles.adminName}>Topik : {topic}</Text>
+                <Text style={styles.adminName}>
+                  {t("DetailCounsHeadTitle")}
+                  {topic}
+                </Text>
               </View>
             </View>
             {status !== "Selesai" && (
@@ -256,8 +266,7 @@ const DetailKonseling = ({ navigation, route }) => {
               style={styles.messagesContainer}
               contentContainerStyle={styles.messagesContent}
               keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
+              showsVerticalScrollIndicator={false}>
               {[...messages]
                 .sort((a, b) =>
                   dayjs(`${a.date} ${a.time}`, "DD/MM/YY HH:mm").diff(
@@ -274,23 +283,20 @@ const DetailKonseling = ({ navigation, route }) => {
                         isSender
                           ? styles.userMessageWrapper
                           : styles.adminMessageWrapper,
-                      ]}
-                    >
+                      ]}>
                       <View style={styles.messageContainer}>
                         <View
                           style={[
                             styles.messageBubble,
                             isSender ? styles.userMessage : styles.adminMessage,
-                          ]}
-                        >
+                          ]}>
                           <Text
                             style={[
                               styles.messageText,
                               isSender
                                 ? styles.userMessageText
                                 : styles.adminMessageText,
-                            ]}
-                          >
+                            ]}>
                             {msg.text}
                           </Text>
                         </View>
@@ -300,8 +306,7 @@ const DetailKonseling = ({ navigation, route }) => {
                             isSender
                               ? styles.userMessageTime
                               : styles.adminMessageTime,
-                          ]}
-                        >
+                          ]}>
                           {msg.date} {msg.time}
                         </Text>
                       </View>
@@ -331,9 +336,10 @@ const DetailKonseling = ({ navigation, route }) => {
                   !message.trim() && styles.sendButtonDisabled,
                 ]}
                 onPress={sendMessage}
-                disabled={!message.trim()}
-              >
-                <Text style={styles.sendButtonText}>→</Text>
+                disabled={!message.trim()}>
+                <Text style={styles.sendButtonText}>
+                  <Icon name="send" size={24} color="black" />
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -364,7 +370,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    paddingTop: 20,
+    paddingTop: 30,
   },
   backButton: {
     marginRight: 16,
@@ -453,6 +459,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 8,
+  },
+
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 12,
   },
   messageAvatarText: {
     fontSize: 12,

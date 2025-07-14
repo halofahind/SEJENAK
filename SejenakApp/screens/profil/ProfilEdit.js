@@ -17,10 +17,11 @@ import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
+import { useTranslation } from "react-i18next";
 import * as FileSystem from "expo-file-system";
 
 export default function ProfilEdit({ navigation }) {
+  const { t } = useTranslation();
   const [dob, setDob] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [user, setUser] = useState({
@@ -181,7 +182,7 @@ export default function ProfilEdit({ navigation }) {
       };
 
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -353,7 +354,7 @@ export default function ProfilEdit({ navigation }) {
                 )}
               </TouchableOpacity>
               <View style={styles.userInfo}>
-                <Text style={styles.nameText}>Edit Profil</Text>
+                <Text style={styles.nameText}>{t("ProfilEditTitle")}</Text>
               </View>
             </View>
           </View>
@@ -396,7 +397,7 @@ export default function ProfilEdit({ navigation }) {
               style={styles.input}
               disabled={isLoading}>
               <Text style={{ color: dob ? "#333" : "#999" }}>
-                {dob || "Pilih tanggal lahir (DD/MM/YYYY)"}
+                {dob || t("DateInputPh")}
               </Text>
             </TouchableOpacity>
           </View>

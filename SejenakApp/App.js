@@ -59,8 +59,9 @@ const Stack = createNativeStackNavigator();
 // Notifikasi Handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
+    shouldShowBanner: true, // ganti dari shouldShowAlert
+    shouldShowList: true, // tambahkan ini kalau mau tampil di notification center
+    shouldPlaySound: false,
     shouldSetBadge: false,
   }),
 });
@@ -109,8 +110,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
-          screenOptions={{ headerShown: false }}
-        >
+          screenOptions={{ headerShown: false }}>
           {/* Start */}
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="OnBoarding" component={OnboardingScreen} />

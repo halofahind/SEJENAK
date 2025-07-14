@@ -22,7 +22,6 @@ import i18n from "../../locales/i18n";
 import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../utils/constants";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import Iconf from "react-native-vector-icons/FontAwesome";
 import Tanaman from "../../assets/Profil/tanaman.png";
 
 export default function Profil({ navigation }) {
@@ -257,7 +256,7 @@ export default function Profil({ navigation }) {
     },
     {
       title: t("ProfilMenuCallMe"),
-      icon: "messages",
+      icon: "chat",
       onPress: () => {
         const nomorWA = "6282118028300";
         const pesan =
