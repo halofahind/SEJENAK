@@ -56,5 +56,9 @@
   "CounselingHistoryEmpTitle": "Belum Ada Riwayat Konseling",
   "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru",
   "CounselingBtnStartCouns": "Mulai Konseling",
-  "CounselingBtnManageTopic": "Kelola Topik"
+  "CounselingBtnManageTopic": "Kelola Topik",
+
+  "TopicSelectTitle": "Pilih Topik",
+  "TopicSelectSubTitle": "Permasalahan apa yang ingin anda diskusikan?",
+  "TopicSelectBtn": "Pilih Topik"
 }

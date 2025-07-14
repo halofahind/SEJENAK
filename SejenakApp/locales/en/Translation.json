@@ -56,5 +56,11 @@
   "CounselingHeadDesc": "Choose a topic and start talking about your issues safely and comfortably.",
   "CounselingHistoryTitle": "Counseling History",
   "CounselingHistoryEmpTitle": "No Counseling History Yet",
-  "CounselingHistoryEmpDesc": "Tap the 'Start Counseling' button to begin a new counseling session"
+  "CounselingHistoryEmpDesc": "Tap the 'Start Counseling' button to begin a new counseling session",
+  "CounselingBtnStartCouns": "Start Counseling",
+  "CounselingBtnManageTopic": "Manage Topic",
+
+  "TopicSelectTitle": "Select Topic",
+  "TopicSelectSubTitle": "What issues would you like to discuss??",
+  "TopicSelectBtn": "Select Topic"
 }

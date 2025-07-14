@@ -108,7 +108,7 @@ export default function Profil({ navigation }) {
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
           hobi: parsedData.hobi || "",
-          tentang: parsedData.tentang || "",
+          tentang: parsedData.about || "",
           profilePic: profilePicSource,
           role: parsedData.role || "user",
         });
@@ -351,7 +351,7 @@ export default function Profil({ navigation }) {
                 name={item.icon}
                 size={24}
                 type={item.type}
-                color="#5E5E5D"
+                color="#a8a8a8ff"
               />
               <Text style={styles.menuText}>{item.title}</Text>
               <Icon name="chevron-right" size={24} color="#ccc" />
