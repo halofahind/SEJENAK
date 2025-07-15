@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
-
+import { useTranslation } from "react-i18next";
 const screenWidth = Dimensions.get("window").width;
 
 const topiks = [
@@ -60,7 +60,7 @@ const moods = [
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-
+  const { t } = useTranslation();
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -165,14 +165,14 @@ export default function Home({ navigation }) {
             />
 
             <View>
-              <Text style={styles.userName}>Hai, {user.name}</Text>
+              <Text style={styles.userName}>{t("HomeGreeting", { name: user.name })}</Text>
               <Text style={styles.welcomeText}>
-                Bagaimana perasaanmu hari ini?
+                {t("HomeWelcomeMessage")}
               </Text>
             </View>
           </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate("NotifikasiScreen")}
+            onPress={() => navigation.navigate("Notifikasi")}
           >
             <Icon name="notifications-none" size={28} color="#444" />
           </TouchableOpacity>
@@ -198,7 +198,7 @@ export default function Home({ navigation }) {
 
         {/* === Quotes === */}
         <View style={styles.headerContainer}>
-          <Text style={styles.manageQuotes}>Quotes hari ini</Text>
+          <Text style={styles.manageQuotes}>{t("HomeQuoteTitle")}</Text>
           {user.role === "admin" && (
             <TouchableOpacity
               onPress={() => navigation.navigate("MotivasiScreen")}
@@ -224,7 +224,7 @@ export default function Home({ navigation }) {
         </View>
 
         {/* === Topik === */}
-        <Text style={styles.sectionTitle}>Topik Journal</Text>
+        <Text style={styles.sectionTitle}>{t("HomeTopikTitle")}</Text>
         <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
 
         <View style={styles.topikWrapper}>

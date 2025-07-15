@@ -54,5 +54,12 @@
   "CounselingHeadDesc": "Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan nyaman",
   "CounselingHistoryTitle": "Riwayat Konseling",
   "CounselingHistoryEmpTitle": "Belum Ada Riwayat Konseling",
-  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru"
+  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru",
+
+
+  "HomeQuoteTitle": "Kata-kata Hari Ini",
+  "HomeTopikTitle": "Topik Jurnal",
+
+  "HomeGreeting": "Hai, {{name}}",
+  "HomeWelcomeMessage": "Bagaimana perasaanmu hari ini?"
 }

@@ -70,6 +70,13 @@
   "MoodNeutral": "Neutral",
   "MoodGood": "Good",
   "MoodVeryGood": "Very Good",
+
+  "HomeQuoteTitle": "Quotes of the Day",
+  "HomeTopikTitle": "Topic Journal",
+
+  "HomeGreeting": "Hi, {{name}}",
+  "HomeWelcomeMessage": "How are you feeling today?",
+
   "Topic1": "Get to Know Yourself",
   "Topic2": "Build Relationships",
   "Topic3": "Everyday Stories",

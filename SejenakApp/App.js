@@ -52,7 +52,8 @@ import JurnalDetailPertanyaan from "./screens/jurnalku/JurnalDetailPertanyaan";
 import JurnalPenutup from "./screens/jurnalku/JurnalPenutup";
 import Jurnalku from "./screens/jurnalku/Jurnalku";
 import JurnalDetailSelesai from "./screens/jurnalku/JurnalkuDetailSelesai";
-
+import Notifikasi from "./screens/home/Notifikasi";
+import NotifBadge from "./components/NotifBadge";
 // Stack navigator
 const Stack = createNativeStackNavigator();
 
@@ -165,6 +166,8 @@ export default function App() {
           />
           <Stack.Screen name="JurnalPenutup" component={JurnalPenutup} />
           <Stack.Screen name="Jurnalku" component={Jurnalku} />
+          <Stack.Screen name="Notifikasi" component={Notifikasi} />
+          <Stack.Screen name="NotifBadge" component={NotifBadge} />
           <Stack.Screen
             name="JurnalkuDetailSelesai"
             component={JurnalDetailSelesai}
