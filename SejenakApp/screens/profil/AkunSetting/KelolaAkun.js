@@ -13,11 +13,12 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 import { API_BASE_URL } from "../../../utils/constants";
-
+import { useTranslation } from "react-i18next";
 export default function KelolaAkun({ navigation }) {
   const [pengguna, setPengguna] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { t } = useTranslation();
 
   const fetchPengguna = async () => {
     try {
@@ -46,14 +47,15 @@ export default function KelolaAkun({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("DetailAkun", { data: item })}
-    >
+      onPress={() => navigation.navigate("DetailAkun", { data: item })}>
       <View style={styles.cardContent}>
         <Image
           source={
             item.profilePic
               ? { uri: item.profilePic }
-              : require("../../../assets/Home/1.png")
+              : item.gender === "female"
+              ? require("../../../assets/User/female.png")
+              : require("../../../assets/User/male.png")
           }
           style={styles.profileImage}
         />
@@ -77,8 +79,7 @@ export default function KelolaAkun({ navigation }) {
               item.usrStatus === "Aktif"
                 ? styles.activeBadge
                 : styles.inactiveBadge,
-            ]}
-          >
+            ]}>
             <Text style={styles.statusText}>{item.usrStatus || "-"}</Text>
           </View>
           <Icon name="chevron-right" size={24} color="#ccc" />
@@ -93,11 +94,10 @@ export default function KelolaAkun({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+          style={styles.backButton}>
           <Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Kelola Akun Pengguna</Text>
+        <Text style={styles.headerTitle}>{t("ProfilMenuManageAcc")}</Text>
       </View>
 
       {/* Content */}
@@ -105,19 +105,19 @@ export default function KelolaAkun({ navigation }) {
         <View style={styles.summaryContainer}>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryNumber}>{pengguna.length}</Text>
-            <Text style={styles.summaryLabel}>Total Akun</Text>
+            <Text style={styles.summaryLabel}>{t("CountTotalUser")}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryNumber}>
               {pengguna.filter((u) => u.usrStatus === "Aktif").length}
             </Text>
-            <Text style={styles.summaryLabel}>Aktif</Text>
+            <Text style={styles.summaryLabel}>{t("ActiveStatus")}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryNumber}>
               {pengguna.filter((u) => u.usrStatus !== "Aktif").length}
             </Text>
-            <Text style={styles.summaryLabel}>Non-Aktif</Text>
+            <Text style={styles.summaryLabel}>{t("NonActiveStatus")}</Text>
           </View>
         </View>
 
@@ -144,8 +144,7 @@ export default function KelolaAkun({ navigation }) {
       {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate("TambahAkun")}
-      >
+        onPress={() => navigation.navigate("TambahAkun")}>
         <Icon name="add" size={30} color="#fff" />
       </TouchableOpacity>
     </View>

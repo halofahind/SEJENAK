@@ -12,14 +12,14 @@ import {
 // import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
+import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../../utils/constants";
 export default function GantiPassword({ navigation }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const { t } = useTranslation();
   const handleSubmit = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       Alert.alert("Error", "Harap isi semua field");
@@ -102,21 +102,20 @@ export default function GantiPassword({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+          style={styles.backButton}>
           <Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Ganti Password</Text>
+        <Text style={styles.headerTitle}>{t("ProfilChangePwTitle")}</Text>
       </View>
 
       {/* Form */}
       <View style={styles.formContainer}>
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password Saat Ini</Text>
+          <Text style={styles.label}>{t("ProfilChangePwCurLb")}</Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="Masukkan password saat ini"
+              placeholder={t("ProfilChangePwCurPh")}
               secureTextEntry
               value={currentPassword}
               onChangeText={setCurrentPassword}
@@ -127,11 +126,11 @@ export default function GantiPassword({ navigation }) {
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password Baru</Text>
+          <Text style={styles.label}>{t("ProfilChangePwNewLb")}</Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="Masukkan password baru "
+              placeholder={t("ProfilChangePwNewPh")}
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
@@ -147,11 +146,11 @@ export default function GantiPassword({ navigation }) {
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Konfirmasi Password Baru</Text>
+          <Text style={styles.label}>{t("ProfilChangePwConLb")}</Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="Tulis ulang password baru"
+              placeholder={t("ProfilChangePwConPh")}
               secureTextEntry
               value={confirmPassword}
               onChangeText={setConfirmPassword}
@@ -165,12 +164,11 @@ export default function GantiPassword({ navigation }) {
           <TouchableOpacity
             style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleSubmit}
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Simpan Perubahan</Text>
+              <Text style={styles.buttonText}>{t("SaveBtn")}</Text>
             )}
           </TouchableOpacity>
         </View>

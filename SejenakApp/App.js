@@ -21,7 +21,6 @@ import Setting from "./screens/profil/Setting";
 import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
 import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
 import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
-import AkunPersonal from "./screens/profil/AkunSetting/AkunPersonal";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
 import TambahAkun from "./screens/profil/TambahAkun";
 
@@ -143,7 +142,6 @@ export default function App() {
           <Stack.Screen name="KelolaAkun" component={KelolaAkun} />
           <Stack.Screen name="GantiPassword" component={GantiPassword} />
           <Stack.Screen name="HapusAkun" component={HapusAkun} />
-          <Stack.Screen name="AkunPersonal" component={AkunPersonal} />
           <Stack.Screen name="DetailAkun" component={DetailAkun} />
           <Stack.Screen name="TambahAkun" component={TambahAkun} />
           <Stack.Screen name="ProfilEdit" component={ProfilEdit} />

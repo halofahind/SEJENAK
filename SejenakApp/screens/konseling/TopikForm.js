@@ -47,27 +47,25 @@ const TopikForm = ({ navigation, route }) => {
   const validateForm = () => {
     const newErrors = {};
 
+    // Validate namaTopik
     if (!namaTopik.trim()) {
-      // newErrors.tpk_nama = "Nama topik tidak boleh kosong";
-      newErrors.tpk_pesan_pertama = "Pesan Pertama tidak boleh kosong";
-      newErrors.tpk_pesan_terakhir = "Pesan Terakhir tidak boleh kosong";
-    } else if (formData.tpk_nama.trim().length < 3) {
-      newErrors.tpk_nama = "Nama topik minimal 3 karakter";
-    }
-    if (!pesanPertama.trim()) {
-      newErrors.tpk_nama = "Nama topik tidak boleh kosong";
-      newErrors.tpk_pesan_pertama = "Pesan Pertama tidak boleh kosong";
-      newErrors.tpk_pesan_terakhir = "Pesan Terakhir tidak boleh kosong";
-    } else if (formData.tpk_nama.trim().length < 3) {
-      newErrors.tpk_nama = "Nama topik minimal 3 karakter";
+      newErrors.namaTopik = t("TopicNameRequiredError");
+    } else if (namaTopik.trim().length < 3) {
+      newErrors.namaTopik = t("TopicNameMinLengthError");
     }
 
+    // Validate pesanPertama
+    if (!pesanPertama.trim()) {
+      newErrors.pesanPertama = t("FirstMessageRequiredError");
+    } else if (pesanPertama.trim().length < 10) {
+      newErrors.pesanPertama = t("FirstMessageMinLengthError");
+    }
+
+    // Validate pesanTerakhir
     if (!pesanTerakhir.trim()) {
-      newErrors.tpk_nama = "Nama topik tidak boleh kosong";
-      newErrors.tpk_pesan_pertama = "Pesan Pertama tidak boleh kosong";
-      newErrors.tpk_pesan_terakhir = "Pesan Terakhir tidak boleh kosong";
-    } else if (formData.tpk_nama.trim().length < 3) {
-      newErrors.tpk_nama = "Nama topik minimal 3 karakter";
+      newErrors.pesanTerakhir = t("LastMessageRequiredError");
+    } else if (pesanTerakhir.trim().length < 10) {
+      newErrors.pesanTerakhir = t("LastMessageMinLengthError");
     }
 
     setErrors(newErrors);
@@ -181,24 +179,28 @@ const TopikForm = ({ navigation, route }) => {
                 {t("TopicNameLb")} <Text style={styles.required}>*</Text>
               </Text>
               <TextInput
-                style={[styles.input, errors.tpk_nama && styles.inputError]}
+                style={[styles.input, errors.namaTopik && styles.inputError]}
                 value={namaTopik}
                 onChangeText={setNamaTopik}
                 placeholder={t("TopicNamePh")}
                 placeholderTextColor="#999"
                 maxLength={100}
               />
-              {errors.tpk_nama && (
-                <Text style={styles.errorText}>{errors.tpk_nama}</Text>
+              {errors.namaTopik && (
+                <Text style={styles.errorText}>{errors.namaTopik}</Text>
               )}
-              <Text style={styles.charCount}>{formData.length}/100</Text>
+              <Text style={styles.charCount}>{namaTopik.length}/100</Text>
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{t("TopicMessageOpenLb")}</Text>
               <Text style={styles.labelDesc}>{t("TopicMessageOpenSubLb")}</Text>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[
+                  styles.input,
+                  styles.textArea,
+                  errors.pesanPertama && styles.inputError,
+                ]}
                 value={pesanPertama}
                 onChangeText={setPesanPertama}
                 placeholder={t("TopicMessageOpenPh")}
@@ -208,9 +210,10 @@ const TopikForm = ({ navigation, route }) => {
                 textAlignVertical="top"
                 maxLength={500}
               />
-              <Text style={styles.charCount}>
-                {formData.tpk_pesan_pertama.length}/500
-              </Text>
+              {errors.pesanPertama && (
+                <Text style={styles.errorText}>{errors.pesanPertama}</Text>
+              )}
+              <Text style={styles.charCount}>{pesanPertama.length}/500</Text>
             </View>
 
             <View style={styles.inputGroup}>
@@ -219,7 +222,11 @@ const TopikForm = ({ navigation, route }) => {
                 {t("TopicMessageCloseSubLb")}
               </Text>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[
+                  styles.input,
+                  styles.textArea,
+                  errors.pesanTerakhir && styles.inputError,
+                ]}
                 value={pesanTerakhir}
                 onChangeText={setPesanTerakhir}
                 placeholder={t("TopicMessageClosePh")}
@@ -229,26 +236,11 @@ const TopikForm = ({ navigation, route }) => {
                 textAlignVertical="top"
                 maxLength={500}
               />
-              <Text style={styles.charCount}>
-                {formData.tpk_pesan_terakhir.length}/500
-              </Text>
+              {errors.pesanTerakhir && (
+                <Text style={styles.errorText}>{errors.pesanTerakhir}</Text>
+              )}
+              <Text style={styles.charCount}>{pesanTerakhir.length}/500</Text>
             </View>
-
-            {/* {isEditMode && (
-              <View style={styles.infoBox}>
-                <Ionicons
-                  name="information-circle-outline"
-                  size={20}
-                  color="#2196F3"
-                />
-                <Text style={styles.infoText}>
-                  Topik ini telah dibuat pada{" "}
-                  {new Date(topik?.tpk_created_date).toLocaleDateString(
-                    "id-ID"
-                  )}
-                </Text>
-              </View>
-            )} */}
           </View>
         </ScrollView>
 

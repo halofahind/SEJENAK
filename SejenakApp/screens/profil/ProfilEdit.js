@@ -177,7 +177,7 @@ export default function ProfilEdit({ navigation }) {
         telepon: user.phone,
         gender: user.gender,
         hobi: user.hobi || null,
-        about: user.about || null,
+        about: user.tentang || null,
         usrFoto: profilePicUrl,
       };
 
@@ -493,7 +493,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t("")}</Text>
+            <Text style={styles.label}>{t("AboutLb")}</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
               value={user.tentang}
@@ -514,7 +514,7 @@ export default function ProfilEdit({ navigation }) {
             {isSaving ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.saveButtonText}>Simpan Perubahan</Text>
+              <Text style={styles.saveButtonText}>{t("SaveBtn")}</Text>
             )}
           </TouchableOpacity>
         </View>

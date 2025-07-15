@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Linking } from "react-native";
 import { Icon } from "react-native-elements";
-
+import { useTranslation } from "react-i18next";
 const KebijakanPrivasi = ({ navigation }) => {
+  const { t } = useTranslation();
   const handleBack = () => {
     navigation.goBack();
   };
@@ -31,90 +32,97 @@ const KebijakanPrivasi = ({ navigation }) => {
             onPress={handleBack}
             containerStyle={styles.backButton}
           />
-          <Text style={styles.headerTitle}>Kebijakan Privasi</Text>
+          <Text style={styles.headerTitle}>{t("privacy.headerTitle")}</Text>
         </View>
       </View>
 
       {/* Content */}
       <View style={styles.contentContainer}>
-        <Text style={styles.introText}>
-          Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan,
-          menggunakan, dan melindungi informasi pribadi Anda saat menggunakan
-          aplikasi kami.
+        <Text style={styles.introText}>{t("privacy.intro")}</Text>
+
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.collect.title")}
+        </Text>
+        <Text style={styles.sectionText}>
+          1. {t("privacy.section.collect.text1")}
+        </Text>
+        <Text style={styles.sectionText}>
+          2. {t("privacy.section.collect.text2")}
+        </Text>
+        <Text style={styles.sectionText}>
+          3. {t("privacy.section.collect.text3")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Informasi yang Kami Kumpulkan</Text>
-        <Text style={styles.sectionText}>
-          1. Data profil (nama, email, nomor telepon, dll) yang Anda berikan
-          saat registrasi
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.use.title")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Data penggunaan aplikasi termasuk interaksi dan preferensi
+          1. {t("privacy.section.use.text1")}
         </Text>
         <Text style={styles.sectionText}>
-          3. Foto profil yang Anda unggah (jika ada)
-        </Text>
-
-        <Text style={styles.sectionTitle}>Penggunaan Informasi</Text>
-        <Text style={styles.sectionText}>
-          1. Untuk menyediakan dan memelihara layanan kami
+          2. {t("privacy.section.use.text2")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Untuk memberi Anda dukungan pelanggan
+          3. {t("privacy.section.use.text3")}
         </Text>
         <Text style={styles.sectionText}>
-          3. Untuk pengembangan dan peningkatan aplikasi
-        </Text>
-        <Text style={styles.sectionText}>
-          4. Untuk mengirim notifikasi penting
+          4. {t("privacy.section.use.text4")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Perlindungan Data</Text>
-        <Text style={styles.sectionText}>
-          1. Kami menggunakan enkripsi untuk melindungi data sensitif
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.protect.title")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Akses ke data Anda dibatasi hanya untuk keperluan layanan
+          1. {t("privacy.section.protect.text1")}
         </Text>
         <Text style={styles.sectionText}>
-          3. Kami menyimpan data Anda selama diperlukan untuk menyediakan
-          layanan
-        </Text>
-
-        <Text style={styles.sectionTitle}>Berbagi Informasi</Text>
-        <Text style={styles.sectionText}>
-          Kami tidak akan menjual atau membagikan data pribadi Anda kepada pihak
-          ketiga kecuali:
-        </Text>
-        <Text style={styles.sectionText}>1. Dengan persetujuan Anda</Text>
-        <Text style={styles.sectionText}>
-          2. Untuk memenuhi kewajiban hukum
+          2. {t("privacy.section.protect.text2")}
         </Text>
         <Text style={styles.sectionText}>
-          3. Untuk melindungi hak dan properti kami
+          3. {t("privacy.section.protect.text3")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Hak Anda</Text>
-        <Text style={styles.sectionText}>
-          1. Anda dapat mengakses dan memperbarui data pribadi Anda melalui
-          pengaturan profil
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.share.title")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Anda dapat meminta penghapusan akun dan data pribadi
+          {t("privacy.section.share.text1")}
         </Text>
         <Text style={styles.sectionText}>
-          3. Anda dapat memilih untuk tidak menerima notifikasi
+          1. {t("privacy.section.share.text2")}
         </Text>
-
-        <Text style={styles.sectionTitle}>Perubahan Kebijakan</Text>
         <Text style={styles.sectionText}>
-          Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu.
-          Perubahan akan diberitahukan melalui aplikasi.
+          2. {t("privacy.section.share.text3")}
+        </Text>
+        <Text style={styles.sectionText}>
+          3. {t("privacy.section.share.text4")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Hubungi Kami</Text>
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.rights.title")}
+        </Text>
         <Text style={styles.sectionText}>
-          Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini:
+          1. {t("privacy.section.rights.text1")}
+        </Text>
+        <Text style={styles.sectionText}>
+          2. {t("privacy.section.rights.text2")}
+        </Text>
+        <Text style={styles.sectionText}>
+          3. {t("privacy.section.rights.text3")}
+        </Text>
+
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.changes.title")}
+        </Text>
+        <Text style={styles.sectionText}>
+          {t("privacy.section.changes.text")}
+        </Text>
+
+        <Text style={styles.sectionTitle}>
+          {t("privacy.section.contact.title")}
+        </Text>
+        <Text style={styles.sectionText}>
+          {t("privacy.section.contact.text")}
         </Text>
         <View style={styles.contactButton}>
           <Icon
@@ -125,12 +133,12 @@ const KebijakanPrivasi = ({ navigation }) => {
             onPress={openWhatsApp}
           />
           <Text style={styles.contactText} onPress={openWhatsApp}>
-            Hubungi via WhatsApp
+            {t("privacy.section.contact.button")}
           </Text>
         </View>
 
         <Text style={styles.lastUpdated}>
-          Terakhir diperbarui: {new Date().toLocaleDateString("id-ID")}
+          {t("lastUpdated")}: {new Date().toLocaleDateString("id-ID")}
         </Text>
       </View>
     </ScrollView>

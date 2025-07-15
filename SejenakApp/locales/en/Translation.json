@@ -68,6 +68,14 @@
   "ProfilEditTitle": "Edit Profile",
   "ProfilEditSaveBtn": "Save Changes",
 
+  "ProfilChangePwTitle": "Change Password",
+  "ProfilChangePwCurLb": "Current Password",
+  "ProfilChangePwCurPh": "Enter Current Password",
+  "ProfilChangePwNewLb": "New Password",
+  "ProfilChangePwNewPh": "Enter New Password",
+  "ProfilChangePwConLb": "Confirm New Password",
+  "ProfilChangePwConPh": "Re-enter New Password",
+
   "CounselingHeadTitle": "Counseling",
   "CounselingHeadDesc": "Choose a topic and start sharing your problem in a safe and comfortable way.",
   "CounselingHistoryTitle": "Counseling History",
@@ -185,5 +193,15 @@
   "ActiveStatus": "Active",
   "NonActiveStatus": "Not Active",
 
-  "SayHi": "Hello"
+  "SayHi": "Hello",
+
+  "SelectLanguage": "Select Language",
+
+  "CountTotalUser": "Account Total",
+  "TopicNameRequiredError": "Topic name cannot be empty",
+  "TopicNameMinLengthError": "Topic name must be at least 3 characters",
+  "FirstMessageRequiredError": "First message cannot be empty",
+  "FirstMessageMinLengthError": "First message must be at least 10 characters",
+  "LastMessageRequiredError": "Last message cannot be empty",
+  "LastMessageMinLengthError": "Last message must be at least 10 characters"
 }

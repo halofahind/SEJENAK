@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Linking } from "react-native";
 import { Icon } from "react-native-elements";
-
+import { useTranslation } from "react-i18next";
 const SyaratKetentuan = ({ navigation }) => {
+  const { t } = useTranslation();
   const handleBack = () => {
     navigation.goBack();
   };
@@ -31,60 +32,64 @@ const SyaratKetentuan = ({ navigation }) => {
             onPress={handleBack}
             containerStyle={styles.backButton}
           />
-          <Text style={styles.headerTitle}>Syarat & Ketentuan</Text>
+          <Text style={styles.headerTitle}>{t("terms.headerTitle")}</Text>
         </View>
       </View>
 
       {/* Content */}
       <View style={styles.contentContainer}>
-        <Text style={styles.sectionTitle}>Penggunaan Aplikasi</Text>
-        <Text style={styles.sectionText}>
-          1. Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi semua
-          syarat dan ketentuan yang berlaku.
+        <Text style={styles.sectionTitle}>
+          {t("terms.section.usage.title")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Aplikasi ini ditujukan untuk penggunaan pribadi dan non-komersial.
-        </Text>
-
-        <Text style={styles.sectionTitle}>Akun Pengguna</Text>
-        <Text style={styles.sectionText}>
-          1. Anda bertanggung jawab penuh atas kerahasiaan informasi akun Anda.
+          1. {t("terms.section.usage.text1")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Kami berhak menangguhkan atau menutup akun yang melanggar
-          ketentuan.
+          2. {t("terms.section.usage.text2")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Konten</Text>
-        <Text style={styles.sectionText}>
-          1. Anda dilarang mengunggah konten yang melanggar hak cipta,
-          mengandung SARA, atau tidak senonoh.
+        <Text style={styles.sectionTitle}>
+          {t("terms.section.account.title")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Kami berhak menghapus konten yang dianggap tidak pantas tanpa
-          pemberitahuan.
-        </Text>
-
-        <Text style={styles.sectionTitle}>Privasi</Text>
-        <Text style={styles.sectionText}>
-          1. Data pribadi Anda akan dilindungi sesuai dengan Kebijakan Privasi
-          kami.
+          1. {t("terms.section.account.text1")}
         </Text>
         <Text style={styles.sectionText}>
-          2. Kami tidak akan menjual atau membagikan data Anda kepada pihak
-          ketiga tanpa izin.
+          2. {t("terms.section.account.text2")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Perubahan Ketentuan</Text>
+        <Text style={styles.sectionTitle}>
+          {t("terms.section.content.title")}
+        </Text>
         <Text style={styles.sectionText}>
-          Kami dapat mengubah syarat dan ketentuan ini sewaktu-waktu. Perubahan
-          akan diberitahukan melalui aplikasi.
+          1. {t("terms.section.content.text1")}
+        </Text>
+        <Text style={styles.sectionText}>
+          2. {t("terms.section.content.text2")}
         </Text>
 
-        <Text style={styles.sectionTitle}>Hubungi Kami</Text>
+        <Text style={styles.sectionTitle}>
+          {t("terms.section.privacy.title")}
+        </Text>
         <Text style={styles.sectionText}>
-          Jika Anda memiliki pertanyaan tentang Syarat & Ketentuan ini, silakan
-          hubungi kami:
+          1. {t("terms.section.privacy.text1")}
+        </Text>
+        <Text style={styles.sectionText}>
+          2. {t("terms.section.privacy.text2")}
+        </Text>
+
+        <Text style={styles.sectionTitle}>
+          {t("terms.section.changes.title")}
+        </Text>
+        <Text style={styles.sectionText}>
+          {t("terms.section.changes.text")}
+        </Text>
+
+        <Text style={styles.sectionTitle}>
+          {t("terms.section.contact.title")}
+        </Text>
+        <Text style={styles.sectionText}>
+          {t("terms.section.contact.text")}
         </Text>
         <View style={styles.contactButton}>
           <Icon
@@ -95,7 +100,7 @@ const SyaratKetentuan = ({ navigation }) => {
             onPress={openWhatsApp}
           />
           <Text style={styles.contactText} onPress={openWhatsApp}>
-            Hubungi via WhatsApp
+            {t("terms.section.contact.button")}
           </Text>
         </View>
       </View>
