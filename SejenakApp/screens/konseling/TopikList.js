@@ -19,12 +19,13 @@ import {
 import { API_BASE_URL } from "../../utils/constants";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 export default function TopikList({ navigation }) {
   const [topiks, setTopiks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { t } = useTranslation();
   useFocusEffect(
     useCallback(() => {
       fetchTopiks();
@@ -153,16 +154,14 @@ export default function TopikList({ navigation }) {
                     ? "#ff4757"
                     : "#007bff",
               },
-            ]}
-          >
+            ]}>
             <TouchableOpacity
               onPress={() => {
                 closeSwipe();
                 handleDelete(item.id, item.nama, item.status);
               }}
               style={styles.actionButton}
-              activeOpacity={0.7}
-            >
+              activeOpacity={0.7}>
               <Ionicons
                 name={
                   item.status === "Aktif" || item.status === 1
@@ -185,16 +184,14 @@ export default function TopikList({ navigation }) {
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={onHandlerStateChange}
             activeOffsetX={[-20, 20]}
-            failOffsetY={[-10, 10]}
-          >
+            failOffsetY={[-10, 10]}>
             <Animated.View
               style={[
                 styles.rowFront,
                 {
                   transform: [{ translateX }],
                 },
-              ]}
-            >
+              ]}>
               <TouchableOpacity
                 style={styles.topikItem}
                 onPress={() => {
@@ -204,8 +201,7 @@ export default function TopikList({ navigation }) {
                     handleEditTopik(item);
                   }
                 }}
-                activeOpacity={0.8}
-              >
+                activeOpacity={0.8}>
                 <View style={styles.topikContent}>
                   <View style={styles.topikInfo}>
                     <Text style={styles.topikName}>{item.nama}</Text>
@@ -239,8 +235,7 @@ export default function TopikList({ navigation }) {
                       backgroundColor:
                         item.status === "Aktif" ? "#D7385E" : "#6c757d",
                     },
-                  ]}
-                >
+                  ]}>
                   <Text style={styles.statusText}>
                     {item.status || "Aktif"}
                   </Text>
@@ -269,7 +264,7 @@ export default function TopikList({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Daftar Topik</Text>
+        <Text style={styles.title}>{t("TopicManageTitle")}</Text>
       </View>
 
       <FlatList
@@ -294,8 +289,7 @@ export default function TopikList({ navigation }) {
       <TouchableOpacity
         style={styles.fab}
         onPress={handleAddTopik}
-        activeOpacity={0.8}
-      >
+        activeOpacity={0.8}>
         <Ionicons name="add" size={40} color="white" />
       </TouchableOpacity>
     </SafeAreaView>

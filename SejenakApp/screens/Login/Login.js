@@ -172,8 +172,7 @@ export default function Login({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}
-        >
+          bounces={false}>
           <View style={styles.loginTitleWrap}>
             <Text style={styles.loginTitle}>{t("LoginTitle")}</Text>
           </View>
@@ -219,8 +218,7 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               <Icon
                 name={showPassword ? "visibility" : "visibility-off"}
                 size={20}
@@ -236,8 +234,7 @@ export default function Login({ navigation }) {
                 isLoading && styles.loginButtonDisabled,
               ]}
               onPress={handleLogin}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
@@ -255,14 +252,12 @@ export default function Login({ navigation }) {
             <Text style={styles.signupText}>{t("LoginRegisterLabel")} </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Daftar")}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               <Text
                 style={{
                   color: isLoading ? "#ccc" : "#EF6A6A",
                   fontWeight: "bold",
-                }}
-              >
+                }}>
                 {t("LoginRegisterBtn")}
               </Text>
             </TouchableOpacity>

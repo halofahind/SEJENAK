@@ -13,11 +13,11 @@ import {
   Platform,
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
-
+import { useTranslation } from "react-i18next";
 const TopikForm = ({ navigation, route }) => {
   const { topik, mode, title } = route.params;
   const isEditMode = mode === "edit";
-
+  const { t } = useTranslation();
   // State initialization - sesuaikan dengan struktur
   const [namaTopik, setNamaTopik] = useState(
     mode === "edit" ? topik.tpk_nama || topik.nama || "" : ""
@@ -158,33 +158,33 @@ const TopikForm = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
+          keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
             <Text style={styles.title}>
-              {isEditMode ? "Edit Topik" : "Tambah Topik Baru"}
+              {isEditMode
+                ? t("TopicManageEditTitle")
+                : t("TopicManageAddTitle")}
             </Text>
             <Text style={styles.subtitle}>
               {isEditMode
-                ? "Perbarui informasi topik konseling"
-                : "Buat topik konseling baru untuk pengguna"}
+                ? t("TopicManageAddSubTitle")
+                : t("TopicManageEditSubTitle")}
             </Text>
           </View>
 
           <View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>
-                Nama Topik <Text style={styles.required}>*</Text>
+                {t("TopicNameLb")} <Text style={styles.required}>*</Text>
               </Text>
               <TextInput
                 style={[styles.input, errors.tpk_nama && styles.inputError]}
                 value={namaTopik}
                 onChangeText={setNamaTopik}
-                placeholder="Contoh: Keluarga, Pasangan, Pertemanan"
+                placeholder={t("TopicNamePh")}
                 placeholderTextColor="#999"
                 maxLength={100}
               />
@@ -195,16 +195,13 @@ const TopikForm = ({ navigation, route }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Pesan Pembuka</Text>
-              <Text style={styles.labelDesc}>
-                Pesan yang akan ditampilkan saat memulai konseling dengan topik
-                ini
-              </Text>
+              <Text style={styles.label}>{t("TopicMessageOpenLb")}</Text>
+              <Text style={styles.labelDesc}>{t("TopicMessageOpenSubLb")}</Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 value={pesanPertama}
                 onChangeText={setPesanPertama}
-                placeholder="Masukkan pesan pembuka yang ramah dan mendukung..."
+                placeholder={t("TopicMessageOpenPh")}
                 placeholderTextColor="#999"
                 multiline
                 numberOfLines={4}
@@ -217,15 +214,15 @@ const TopikForm = ({ navigation, route }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Pesan Penutup</Text>
+              <Text style={styles.label}>{t("TopicMessageCloseLb")}</Text>
               <Text style={styles.labelDesc}>
-                Pesan yang akan ditampilkan di akhir sesi konseling
+                {t("TopicMessageCloseSubLb")}
               </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 value={pesanTerakhir}
                 onChangeText={setPesanTerakhir}
-                placeholder="Masukkan pesan penutup yang memberikan harapan..."
+                placeholder={t("TopicMessageClosePh")}
                 placeholderTextColor="#999"
                 multiline
                 numberOfLines={4}
@@ -259,9 +256,8 @@ const TopikForm = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={handleCancel}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.cancelButtonText}>Batal</Text>
+            activeOpacity={0.8}>
+            <Text style={styles.cancelButtonText}>{t("CancelBtn")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -272,14 +268,13 @@ const TopikForm = ({ navigation, route }) => {
             ]}
             onPress={handleSubmit}
             disabled={loading}
-            activeOpacity={0.8}
-          >
+            activeOpacity={0.8}>
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
               <>
                 <Text style={styles.submitButtonText}>
-                  {isEditMode ? "Perbarui" : "Simpan"}
+                  {isEditMode ? t("UpdateBtn") : t("SaveBtn")}
                 </Text>
               </>
             )}

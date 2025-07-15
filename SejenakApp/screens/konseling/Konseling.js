@@ -18,6 +18,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 import { Image } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 const Konseling = ({ navigation }) => {
   dayjs.locale("id");
@@ -26,7 +27,7 @@ const Konseling = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState(null);
-
+  const { t } = useTranslation();
   useFocusEffect(
     useCallback(() => {
       fetchKonselings();
@@ -129,8 +130,7 @@ const Konseling = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.historyItem}
-        onPress={() => handleHistoryPress(item)}
-      >
+        onPress={() => handleHistoryPress(item)}>
         <Image
           style={styles.avatarImage}
           source={require("../../assets/User/user-pr.png")}
@@ -185,34 +185,33 @@ const Konseling = ({ navigation }) => {
 
           {/* Bagian kanan: teks + tombol (8 dari 12) */}
           <View style={{ flex: 8 }}>
-            <Text style={styles.cardTitle}>Konseling</Text>
-            <Text style={styles.cardSubtitle}>
-              Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman
-              dan nyaman
-            </Text>
+            <Text style={styles.cardTitle}>{t("CounselingHeadTitle")}</Text>
+            <Text style={styles.cardSubtitle}>{t("CounselingHeadDesc")}</Text>
 
             {userData?.role === "admin" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleAddTopik}
-              >
-                <Text style={styles.primaryButtonText}>Kelola Topik</Text>
+                onPress={handleAddTopik}>
+                <Text style={styles.primaryButtonText}>
+                  {t("CounselingBtnManageTopic")}
+                </Text>
               </TouchableOpacity>
             )}
 
             {userData?.role === "user" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleStartCounseling}
-              >
-                <Text style={styles.primaryButtonText}>Mulai Konseling</Text>
+                onPress={handleStartCounseling}>
+                <Text style={styles.primaryButtonText}>
+                  {t("CounselingBtnStartCouns")}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
 
         <View style={[styles.section]}>
-          <Text style={styles.sectionTitle}>Riwayat Konseling</Text>
+          <Text style={styles.sectionTitle}>{t("CounselingHistoryTitle")}</Text>
 
           {loading ? (
             <ActivityIndicator size="large" color="#3498db" />
@@ -230,10 +229,10 @@ const Konseling = ({ navigation }) => {
                 <View style={styles.emptyContainer}>
                   <Ionicons name="chatbubbles-outline" size={48} color="#ccc" />
                   <Text style={styles.emptyText}>
-                    Belum Ada Riwayat Konseling
+                    {t("CounselingHistoryEmpTitle")}
                   </Text>
                   <Text style={styles.emptySubtext}>
-                    Tap tombol "Mulai Konseling" untuk memulai konseling baru
+                    {t("CounselingHistoryEmpDesc")}
                   </Text>
                 </View>
               }

@@ -15,11 +15,11 @@ import { API_BASE_URL } from "../../utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useTranslation } from "react-i18next";
 export default function Jurnalku({ navigation }) {
   const [data, setData] = useState([]);
   const [sortType, setSortType] = useState("tanggal");
-
+  const { t } = useTranslation();
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -36,16 +36,15 @@ export default function Jurnalku({ navigation }) {
             title: item.jurnal.judul,
             image: require("../../assets/Jurnalku/2.png"),
             dateObj: new Date(item.transaksi.date),
-            date: `Ditulis pada ${new Date(item.transaksi.date).toLocaleString(
-              [],
-              {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            )}`,
+            date: `${t("JournalTextDate")} ${new Date(
+              item.transaksi.date
+            ).toLocaleString([], {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}`,
           }));
 
           setData(formattedData);
@@ -59,7 +58,7 @@ export default function Jurnalku({ navigation }) {
   );
 
   const toggleSort = () => {
-    setSortType((prev) => (prev === "tanggal" ? "abjad" : "tanggal"));
+    setSortType((prev) => (prev === "tanggal" ? "aA-zZ" : "tanggal"));
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -74,13 +73,13 @@ export default function Jurnalku({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Journalku</Text>
-        <Ionicons name="search-outline" size={20} color="#000" />
+        <Text style={styles.title}>{t("JournalTitle")}</Text>
+        {/* <Ionicons name="search-outline" size={20} color="#000" /> */}
       </View>
 
       {/* Filter */}
       <View style={styles.filterRow}>
-        <Text style={styles.filterLabel}>Tampilkan Berdasarkan</Text>
+        <Text style={styles.filterLabel}>{t("JournalSortBy")}</Text>
         <TouchableOpacity style={styles.filterButton} onPress={toggleSort}>
           <Text style={styles.filterText}>
             {sortType === "tanggal" ? "Tanggal" : "Abjad"}

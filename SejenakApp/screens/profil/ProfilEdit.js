@@ -17,10 +17,11 @@ import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
+import { useTranslation } from "react-i18next";
 import * as FileSystem from "expo-file-system";
 
 export default function ProfilEdit({ navigation }) {
+  const { t } = useTranslation();
   const [dob, setDob] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [user, setUser] = useState({
@@ -176,12 +177,12 @@ export default function ProfilEdit({ navigation }) {
         telepon: user.phone,
         gender: user.gender,
         hobi: user.hobi || null,
-        about: user.tentang || null,
+        about: user.about || null,
         usrFoto: profilePicUrl,
       };
 
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -313,21 +314,18 @@ export default function ProfilEdit({ navigation }) {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -45}
-    >
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -45}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
+        keyboardShouldPersistTaps="handled">
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.profileSection}>
               <TouchableOpacity
                 onPress={showImagePickerOptions}
-                style={styles.profileImageContainer}
-              >
+                style={styles.profileImageContainer}>
                 <Image
                   source={
                     // Handle semua kemungkinan format:
@@ -356,7 +354,7 @@ export default function ProfilEdit({ navigation }) {
                 )}
               </TouchableOpacity>
               <View style={styles.userInfo}>
-                <Text style={styles.nameText}>Edit Profil</Text>
+                <Text style={styles.nameText}>{t("ProfilEditTitle")}</Text>
               </View>
             </View>
           </View>
@@ -365,7 +363,7 @@ export default function ProfilEdit({ navigation }) {
         {/* Form Section */}
         <View style={styles.formContainer}>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>{t("EmailInputPh")}</Text>
             <TextInput
               style={styles.input}
               value={user.email}
@@ -384,7 +382,7 @@ export default function ProfilEdit({ navigation }) {
             />
           </View>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nama Lengkap</Text>
+            <Text style={styles.label}>{t("NameInputLb")}</Text>
             <TextInput
               style={styles.input}
               value={user.name}
@@ -393,14 +391,13 @@ export default function ProfilEdit({ navigation }) {
             />
           </View>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Tanggal Lahir</Text>
+            <Text style={styles.label}>{t("DateInputLb")}</Text>
             <TouchableOpacity
               onPress={() => !isLoading && setShowDatePicker(true)}
               style={styles.input}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               <Text style={{ color: dob ? "#333" : "#999" }}>
-                {dob || "Pilih tanggal lahir (DD/MM/YYYY)"}
+                {dob || t("DateInputPh")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -410,7 +407,7 @@ export default function ProfilEdit({ navigation }) {
                 user.tanggalLahir ? new Date(user.tanggalLahir) : new Date()
               }
               mode="date"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
+              display={"default"}
               maximumDate={new Date()}
               onChange={(event, selectedDate) => {
                 setShowDatePicker(false);
@@ -431,7 +428,7 @@ export default function ProfilEdit({ navigation }) {
             />
           )}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>{t("UsernameInputLb")}</Text>
             <TextInput
               style={styles.input}
               value={user.username}
@@ -441,7 +438,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nomor Telepon</Text>
+            <Text style={styles.label}>{t("PhoneInputLb")}</Text>
             <TextInput
               style={styles.input}
               value={user.phone}
@@ -452,22 +449,20 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Jenis Kelamin</Text>
+            <Text style={styles.label}>{t("GenderLb")}</Text>
             <View style={styles.genderContainer}>
               <TouchableOpacity
                 style={[
                   styles.genderButton,
                   user.gender === "Laki-laki" && styles.genderSelectedMale,
                 ]}
-                onPress={() => setUser({ ...user, gender: "Laki-laki" })}
-              >
+                onPress={() => setUser({ ...user, gender: "Laki-laki" })}>
                 <Text
                   style={[
                     styles.genderText,
                     user.gender === "Laki-laki" && styles.genderTextSelected,
-                  ]}
-                >
-                  Laki-laki
+                  ]}>
+                  {t("MGender")}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -475,22 +470,20 @@ export default function ProfilEdit({ navigation }) {
                   styles.genderButton,
                   user.gender === "Perempuan" && styles.genderSelectedFemale,
                 ]}
-                onPress={() => setUser({ ...user, gender: "Perempuan" })}
-              >
+                onPress={() => setUser({ ...user, gender: "Perempuan" })}>
                 <Text
                   style={[
                     styles.genderText,
                     user.gender === "Perempuan" && styles.genderTextSelected,
-                  ]}
-                >
-                  Perempuan
+                  ]}>
+                  {t("FGender")}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Hobi</Text>
+            <Text style={styles.label}> {t("MGender")}</Text>
             <TextInput
               style={styles.input}
               value={user.hobi}
@@ -500,7 +493,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Tentang Saya</Text>
+            <Text style={styles.label}>{t("")}</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
               value={user.tentang}
@@ -517,8 +510,7 @@ export default function ProfilEdit({ navigation }) {
           <TouchableOpacity
             style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
             onPress={handleSave}
-            disabled={isSaving}
-          >
+            disabled={isSaving}>
             {isSaving ? (
               <ActivityIndicator color="#fff" />
             ) : (
