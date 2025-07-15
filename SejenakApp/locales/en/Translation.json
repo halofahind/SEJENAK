@@ -1,33 +1,31 @@
 {
-  "OnBoardingSlide1Title": "Get to Know Yourself\nMore Deeply",
-  "OnBoardingSlide1Desc": "We understand that campus life can be exhausting. Here, you can take time to reflect on your feelings, thoughts, and needs—free from judgment.",
-  "OnBoardingSlide2Title": "You Are Not\nAlone",
-  "OnBoardingSlide2Desc": "This app is your companion on the journey to mental wellness. From journaling to access to professional help—all in one safe and private space.",
-  "OnBoardingSlide3Title": "Take a\nBreather",
-  "OnBoardingSlide3Desc": "It’s time to give space for yourself. Begin your journey toward better mental health—one small step, one mindful moment at a time.",
-  "OnBoardingSlide4Title": "Welcome to\nSejenak",
-  "OnBoardingSlide4Desc": "This is your safe space to feel, reflect, and grow. No need to be perfect—just be you, one moment at a time.",
+  "OnBoardingSlide1Title": "Get to Know\nYourself Better",
+  "OnBoardingSlide1Desc": "We know campus life can be exhausting. Here, you can take time to understand your feelings, thoughts, and needs without judgment.",
+  "OnBoardingSlide2Title": "You're not\nalone",
+  "OnBoardingSlide2Desc": "This app is here as your mental health companion. From journaling to professional help access — all in one safe and private space.",
+  "OnBoardingSlide3Title": "Take a\nBreath",
+  "OnBoardingSlide3Desc": "It's time to give yourself some space. Begin your journey toward better mental health — one small step, one mindful moment at a time.",
+  "OnBoardingSlide4Title": "Welcome to,\nSejenak",
+  "OnBoardingSlide4Desc": "This is your safe space to feel, reflect, and grow. No need to be perfect — just be yourself, one step at a time.",
   "OnBoardingSkipBtn": "Skip",
   "OnBoardingNextBtn": "Next",
-  "OnBoardingStartBtn": "Let's Start",
-
-  "InfoSlide1Title": "This is an Information Title",
-  "InfoSlide1Desc": "This is a Description",
+  "OnBoardingStartBtn": "Get Started",
+  "InfoSlide1Title": "Information Title",
+  "InfoSlide1Desc": "Information Description",
 
   "LoginTitle": "Login",
   "LoginUsernamePlaceholder": "Username",
   "LoginPasswordPlaceholder": "Password",
   "LoginButtonLogin": "Login",
-  "LoginRegisterLabel": "Don’t have an account?",
+  "LoginRegisterLabel": "Don't have an account?",
   "LoginRegisterBtn": "Register",
-
   "RegTitle": "Register",
   "RegLoginLabel": "Already have an account?",
   "RegLoginBtn": "Login",
 
   "Loading": "Loading",
 
-  "EmailInputPh": "Email",
+  "EmailInputPh": "E-mail",
   "UsernameInputPh": "Username",
   "NameInputPh": "Full Name",
   "PasswordInputPh": "Password",
@@ -35,7 +33,20 @@
   "DateInputPh": "Date (DD/MM/YYYY)",
   "MGender": "Male",
   "FGender": "Female",
-  "PhoneInputPh": "Phone number (e.g. 0812345678)",
+  "PhoneInputLb": "Phone number (e.g., 0812345678)",
+  "EmailInputLb": "E-mail",
+  "UsernameInputLb": "Username",
+  "NameInputLb": "Full Name",
+  "PasswordInputLb": "Password",
+  "PasswordConfInputLb": "Confirm Password",
+  "DateInputLb": "Date (DD/MM/YYYY)",
+  "GenderLb": "Gender",
+  "PhoneInputPh": "Phone number (e.g., 0812345678)",
+
+  "ConfirmBtn": "Confirm",
+  "CancelBtn": "Cancel",
+  "SaveBtn": "Save",
+  "UpdateBtn": "Update",
 
   "MainTabsHome": "Home",
   "MainTabsJournal": "My Journal",
@@ -44,24 +55,126 @@
 
   "ProfilGreetingLabel": "Hi, ",
   "ProfilEditBtn": "Edit",
-  "ProfilMenuManageAcc": "Manage User Account",
+  "ProfilMenuManageAcc": "Manage User Accounts",
   "ProfilMenuPassChange": "Change Password",
   "ProfilMenuSK": "Terms & Conditions",
   "ProfilMenuPrivacy": "Privacy Policy",
   "ProfilMenuCallMe": "Contact Us",
   "ProfileMenuLangChange": "Change Language",
-  "ProfilLogOutBtn": "Logout",
+  "ProfilLogOutBtn": "Log Out",
+
   "ProfilEditTitle": "Edit Profile",
+  "ProfilEditSaveBtn": "Save Changes",
 
   "CounselingHeadTitle": "Counseling",
-  "CounselingHeadDesc": "Choose a topic and start talking about your issues safely and comfortably.",
+  "CounselingHeadDesc": "Choose a topic and start sharing your problem in a safe and comfortable way.",
   "CounselingHistoryTitle": "Counseling History",
-  "CounselingHistoryEmpTitle": "No Counseling History Yet",
-  "CounselingHistoryEmpDesc": "Tap the 'Start Counseling' button to begin a new counseling session",
+  "CounselingHistoryEmpTitle": "No Counseling History",
+  "CounselingHistoryEmpDesc": "Tap 'Start Counseling' to begin a new session",
   "CounselingBtnStartCouns": "Start Counseling",
-  "CounselingBtnManageTopic": "Manage Topic",
+  "CounselingBtnManageTopic": "Manage Topics",
 
-  "TopicSelectTitle": "Select Topic",
-  "TopicSelectSubTitle": "What issues would you like to discuss??",
-  "TopicSelectBtn": "Select Topic"
+  "TopicSelectTitle": "Choose Topic",
+  "TopicSelectSubTitle": "What issue would you like to talk about?",
+  "TopicSelectBtn": "Select Topic",
+
+  "TopicManageTitle": "Topic List",
+  "TopicManageAddTitle": "Add New Topic",
+  "TopicManageAddSubTitle": "Create a new counseling topic for users",
+  "TopicManageEditTitle": "Edit Topic",
+  "TopicManageEditSubTitle": "Update counseling topic information",
+
+  "TopicNameLb": "Topic Name",
+  "TopicMessageOpenLb": "Opening Message",
+  "TopicMessageCloseLb": "Closing Message",
+  "TopicMessageOpenSubLb": "Message shown at the start of a counseling session",
+  "TopicMessageCloseSubLb": "Message shown at the end of a counseling session",
+  "TopicNamePh": "Example: Family, Relationships, Friendships",
+  "TopicMessageOpenPh": "Enter a warm and supportive opening message...",
+  "TopicMessageClosePh": "Enter a hopeful and reassuring closing message...",
+
+  "JournalTitle": "My Journal",
+  "JournalSortBy": "Sort By",
+  "JournalTextDate": "Written on ",
+
+  "HomeGreetingText": "How are you feeling today?",
+  "HomeQuotesTitle": "",
+  "HomeJournalTopicTitle": "",
+  "HomeJournalTopicSubTitle": "Choose a topic and start!",
+
+  "MotivTitle": "Motivational List",
+  "MotivAddTitle": "Add Motivation",
+  "MotivAddSubTitle": "Write a quote or message to motivate users",
+  "MotivEditTitle": "Edit Motivation",
+  "MotivEditSubTitle": "Update the user's motivational text",
+
+  "MotivNameLb": "Motivation",
+  "MotivNamePh": "Example: Don't fear failure, fear not trying",
+
+  "DetailCounsHeadTitle": "Topic",
+
+  "terms.headerTitle": "Terms & Conditions",
+  "terms.section.usage.title": "App Usage",
+  "terms.section.usage.text1": "By using this app, you agree to comply with all applicable terms and conditions.",
+  "terms.section.usage.text2": "This app is intended for personal and non-commercial use.",
+
+  "terms.section.account.title": "User Account",
+  "terms.section.account.text1": "You are fully responsible for maintaining the confidentiality of your account information.",
+  "terms.section.account.text2": "We reserve the right to suspend or close accounts that violate the terms.",
+
+  "terms.section.content.title": "Content",
+  "terms.section.content.text1": "You are prohibited from uploading content that infringes copyrights, contains hate speech, or is inappropriate.",
+  "terms.section.content.text2": "We reserve the right to remove inappropriate content without notice.",
+
+  "terms.section.privacy.title": "Privacy",
+  "terms.section.privacy.text1": "Your personal data will be protected according to our Privacy Policy.",
+  "terms.section.privacy.text2": "We will not sell or share your data with third parties without your consent.",
+
+  "terms.section.changes.title": "Changes to Terms",
+  "terms.section.changes.text": "We may change these terms at any time. Changes will be notified via the app.",
+
+  "terms.section.contact.title": "Contact Us",
+  "terms.section.contact.text": "If you have questions about these Terms & Conditions, please contact us:",
+  "terms.section.contact.button": "Contact via WhatsApp",
+
+  "terms.whatsapp.message": "Hi, I have a question about the app’s terms and conditions",
+
+  "privacy.headerTitle": "Privacy Policy",
+  "privacy.intro": "This Privacy Policy explains how we collect, use, and protect your personal information when using our app.",
+
+  "privacy.section.collect.title": "Information We Collect",
+  "privacy.section.collect.text1": "Profile data (name, email, phone number, etc.) you provide during registration",
+  "privacy.section.collect.text2": "App usage data including interactions and preferences",
+  "privacy.section.collect.text3": "Profile photo you upload (if any)",
+
+  "privacy.section.use.title": "Use of Information",
+  "privacy.section.use.text1": "To provide and maintain our services",
+  "privacy.section.use.text2": "To provide customer support",
+  "privacy.section.use.text3": "To develop and improve the app",
+  "privacy.section.use.text4": "To send important notifications",
+
+  "privacy.section.protect.title": "Data Protection",
+  "privacy.section.protect.text1": "We use encryption to protect sensitive data",
+  "privacy.section.protect.text2": "Access to your data is restricted to service-related purposes",
+  "privacy.section.protect.text3": "We retain your data as long as necessary to provide the services",
+
+  "privacy.section.share.title": "Information Sharing",
+  "privacy.section.share.text1": "We will not sell or share your personal data with third parties unless:",
+  "privacy.section.share.text2": "With your consent",
+  "privacy.section.share.text3": "To comply with legal obligations",
+  "privacy.section.share.text4": "To protect our rights and property",
+
+  "privacy.section.rights.title": "Your Rights",
+  "privacy.section.rights.text1": "You can access and update your personal data through profile settings",
+  "privacy.section.rights.text2": "You can request account and data deletion",
+  "privacy.section.rights.text3": "You can opt out of receiving notifications",
+
+  "privacy.section.changes.title": "Policy Changes",
+  "privacy.section.changes.text": "We may update this Privacy Policy from time to time. Changes will be notified through the app.",
+
+  "privacy.section.contact.title": "Contact Us",
+  "privacy.section.contact.text": "If you have questions about this Privacy Policy:",
+  "privacy.section.contact.button": "Contact via WhatsApp",
+
+  "privacy.whatsapp.message": "Hi, I have a question about the app’s privacy policy"
 }
