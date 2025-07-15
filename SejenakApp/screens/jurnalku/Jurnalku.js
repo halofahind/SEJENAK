@@ -74,7 +74,7 @@ export default function Jurnalku({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>{t("JournalTitle")}</Text>
-        <Ionicons name="search-outline" size={20} color="#000" />
+        {/* <Ionicons name="search-outline" size={20} color="#000" /> */}
       </View>
 
       {/* Filter */}
@@ -99,7 +99,8 @@ export default function Jurnalku({ navigation }) {
               navigation.navigate("JurnalkuDetailSelesai", {
                 jurnal: item,
               })
-            }>
+            }
+          >
             <View style={styles.card}>
               <Image source={item.image} style={styles.cardImage} />
               <View style={{ flex: 1 }}>

@@ -193,28 +193,15 @@ export default function Home({ navigation }) {
               <Text style={styles.welcomeText}>{t("HomeGreetingText")}</Text>
             </View>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate("NotifikasiScreen")}
           >
             <Icon name="notifications-none" size={28} color="#444" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* === Mood Pilihan === */}
-        <View style={styles.moodOptions}>
-          {moods.map((mood, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.moodItem}
-              onPress={() =>
-                navigation.navigate("MoodTracker", { selectedMood: mood })
-              }
-            >
-              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-              <Text style={styles.moodLabel}>{mood.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+
         {!todayCheckin && (
           <View style={styles.moodOptions}>
             {moods.map((mood, index) => (
