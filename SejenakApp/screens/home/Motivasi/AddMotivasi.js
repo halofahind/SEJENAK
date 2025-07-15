@@ -13,11 +13,12 @@ import {
   Platform,
 } from "react-native";
 import { API_BASE_URL } from "../../../utils/constants";
-
+import { useTranslation } from "react-i18next";
 export default function AddMotivasiScreen({ navigation }) {
   const [motivasiText, setMotivasiText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { t } = useTranslation();
 
   const validate = () => {
     if (!motivasiText.trim()) {
@@ -82,25 +83,22 @@ export default function AddMotivasiScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
-            <Text style={styles.title}>Tambah Motivasi</Text>
-            <Text style={styles.subtitle}>
-              Tulis kutipan atau pesan yang bisa memotivasi pengguna
-            </Text>
+            <Text style={styles.title}>{t("MotivAddTitle")}</Text>
+            <Text style={styles.subtitle}>{t("MotivAddSubTitle")}</Text>
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
-              Motivasi <Text style={styles.required}>*</Text>
+              {t("MotivNameLb")} <Text style={styles.required}>*</Text>
             </Text>
             <TextInput
               style={[styles.input, error && styles.inputError]}
               value={motivasiText}
               onChangeText={setMotivasiText}
-              placeholder="Contoh: Jangan takut gagal, takutlah untuk tidak mencoba."
+              placeholder={t("MotivNamePh")}
               placeholderTextColor="#999"
               multiline
               numberOfLines={4}
@@ -116,9 +114,8 @@ export default function AddMotivasiScreen({ navigation }) {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={handleCancel}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.cancelButtonText}>Batal</Text>
+            activeOpacity={0.8}>
+            <Text style={styles.cancelButtonText}>{t("CancelBtn")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -127,12 +124,11 @@ export default function AddMotivasiScreen({ navigation }) {
             ]}
             onPress={handleSubmit}
             disabled={loading}
-            activeOpacity={0.8}
-          >
+            activeOpacity={0.8}>
             {loading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.submitButtonText}>Simpan</Text>
+              <Text style={styles.submitButtonText}>{t("SaveBtn")}</Text>
             )}
           </TouchableOpacity>
         </View>

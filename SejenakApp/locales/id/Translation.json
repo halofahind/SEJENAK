@@ -31,9 +31,24 @@
   "PasswordInputPh": "Kata Sandi",
   "PasswordConfInputPh": "Konfirmasi Kata Sandi",
   "DateInputPh": "Tanggal (DD/MM/YYYY)",
+  "HobbyLb": "Hobi",
   "MGender": "Laki-laki",
   "FGender": "Perempuan",
+  "PhoneInputLb": "Nomor telepon",
+  "EmailInputLb": "E-mail",
+  "UsernameInputLb": "Nama Pengguna",
+  "NameInputLb": "Nama Lengkap",
+  "PasswordInputLb": "Kata Sandi",
+  "PasswordConfInputLb": "Konfirmasi Kata Sandi",
+  "DateInputLb": "Tanggal (DD/MM/YYYY)",
+  "GenderLb": "Jenis Kelamin",
+  "AboutLb": "Tentang",
   "PhoneInputPh": "Nomor telepon (contoh: 0812345678)",
+
+  "ConfirmBtn": "Konfirmasi",
+  "CancelBtn": "Batal",
+  "SaveBtn": "Simpan",
+  "UpdateBtn": "Perbarui",
 
   "MainTabsHome": "Beranda",
   "MainTabsJournal": "Jurnalku",
@@ -50,9 +65,126 @@
   "ProfileMenuLangChange": "Ganti Bahasa",
   "ProfilLogOutBtn": "Keluar",
 
+  "ProfilEditTitle": "Ubah Profil",
+  "ProfilEditSaveBtn": "Simpan Perubahan",
+
   "CounselingHeadTitle": "Konseling",
   "CounselingHeadDesc": "Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan nyaman",
   "CounselingHistoryTitle": "Riwayat Konseling",
   "CounselingHistoryEmpTitle": "Belum Ada Riwayat Konseling",
-  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru"
+  "CounselingHistoryEmpDesc": "Tap tombol 'Mulai Konseling' untuk memulai konseling baru",
+  "CounselingBtnStartCouns": "Mulai Konseling",
+  "CounselingBtnManageTopic": "Kelola Topik",
+
+  "TopicSelectTitle": "Pilih Topik",
+  "TopicSelectSubTitle": "Permasalahan apa yang ingin anda diskusikan?",
+  "TopicSelectBtn": "Pilih Topik",
+
+  "TopicManageTitle": "Daftar Topik",
+  "TopicManageAddTitle": "Tambah Topik Baru",
+  "TopicManageAddSubTitle": "Buat topik konseling baru untuk pengguna",
+  "TopicManageEditTitle": "Edit Topik",
+  "TopicManageEditSubTitle": "Perbarui informasi topik konseling",
+
+  "TopicNameLb": "Nama Topik",
+  "TopicMessageOpenLb": "Pesan Pembuka",
+  "TopicMessageCloseLb": "Pesan Penutup",
+  "TopicMessageOpenSubLb": "Pesan yang akan ditampilkan saat memulai konseling dengan topik ini",
+  "TopicMessageCloseSubLb": "Pesan yang akan ditampilkan di akhir sesi konseling",
+  "TopicNamePh": "Contoh: Keluarga, Pasangan, Pertemanan",
+  "TopicMessageOpenPh": "Masukkan pesan pembuka yang ramah dan mendukung...",
+  "TopicMessageClosePh": "Masukkan pesan penutup yang memberikan harapan...",
+
+  "JournalTitle": "Jurnalku",
+  "JournalSortBy": "Tampilkan Berdasarkan",
+  "JournalTextDate": "Ditulis pada ",
+
+  "HomeGreetingText": "Bagaimana perasaanmu hari ini?",
+  "HomeQuotesTitle": "Kutipan hari ini",
+  "HomeJournalTopicTitle": "Topik Jurnal",
+  "HomeJournalTopicSubTitle": "Pilih salah satu topik dan mulai!",
+
+  "MotivTitle": "Daftar Motivasi",
+  "MotivAddTitle": "Tambah Motivasi",
+  "MotivAddSubTitle": "Tulis kutipan atau pesan yang bisa memotivasi pengguna",
+  "MotivEditTitle": "Edit Motivasi",
+  "MotivEditSubTitle": "Perbarui teks motivasi pengguna",
+  "MotivHistoryEmpTitle": "Belum Ada Riwayat Motivasi",
+  "MotivHistoryEmpDesc": "Tap tombol + untuk menambah Motivasi baru",
+
+  "MotivNameLb": "Motivasi",
+  "MotivNamePh": "Contoh: Jangan takut gagal, takutlah untuk tidak mencoba",
+
+  "DetailCounsHeadTitle": "Topik",
+
+  "terms.headerTitle": "Syarat & Ketentuan",
+
+  "terms.section.usage.title": "Penggunaan Aplikasi",
+  "terms.section.usage.text1": "Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi semua syarat dan ketentuan yang berlaku.",
+  "terms.section.usage.text2": "Aplikasi ini ditujukan untuk penggunaan pribadi dan non-komersial.",
+
+  "terms.section.account.title": "Akun Pengguna",
+  "terms.section.account.text1": "Anda bertanggung jawab penuh atas kerahasiaan informasi akun Anda.",
+  "terms.section.account.text2": "Kami berhak menangguhkan atau menutup akun yang melanggar ketentuan.",
+
+  "terms.section.content.title": "Konten",
+  "terms.section.content.text1": "Anda dilarang mengunggah konten yang melanggar hak cipta, mengandung SARA, atau tidak senonoh.",
+  "terms.section.content.text2": "Kami berhak menghapus konten yang dianggap tidak pantas tanpa pemberitahuan.",
+
+  "terms.section.privacy.title": "Privasi",
+  "terms.section.privacy.text1": "Data pribadi Anda akan dilindungi sesuai dengan Kebijakan Privasi kami.",
+  "terms.section.privacy.text2": "Kami tidak akan menjual atau membagikan data Anda kepada pihak ketiga tanpa izin.",
+
+  "terms.section.changes.title": "Perubahan Ketentuan",
+  "terms.section.changes.text": "Kami dapat mengubah syarat dan ketentuan ini sewaktu-waktu. Perubahan akan diberitahukan melalui aplikasi.",
+
+  "terms.section.contact.title": "Hubungi Kami",
+  "terms.section.contact.text": "Jika Anda memiliki pertanyaan tentang Syarat & Ketentuan ini, silakan hubungi kami:",
+  "terms.section.contact.button": "Hubungi via WhatsApp",
+
+  "terms.whatsapp.message": "Hai, saya ingin bertanya tentang syarat dan ketentuan aplikasi ini",
+
+  "privacy.headerTitle": "Kebijakan Privasi",
+  "privacy.intro": "Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan aplikasi kami.",
+
+  "privacy.section.collect.title": "Informasi yang Kami Kumpulkan",
+  "privacy.section.collect.text1": "Data profil (nama, email, nomor telepon, dll) yang Anda berikan saat registrasi",
+  "privacy.section.collect.text2": "Data penggunaan aplikasi termasuk interaksi dan preferensi",
+  "privacy.section.collect.text3": "Foto profil yang Anda unggah (jika ada)",
+
+  "privacy.section.use.title": "Penggunaan Informasi",
+  "privacy.section.use.text1": "Untuk menyediakan dan memelihara layanan kami",
+  "privacy.section.use.text2": "Untuk memberi Anda dukungan pelanggan",
+  "privacy.section.use.text3": "Untuk pengembangan dan peningkatan aplikasi",
+  "privacy.section.use.text4": "Untuk mengirim notifikasi penting",
+
+  "privacy.section.protect.title": "Perlindungan Data",
+  "privacy.section.protect.text1": "Kami menggunakan enkripsi untuk melindungi data sensitif",
+  "privacy.section.protect.text2": "Akses ke data Anda dibatasi hanya untuk keperluan layanan",
+  "privacy.section.protect.text3": "Kami menyimpan data Anda selama diperlukan untuk menyediakan layanan",
+
+  "privacy.section.share.title": "Berbagi Informasi",
+  "privacy.section.share.text1": "Kami tidak akan menjual atau membagikan data pribadi Anda kepada pihak ketiga kecuali:",
+  "privacy.section.share.text2": "Dengan persetujuan Anda",
+  "privacy.section.share.text3": "Untuk memenuhi kewajiban hukum",
+  "privacy.section.share.text4": "Untuk melindungi hak dan properti kami",
+
+  "privacy.section.rights.title": "Hak Anda",
+  "privacy.section.rights.text1": "Anda dapat mengakses dan memperbarui data pribadi Anda melalui pengaturan profil",
+  "privacy.section.rights.text2": "Anda dapat meminta penghapusan akun dan data pribadi",
+  "privacy.section.rights.text3": "Anda dapat memilih untuk tidak menerima notifikasi",
+
+  "privacy.section.changes.title": "Perubahan Kebijakan",
+  "privacy.section.changes.text": "Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Perubahan akan diberitahukan melalui aplikasi.",
+
+  "privacy.section.contact.title": "Hubungi Kami",
+  "privacy.section.contact.text": "Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini:",
+  "privacy.section.contact.button": "Hubungi via WhatsApp",
+
+  "privacy.whatsapp.message": "Hai, saya ingin bertanya tentang kebijakan privasi aplikasi ini",
+
+  "ActiveStatus": "Aktif",
+  "NonActiveStatus": "Tidak Aktif",
+
+  "SayHi": "Halo"
 }

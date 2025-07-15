@@ -22,7 +22,6 @@ import i18n from "../../locales/i18n";
 import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../utils/constants";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import Iconf from "react-native-vector-icons/FontAwesome";
 import Tanaman from "../../assets/Profil/tanaman.png";
 
 export default function Profil({ navigation }) {
@@ -108,7 +107,7 @@ export default function Profil({ navigation }) {
           gender: parsedData.gender || "",
           address: parsedData.alamat || "",
           hobi: parsedData.hobi || "",
-          tentang: parsedData.tentang || "",
+          tentang: parsedData.about || "",
           profilePic: profilePicSource,
           role: parsedData.role || "user",
         });
@@ -172,7 +171,7 @@ export default function Profil({ navigation }) {
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
             hobi: parsedData.hobi || "",
-            tentang: parsedData.tentang || "",
+            tentang: parsedData.about || "",
             profilePic: profilePicSource,
             role: parsedData.user || "user",
           });
@@ -257,7 +256,7 @@ export default function Profil({ navigation }) {
     },
     {
       title: t("ProfilMenuCallMe"),
-      icon: "whatsapp",
+      icon: "chat",
       onPress: () => {
         const nomorWA = "6282118028300";
         const pesan =
@@ -346,13 +345,12 @@ export default function Profil({ navigation }) {
             <TouchableOpacity
               key={index}
               style={styles.menuItem}
-              onPress={item.onPress}
-            >
+              onPress={item.onPress}>
               <Icon
                 name={item.icon}
                 size={24}
                 type={item.type}
-                color="#5E5E5D"
+                color="#a8a8a8ff"
               />
               <Text style={styles.menuText}>{item.title}</Text>
               <Icon name="chevron-right" size={24} color="#ccc" />
@@ -372,8 +370,7 @@ export default function Profil({ navigation }) {
           animationType="slide"
           transparent={true}
           visible={languageModalVisible}
-          onRequestClose={() => setLanguageModalVisible(false)}
-        >
+          onRequestClose={() => setLanguageModalVisible(false)}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pilih Bahasa</Text>
@@ -385,8 +382,7 @@ export default function Profil({ navigation }) {
                     styles.languageButton,
                     currentLanguage === lang && styles.selectedLanguage,
                   ]}
-                  onPress={() => changeLanguage(lang)}
-                >
+                  onPress={() => changeLanguage(lang)}>
                   <Text style={styles.languageText}>
                     {lang === "id" ? "Bahasa Indonesia" : "English"}
                   </Text>
@@ -398,8 +394,7 @@ export default function Profil({ navigation }) {
 
               <TouchableOpacity
                 style={styles.modalCloseButton}
-                onPress={() => setLanguageModalVisible(false)}
-              >
+                onPress={() => setLanguageModalVisible(false)}>
                 <Text style={styles.modalCloseText}>Batal</Text>
               </TouchableOpacity>
             </View>

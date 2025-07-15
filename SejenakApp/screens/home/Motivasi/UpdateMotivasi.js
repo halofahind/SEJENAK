@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../../utils/constants";
-
+import { useTranslation } from "react-i18next";
 export default function UpdateMotivasiScreen({ route, navigation }) {
   const { item } = route.params;
 
@@ -22,6 +22,7 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
   const [status, setStatus] = useState(item?.status || "Aktif");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { t } = useTranslation();
 
   const hasChanged = () => motivasiText !== item?.motivasiText;
 
@@ -90,19 +91,19 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Edit Motivasi</Text>
-            <Text style={styles.subtitle}>Perbarui teks motivasi pengguna</Text>
+            <Text style={styles.title}>{t("MotivEditTitle")}</Text>
+            <Text style={styles.subtitle}>{t("MotivEditSubTitle")}</Text>
           </View>
 
           {/* Form */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>
-              Motivasi <Text style={styles.required}>*</Text>
+              {t("MotivNameLb")}
+              <Text style={styles.required}>*</Text>
             </Text>
             <TextInput
               style={[styles.input, error && styles.inputError]}
@@ -112,7 +113,7 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
               numberOfLines={4}
               textAlignVertical="top"
               maxLength={255}
-              placeholder="Tulis motivasi di sini..."
+              placeholder={t("MotivAddSubTitle")}
               placeholderTextColor="#999"
             />
             {error && <Text style={styles.errorText}>{error}</Text>}
@@ -125,9 +126,8 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={handleCancel}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.cancelButtonText}>Batal</Text>
+            activeOpacity={0.8}>
+            <Text style={styles.cancelButtonText}>{t("CancelBtn")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -136,12 +136,11 @@ export default function UpdateMotivasiScreen({ route, navigation }) {
             ]}
             onPress={handleUpdate}
             disabled={loading || isDisabled}
-            activeOpacity={0.8}
-          >
+            activeOpacity={0.8}>
             {loading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.submitButtonText}>Perbarui</Text>
+              <Text style={styles.submitButtonText}>{t("UpdateBtn")}</Text>
             )}
           </TouchableOpacity>
         </View>

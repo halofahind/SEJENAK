@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
+import { useTranslation } from "react-i18next";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const screenWidth = Dimensions.get("window").width;
@@ -66,6 +67,7 @@ const getMoodColor = (label) => {
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const { t } = useTranslation();
   const [todayCheckin, setTodayCheckin] = useState(null);
 
   const [user, setUser] = useState({
@@ -185,10 +187,10 @@ export default function Home({ navigation }) {
             />
 
             <View>
-              <Text style={styles.userName}>Hai, {user.name}</Text>
-              <Text style={styles.welcomeText}>
-                Bagaimana perasaanmu hari ini?
+              <Text style={styles.userName}>
+                {t("SayHi")}, {user.name}
               </Text>
+              <Text style={styles.welcomeText}>{t("HomeGreetingText")}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -199,6 +201,20 @@ export default function Home({ navigation }) {
         </View>
 
         {/* === Mood Pilihan === */}
+        <View style={styles.moodOptions}>
+          {moods.map((mood, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.moodItem}
+              onPress={() =>
+                navigation.navigate("MoodTracker", { selectedMood: mood })
+              }
+            >
+              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+              <Text style={styles.moodLabel}>{mood.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         {!todayCheckin && (
           <View style={styles.moodOptions}>
             {moods.map((mood, index) => (
@@ -276,7 +292,7 @@ export default function Home({ navigation }) {
 
         {/* === Quotes === */}
         <View style={styles.headerContainer}>
-          <Text style={styles.manageQuotes}>Quotes hari ini</Text>
+          <Text style={styles.manageQuotes}>{t("HomeQuotesTitle")}</Text>
           {user.role === "admin" && (
             <TouchableOpacity
               onPress={() => navigation.navigate("MotivasiScreen")}
@@ -302,8 +318,8 @@ export default function Home({ navigation }) {
         </View>
 
         {/* === Topik === */}
-        <Text style={styles.sectionTitle}>Topik Journal</Text>
-        <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
+        <Text style={styles.sectionTitle}>{t("HomeJournalTopicTitle")}</Text>
+        <Text style={styles.subTitle}>{t("HomeJournalTopicSubTitle")}</Text>
 
         <View style={styles.topikWrapper}>
           {topiks.map((item, index) => {

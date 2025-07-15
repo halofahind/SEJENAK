@@ -19,12 +19,13 @@ import {
 import axios from "axios";
 import { API_BASE_URL } from "../../../utils/constants";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 export default function MotivasiScreen({ navigation }) {
   const [motivasiList, setMotivasiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { t } = useTranslation();
   useFocusEffect(
     useCallback(() => {
       fetchMotivasi();
@@ -131,16 +132,14 @@ export default function MotivasiScreen({ navigation }) {
                     ? "#ff4757"
                     : "#007bff",
               },
-            ]}
-          >
+            ]}>
             <TouchableOpacity
               onPress={() => {
                 closeSwipe();
                 handleDelete(item.motivasiId, item.motivasiText, item.status);
               }}
               style={styles.actionButton}
-              activeOpacity={0.7}
-            >
+              activeOpacity={0.7}>
               <Ionicons
                 name={
                   item.status === "Aktif" || item.status === 1
@@ -163,29 +162,25 @@ export default function MotivasiScreen({ navigation }) {
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={onHandlerStateChange}
             activeOffsetX={[-20, 20]}
-            failOffsetY={[-10, 10]}
-          >
+            failOffsetY={[-10, 10]}>
             <Animated.View
               style={[
                 styles.rowFront,
                 {
                   transform: [{ translateX }],
                 },
-              ]}
-            >
+              ]}>
               <TouchableOpacity
                 style={styles.card}
                 onPress={() => navigation.navigate("UpdateMotivasi", { item })}
-                activeOpacity={0.8}
-              >
+                activeOpacity={0.8}>
                 <View style={styles.cardContent}>
                   <Text style={styles.cardText}>{item.motivasiText}</Text>
                   <View
                     style={[
                       styles.statusBadge,
                       { backgroundColor: getStatusColor(item.status) },
-                    ]}
-                  >
+                    ]}>
                     <Text style={styles.statusText}>
                       {getStatusText(item.status)}
                     </Text>
@@ -215,7 +210,7 @@ export default function MotivasiScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Daftar Motivasi</Text>
+        <Text style={styles.title}>{t("MotivTitle")}</Text>
       </View>
 
       <FlatList
@@ -229,10 +224,8 @@ export default function MotivasiScreen({ navigation }) {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="chatbox-ellipses-outline" size={48} color="#ccc" />
-            <Text style={styles.emptyText}>Belum ada motivasi</Text>
-            <Text style={styles.emptySubtext}>
-              Tap tombol + untuk menambahkan motivasi baru
-            </Text>
+            <Text style={styles.emptyText}></Text>
+            <Text style={styles.emptySubtext}></Text>
           </View>
         }
       />
@@ -240,8 +233,7 @@ export default function MotivasiScreen({ navigation }) {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate("AddMotivasi")}
-        activeOpacity={0.8}
-      >
+        activeOpacity={0.8}>
         <Ionicons name="add" size={36} color="#fff" />
       </TouchableOpacity>
     </SafeAreaView>

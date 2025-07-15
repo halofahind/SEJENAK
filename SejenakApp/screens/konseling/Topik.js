@@ -10,12 +10,13 @@ import {
 } from "react-native";
 import { API_BASE_URL } from "../../utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 const Topik = ({ navigation }) => {
   const [topiks, setTopiks] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const { t } = useTranslation();
   useEffect(() => {
     fetchTopiks();
   }, []);
@@ -102,8 +103,7 @@ const Topik = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color="#e91e63" />
           <Text>Memuat daftar topik...</Text>
         </View>
@@ -114,10 +114,8 @@ const Topik = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Pilih Topik</Text>
-        <Text style={styles.subtitle}>
-          Permasalahan apa yang ingin Anda diskusikan?
-        </Text>
+        <Text style={styles.title}>{t("TopicSelectTitle")}</Text>
+        <Text style={styles.subtitle}>{t("TopicSelectSubTitle")}</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.listContainer}>
@@ -129,23 +127,20 @@ const Topik = ({ navigation }) => {
               selectedTopic?.id === topic.id && styles.cardSelected,
             ]}
             onPress={() => handleTopicSelect(topic)}
-            activeOpacity={0.8}
-          >
+            activeOpacity={0.8}>
             <View style={styles.cardContent}>
               <Text
                 style={[
                   styles.cardText,
                   selectedTopic?.id === topic.id && styles.cardTextSelected,
-                ]}
-              >
+                ]}>
                 {topic.nama}
               </Text>
               <View
                 style={[
                   styles.radioButton,
                   selectedTopic?.id === topic.id && styles.radioButtonSelected,
-                ]}
-              >
+                ]}>
                 {selectedTopic?.id === topic.id && (
                   <View style={styles.radioButtonInner} />
                 )}
@@ -162,9 +157,8 @@ const Topik = ({ navigation }) => {
         ]}
         onPress={handlePilihTopik}
         disabled={!selectedTopic}
-        activeOpacity={selectedTopic ? 0.8 : 1}
-      >
-        <Text style={styles.selectButtonText}>Pilih Topik</Text>
+        activeOpacity={selectedTopic ? 0.8 : 1}>
+        <Text style={styles.selectButtonText}>{t("TopicSelectBtn")}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
