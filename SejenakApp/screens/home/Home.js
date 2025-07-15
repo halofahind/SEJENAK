@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
-
+import { useTranslation } from "react-i18next";
 const screenWidth = Dimensions.get("window").width;
 
 const topiks = [
@@ -60,7 +60,7 @@ const moods = [
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-
+  const { t } = useTranslation();
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -149,8 +149,7 @@ export default function Home({ navigation }) {
             colors={["#D7385E"]}
             tintColor="#D7385E"
           />
-        }
-      >
+        }>
         {/* === Profil & Notifikasi === */}
         <View style={styles.profileRow}>
           <View style={styles.profileContainer}>
@@ -165,15 +164,14 @@ export default function Home({ navigation }) {
             />
 
             <View>
-              <Text style={styles.userName}>Hai, {user.name}</Text>
-              <Text style={styles.welcomeText}>
-                Bagaimana perasaanmu hari ini?
+              <Text style={styles.userName}>
+                {t("SayHi")}, {user.name}
               </Text>
+              <Text style={styles.welcomeText}>{t("HomeGreetingText")}</Text>
             </View>
           </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate("NotifikasiScreen")}
-          >
+            onPress={() => navigation.navigate("NotifikasiScreen")}>
             <Icon name="notifications-none" size={28} color="#444" />
           </TouchableOpacity>
         </View>
@@ -186,8 +184,7 @@ export default function Home({ navigation }) {
               style={styles.moodItem}
               onPress={() =>
                 navigation.navigate("MoodTracker", { selectedMood: mood })
-              }
-            >
+              }>
               <Text style={styles.moodEmoji}>{mood.emoji}</Text>
               <Text style={styles.moodLabel}>{mood.label}</Text>
             </TouchableOpacity>
@@ -198,11 +195,10 @@ export default function Home({ navigation }) {
 
         {/* === Quotes === */}
         <View style={styles.headerContainer}>
-          <Text style={styles.manageQuotes}>Quotes hari ini</Text>
+          <Text style={styles.manageQuotes}>{t("HomeQuotesTitle")}</Text>
           {user.role === "admin" && (
             <TouchableOpacity
-              onPress={() => navigation.navigate("MotivasiScreen")}
-            >
+              onPress={() => navigation.navigate("MotivasiScreen")}>
               <Icon name="edit" size={28} color="#444" />
             </TouchableOpacity>
           )}
@@ -224,8 +220,8 @@ export default function Home({ navigation }) {
         </View>
 
         {/* === Topik === */}
-        <Text style={styles.sectionTitle}>Topik Journal</Text>
-        <Text style={styles.subTitle}>Pilih salah satu topik dan mulai!</Text>
+        <Text style={styles.sectionTitle}>{t("HomeJournalTopicTitle")}</Text>
+        <Text style={styles.subTitle}>{t("HomeJournalTopicSubTitle")}</Text>
 
         <View style={styles.topikWrapper}>
           {topiks.map((item, index) => {
@@ -245,8 +241,7 @@ export default function Home({ navigation }) {
                   navigation.navigate("DaftarJurnal", {
                     jenisjurnal: item,
                   })
-                }
-              >
+                }>
                 <Image source={item.image} style={styles.image} />
                 <Text style={styles.cardTitle}>{item.title}</Text>
               </TouchableOpacity>

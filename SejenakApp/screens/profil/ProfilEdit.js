@@ -177,7 +177,7 @@ export default function ProfilEdit({ navigation }) {
         telepon: user.phone,
         gender: user.gender,
         hobi: user.hobi || null,
-        about: user.tentang || null,
+        about: user.about || null,
         usrFoto: profilePicUrl,
       };
 
@@ -363,7 +363,7 @@ export default function ProfilEdit({ navigation }) {
         {/* Form Section */}
         <View style={styles.formContainer}>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>{t("EmailInputPh")}</Text>
             <TextInput
               style={styles.input}
               value={user.email}
@@ -382,7 +382,7 @@ export default function ProfilEdit({ navigation }) {
             />
           </View>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nama Lengkap</Text>
+            <Text style={styles.label}>{t("NameInputLb")}</Text>
             <TextInput
               style={styles.input}
               value={user.name}
@@ -391,7 +391,7 @@ export default function ProfilEdit({ navigation }) {
             />
           </View>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Tanggal Lahir</Text>
+            <Text style={styles.label}>{t("DateInputLb")}</Text>
             <TouchableOpacity
               onPress={() => !isLoading && setShowDatePicker(true)}
               style={styles.input}
@@ -428,7 +428,7 @@ export default function ProfilEdit({ navigation }) {
             />
           )}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>{t("UsernameInputLb")}</Text>
             <TextInput
               style={styles.input}
               value={user.username}
@@ -438,7 +438,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nomor Telepon</Text>
+            <Text style={styles.label}>{t("PhoneInputLb")}</Text>
             <TextInput
               style={styles.input}
               value={user.phone}
@@ -449,7 +449,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Jenis Kelamin</Text>
+            <Text style={styles.label}>{t("GenderLb")}</Text>
             <View style={styles.genderContainer}>
               <TouchableOpacity
                 style={[
@@ -462,7 +462,7 @@ export default function ProfilEdit({ navigation }) {
                     styles.genderText,
                     user.gender === "Laki-laki" && styles.genderTextSelected,
                   ]}>
-                  Laki-laki
+                  {t("MGender")}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -476,14 +476,14 @@ export default function ProfilEdit({ navigation }) {
                     styles.genderText,
                     user.gender === "Perempuan" && styles.genderTextSelected,
                   ]}>
-                  Perempuan
+                  {t("FGender")}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Hobi</Text>
+            <Text style={styles.label}> {t("MGender")}</Text>
             <TextInput
               style={styles.input}
               value={user.hobi}
@@ -493,7 +493,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Tentang Saya</Text>
+            <Text style={styles.label}>{t("")}</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
               value={user.tentang}

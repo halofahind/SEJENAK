@@ -31,9 +31,10 @@
   "PasswordInputPh": "Kata Sandi",
   "PasswordConfInputPh": "Konfirmasi Kata Sandi",
   "DateInputPh": "Tanggal (DD/MM/YYYY)",
+  "HobbyLb": "Hobi",
   "MGender": "Laki-laki",
   "FGender": "Perempuan",
-  "PhoneInputLb": "Nomor telepon (contoh: 0812345678)",
+  "PhoneInputLb": "Nomor telepon",
   "EmailInputLb": "E-mail",
   "UsernameInputLb": "Nama Pengguna",
   "NameInputLb": "Nama Lengkap",
@@ -41,6 +42,7 @@
   "PasswordConfInputLb": "Konfirmasi Kata Sandi",
   "DateInputLb": "Tanggal (DD/MM/YYYY)",
   "GenderLb": "Jenis Kelamin",
+  "AboutLb": "Tentang",
   "PhoneInputPh": "Nomor telepon (contoh: 0812345678)",
 
   "ConfirmBtn": "Konfirmasi",
@@ -98,8 +100,8 @@
   "JournalTextDate": "Ditulis pada ",
 
   "HomeGreetingText": "Bagaimana perasaanmu hari ini?",
-  "HomeQuotesTitle": "",
-  "HomeJournalTopicTitle": "",
+  "HomeQuotesTitle": "Kutipan hari ini",
+  "HomeJournalTopicTitle": "Topik Jurnal",
   "HomeJournalTopicSubTitle": "Pilih salah satu topik dan mulai!",
 
   "MotivTitle": "Daftar Motivasi",
@@ -107,6 +109,8 @@
   "MotivAddSubTitle": "Tulis kutipan atau pesan yang bisa memotivasi pengguna",
   "MotivEditTitle": "Edit Motivasi",
   "MotivEditSubTitle": "Perbarui teks motivasi pengguna",
+  "MotivHistoryEmpTitle": "Belum Ada Riwayat Motivasi",
+  "MotivHistoryEmpDesc": "Tap tombol + untuk menambah Motivasi baru",
 
   "MotivNameLb": "Motivasi",
   "MotivNamePh": "Contoh: Jangan takut gagal, takutlah untuk tidak mencoba",
@@ -177,5 +181,10 @@
   "privacy.section.contact.text": "Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini:",
   "privacy.section.contact.button": "Hubungi via WhatsApp",
 
-  "privacy.whatsapp.message": "Hai, saya ingin bertanya tentang kebijakan privasi aplikasi ini"
+  "privacy.whatsapp.message": "Hai, saya ingin bertanya tentang kebijakan privasi aplikasi ini",
+
+  "ActiveStatus": "Aktif",
+  "NonActiveStatus": "Tidak Aktif",
+
+  "SayHi": "Halo"
 }

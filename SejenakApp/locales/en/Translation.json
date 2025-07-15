@@ -31,9 +31,10 @@
   "PasswordInputPh": "Password",
   "PasswordConfInputPh": "Confirm Password",
   "DateInputPh": "Date (DD/MM/YYYY)",
+  "HobbyLb": "Hobby",
   "MGender": "Male",
   "FGender": "Female",
-  "PhoneInputLb": "Phone number (e.g., 0812345678)",
+  "PhoneInputLb": "Phone number",
   "EmailInputLb": "E-mail",
   "UsernameInputLb": "Username",
   "NameInputLb": "Full Name",
@@ -41,6 +42,7 @@
   "PasswordConfInputLb": "Confirm Password",
   "DateInputLb": "Date (DD/MM/YYYY)",
   "GenderLb": "Gender",
+  "AboutLb": "About",
   "PhoneInputPh": "Phone number (e.g., 0812345678)",
 
   "ConfirmBtn": "Confirm",
@@ -98,8 +100,8 @@
   "JournalTextDate": "Written on ",
 
   "HomeGreetingText": "How are you feeling today?",
-  "HomeQuotesTitle": "",
-  "HomeJournalTopicTitle": "",
+  "HomeQuotesTitle": "Quotes Today",
+  "HomeJournalTopicTitle": "Topic Journal",
   "HomeJournalTopicSubTitle": "Choose a topic and start!",
 
   "MotivTitle": "Motivational List",
@@ -107,6 +109,8 @@
   "MotivAddSubTitle": "Write a quote or message to motivate users",
   "MotivEditTitle": "Edit Motivation",
   "MotivEditSubTitle": "Update the user's motivational text",
+  "MotivHistoryEmpTitle": "No Motivation History ",
+  "MotivHistoryEmpDesc": "Tap '+' to begin a new Motivation",
 
   "MotivNameLb": "Motivation",
   "MotivNamePh": "Example: Don't fear failure, fear not trying",
@@ -176,5 +180,10 @@
   "privacy.section.contact.text": "If you have questions about this Privacy Policy:",
   "privacy.section.contact.button": "Contact via WhatsApp",
 
-  "privacy.whatsapp.message": "Hi, I have a question about the app’s privacy policy"
+  "privacy.whatsapp.message": "Hi, I have a question about the app’s privacy policy",
+
+  "ActiveStatus": "Active",
+  "NonActiveStatus": "Not Active",
+
+  "SayHi": "Hello"
 }

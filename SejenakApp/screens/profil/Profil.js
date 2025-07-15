@@ -171,7 +171,7 @@ export default function Profil({ navigation }) {
             gender: parsedData.gender || "",
             address: parsedData.alamat || "",
             hobi: parsedData.hobi || "",
-            tentang: parsedData.tentang || "",
+            tentang: parsedData.about || "",
             profilePic: profilePicSource,
             role: parsedData.user || "user",
           });
