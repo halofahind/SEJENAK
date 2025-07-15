@@ -205,5 +205,12 @@
   "FirstMessageRequiredError": "Pesan pertama tidak boleh kosong",
   "FirstMessageMinLengthError": "Pesan pertama minimal 10 karakter",
   "LastMessageRequiredError": "Pesan terakhir tidak boleh kosong",
-  "LastMessageMinLengthError": "Pesan terakhir minimal 10 karakter"
+  "LastMessageMinLengthError": "Pesan terakhir minimal 10 karakter",
+
+  "CurrentPasswordRequiredError": "Password saat ini harus diisi",
+  "NewPasswordRequiredError": "Password baru harus diisi",
+  "NewPasswordMinLengthError": "Password minimal 8 karakter",
+  "ConfirmPasswordRequiredError": "Konfirmasi password harus diisi",
+  "PasswordMismatchError": "Password tidak cocok",
+  "PasswordMinLengthHint": "Password minimal 8 karakter"
 }

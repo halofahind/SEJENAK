@@ -203,5 +203,12 @@
   "FirstMessageRequiredError": "First message cannot be empty",
   "FirstMessageMinLengthError": "First message must be at least 10 characters",
   "LastMessageRequiredError": "Last message cannot be empty",
-  "LastMessageMinLengthError": "Last message must be at least 10 characters"
+  "LastMessageMinLengthError": "Last message must be at least 10 characters",
+
+  "CurrentPasswordRequiredError": "Current password is required",
+  "NewPasswordRequiredError": "New password is required",
+  "NewPasswordMinLengthError": "Password must be at least 8 characters",
+  "ConfirmPasswordRequiredError": "Please confirm your password",
+  "PasswordMismatchError": "Passwords do not match",
+  "PasswordMinLengthHint": "Password must be at least 8 characters"
 }

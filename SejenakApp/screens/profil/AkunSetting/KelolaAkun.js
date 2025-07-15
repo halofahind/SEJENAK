@@ -19,6 +19,11 @@ export default function KelolaAkun({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { t } = useTranslation();
+  const GENDER = {
+    MALE: "male",
+    FEMALE: "female",
+    OTHER: "other",
+  };
 
   const fetchPengguna = async () => {
     try {
@@ -43,22 +48,27 @@ export default function KelolaAkun({ navigation }) {
     setRefreshing(true);
     fetchPengguna();
   };
+  // Function to get appropriate profile image based on gender
+  const getProfileImage = (user) => {
+    if (user.profilePic) {
+      return { uri: user.profilePic };
+    }
 
+    switch (user.gender?.toLowerCase()) {
+      case GENDER.FEMALE:
+        return require("../../../assets/User/female.png");
+      case GENDER.MALE:
+        return require("../../../assets/User/male.png");
+      default:
+        return require("../../../assets/Profil/Profil.png");
+    }
+  };
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => navigation.navigate("DetailAkun", { data: item })}>
       <View style={styles.cardContent}>
-        <Image
-          source={
-            item.profilePic
-              ? { uri: item.profilePic }
-              : item.gender === "female"
-              ? require("../../../assets/User/female.png")
-              : require("../../../assets/User/male.png")
-          }
-          style={styles.profileImage}
-        />
+        <Image source={getProfileImage(item)} style={styles.profileImage} />
         <View style={styles.textContainer}>
           <Text style={styles.nameText}>
             {item.nama || "Nama tidak tersedia"}
