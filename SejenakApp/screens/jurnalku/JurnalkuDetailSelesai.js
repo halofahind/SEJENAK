@@ -11,6 +11,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { API_BASE_URL } from "../../utils/constants";
@@ -48,12 +49,24 @@ export default function JurnalDetailSelesai({ route, navigation }) {
     try {
       for (const item of detail) {
         if (item.jenis === "pertanyaan") {
+          const jawaban = jawabanEdit[item.id]?.trim();
+          if (!jawaban) {
+            Alert.alert("Validasi", "Lengkapi data yang ingin di edit.");
+            return; // hentikan proses simpan
+          }
+        }
+      }
+
+      // Lolos validasi, kirim semua jawaban
+      for (const item of detail) {
+        if (item.jenis === "pertanyaan") {
           await axios.post(`${API_BASE_URL}/updateJawabanJurnal`, {
             id: item.id,
             jawaban: jawabanEdit[item.id],
           });
         }
       }
+
       setEditMode(false);
       setRefreshKey((prev) => prev + 1);
     } catch (error) {

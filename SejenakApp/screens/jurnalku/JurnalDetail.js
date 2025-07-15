@@ -34,7 +34,7 @@ export default function JurnalDetail({ route, navigation }) {
       <View style={styles.body}>
         <View style={styles.content}>
           <Text style={styles.title}>{jurnal.title}</Text>
-          <Text style={styles.subtitle}>Journal – 11 Halaman</Text>
+          <Text style={styles.subtitle}>Journal – {jenisjurnal.title}</Text>
 
           <Text style={styles.sectionTitle}>Apa tujuan journal ini?</Text>
           <Text style={styles.text}>{jurnal.tujuan}</Text>
