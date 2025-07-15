@@ -115,7 +115,7 @@ export default function JurnalDetailSelesai({ route, navigation }) {
       >
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={styles.body}
+          style={styles.body}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.content}>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     marginBottom: -10,
   },
   body: {
-    paddingBottom: 0,
+    paddingBottom: 100,
   },
   content: {
     padding: 20,
