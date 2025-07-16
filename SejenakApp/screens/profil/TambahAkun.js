@@ -24,7 +24,7 @@ export default function TambahAkun({ navigation }) {
     username: "",
     password: "",
     role: "",
-    usrStatus: "",
+    usrStatus: "Aktif",
     tanggalLahir: "",
     gender: "",
     hobi: "",
@@ -59,14 +59,12 @@ export default function TambahAkun({ navigation }) {
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    // Validasi input wajib
     const requiredFields = [
       "nama",
       "usrNim",
       "username",
       "password",
       "role",
-      "usrStatus",
       "tanggalLahir",
       "gender",
       "email",
@@ -95,9 +93,8 @@ export default function TambahAkun({ navigation }) {
       });
 
       const data = await response.json().catch(() => null);
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(data?.message || "Gagal menyimpan pengguna");
-      }
 
       Alert.alert("Sukses", "Pengguna berhasil ditambahkan");
       navigation.goBack();
@@ -123,7 +120,6 @@ export default function TambahAkun({ navigation }) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.innerContent}>
-          {/* Tombol kembali */}
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
@@ -133,6 +129,7 @@ export default function TambahAkun({ navigation }) {
 
           <Text style={styles.registerTitle}>Tambah Pengguna</Text>
 
+          {/* Input Fields */}
           {[
             {
               icon: "mail-outline",
@@ -156,16 +153,6 @@ export default function TambahAkun({ navigation }) {
               placeholder: "Password",
               key: "password",
               secure: true,
-            },
-            {
-              icon: "verified-user",
-              placeholder: "Role (admin / user)",
-              key: "role",
-            },
-            {
-              icon: "check-circle",
-              placeholder: "Status (Aktif / Tidak Aktif)",
-              key: "usrStatus",
             },
             {
               icon: "phone",
@@ -197,6 +184,38 @@ export default function TambahAkun({ navigation }) {
             </View>
           ))}
 
+          {/* Role Button Group */}
+          <Text style={styles.label}>Role</Text>
+          <View style={styles.genderButtonContainer}>
+            {["Admin", "User"].map((roleItem, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.genderButton,
+                  form.role === roleItem &&
+                    (roleItem === "Admin"
+                      ? styles.genderButtonLaki
+                      : styles.genderButtonPerempuan),
+                ]}
+                onPress={() => handleChange("role", roleItem)}
+              >
+                <Icon
+                  name="verified-user"
+                  size={18}
+                  color={form.role === roleItem ? "#fff" : "#555"}
+                />
+                <Text
+                  style={[
+                    styles.genderButtonText,
+                    form.role === roleItem && styles.genderButtonTextActive,
+                  ]}
+                >
+                  {roleItem}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {/* Tanggal Lahir */}
           <View style={styles.inputWrapper}>
             <Icon name="calendar-today" size={20} color="#333" />
@@ -227,14 +246,14 @@ export default function TambahAkun({ navigation }) {
                     "0"
                   );
                   const year = selectedDate.getFullYear();
-                  const formattedDate = `${day}/${month}/${year}`;
-                  handleChange("tanggalLahir", formattedDate);
+                  handleChange("tanggalLahir", `${day}/${month}/${year}`);
                 }
               }}
             />
           )}
 
-          {/* Gender */}
+          {/* Gender Button Group */}
+          <Text style={styles.label}>Jenis Kelamin</Text>
           <View style={styles.genderButtonContainer}>
             {["Laki-laki", "Perempuan"].map((g, i) => (
               <TouchableOpacity
@@ -287,24 +306,21 @@ export default function TambahAkun({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    marginTop: 50,
-  },
-  innerContent: {
-    alignItems: "center",
-    padding: 20,
-  },
-  backButton: {
-    alignSelf: "flex-start",
-    marginBottom: 10,
-  },
+  container: { flex: 1, backgroundColor: "#fff", marginTop: 50 },
+  innerContent: { alignItems: "center", padding: 20 },
+  backButton: { alignSelf: "flex-start", marginBottom: 10 },
   registerTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 30,
     color: "#D6385E",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    marginBottom: 6,
+    color: "#333",
   },
   inputWrapper: {
     flexDirection: "row",
@@ -318,30 +334,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E3E3E3",
   },
-  input: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 15,
-    color: "#333",
-  },
-  registerButton: {
-    backgroundColor: "#D6385E",
-    paddingVertical: 14,
-    paddingHorizontal: 100,
-    borderRadius: 30,
-    marginTop: 16,
-    marginBottom: 20,
-    elevation: 5,
-  },
-  registerButtonDisabled: {
-    backgroundColor: "#999",
-  },
-  registerButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
+  input: { flex: 1, marginLeft: 10, fontSize: 15, color: "#333" },
   genderButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -360,21 +353,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginHorizontal: 4,
   },
-  genderButtonLaki: {
-    backgroundColor: "#2196F3",
-    borderColor: "#2196F3",
-  },
-  genderButtonPerempuan: {
+  genderButtonLaki: { backgroundColor: "#2196F3", borderColor: "#2196F3" },
+  genderButtonPerempuan: { backgroundColor: "#D6385E", borderColor: "#D6385E" },
+  genderButtonText: { marginLeft: 6, fontSize: 14, color: "#555" },
+  genderButtonTextActive: { color: "#fff", fontWeight: "bold" },
+  registerButton: {
     backgroundColor: "#D6385E",
-    borderColor: "#D6385E",
+    paddingVertical: 14,
+    paddingHorizontal: 100,
+    borderRadius: 30,
+    marginTop: 16,
+    marginBottom: 20,
+    elevation: 5,
   },
-  genderButtonText: {
-    marginLeft: 6,
-    fontSize: 14,
-    color: "#555",
-  },
-  genderButtonTextActive: {
+  registerButtonDisabled: { backgroundColor: "#999" },
+  registerButtonText: {
     color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
+    minWidth: 80,
+    textAlign: "center",
   },
 });

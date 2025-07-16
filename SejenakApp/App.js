@@ -18,7 +18,6 @@ import MainTabs from "./screens/Start/MainTabs";
 import Login from "./screens/Login/Login";
 import Daftar from "./screens/Login/Daftar";
 import Setting from "./screens/profil/Setting";
-import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
 import GantiPassword from "./screens/profil/AkunSetting/GantiPassword";
 import HapusAkun from "./screens/profil/AkunSetting/HapusAkun";
 import DetailAkun from "./screens/profil/Detail/DetailAkun";
@@ -51,7 +50,7 @@ import JurnalDetailPertanyaan from "./screens/jurnalku/JurnalDetailPertanyaan";
 import JurnalPenutup from "./screens/jurnalku/JurnalPenutup";
 import Jurnalku from "./screens/jurnalku/Jurnalku";
 import JurnalDetailSelesai from "./screens/jurnalku/JurnalkuDetailSelesai";
-
+import KelolaAkun from "./screens/profil/AkunSetting/KelolaAkun";
 // Stack navigator
 const Stack = createNativeStackNavigator();
 
@@ -77,13 +76,16 @@ export default function App() {
       content: {
         title: "⏰ Ingatkan Jurnal Harian",
         body: "Yuk, isi jurnal harianmu sekarang!",
+        sound: "default",
       },
       trigger: {
-        seconds: 3600,
-        repeats: true,
+        seconds: 60, // setiap 10 detik
+        repeats: true, // supaya muncul terus-menerus
+        channelId: "default",
       },
     });
   };
+
 
   const registerForPushNotificationsAsync = async () => {
     if (Device.isDevice) {
@@ -109,7 +111,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
-          screenOptions={{ headerShown: false }}>
+          screenOptions={{ headerShown: false }}
+        >
           {/* Start */}
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
@@ -139,7 +142,6 @@ export default function App() {
 
           {/* Profil */}
           <Stack.Screen name="Setting" component={Setting} />
-          <Stack.Screen name="KelolaAkun" component={KelolaAkun} />
           <Stack.Screen name="GantiPassword" component={GantiPassword} />
           <Stack.Screen name="HapusAkun" component={HapusAkun} />
           <Stack.Screen name="DetailAkun" component={DetailAkun} />
@@ -147,6 +149,7 @@ export default function App() {
           <Stack.Screen name="ProfilEdit" component={ProfilEdit} />
           <Stack.Screen name="SyaratKetentuan" component={SyaratKetentuan} />
           <Stack.Screen name="KebijakanPrivasi" component={KebijakanPrivasi} />
+          <Stack.Screen name="KelolaAkun" component={KelolaAkun} />
 
           {/* Jurnal */}
 

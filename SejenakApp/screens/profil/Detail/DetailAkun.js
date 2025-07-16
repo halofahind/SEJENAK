@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { API_BASE_URL } from "../../../utils/constants";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const formatToDDMMYYYY = (dateString) => {
   if (!dateString) return "";
@@ -75,7 +76,7 @@ export default function DetailAkun({ route, navigation }) {
 
   const handleToggleStatus = async () => {
     const newStatus = form.usrStatus === "Aktif" ? "Tidak Aktif" : "Aktif";
-    Alert.alert("Konfirmasi", `Yakin ingin ubah status ke \"${newStatus}\"?`, [
+    Alert.alert("Konfirmasi", `Yakin ingin ubah status ke "${newStatus}"?`, [
       { text: "Batal", style: "cancel" },
       {
         text: "Ya",
@@ -97,7 +98,7 @@ export default function DetailAkun({ route, navigation }) {
             });
 
             if (!response.ok) throw new Error("Gagal mengubah status");
-            Alert.alert("Berhasil", `Status diubah ke \"${newStatus}\"`);
+            Alert.alert("Berhasil", `Status diubah ke "${newStatus}"`);
             setForm({ ...form, usrStatus: newStatus });
           } catch (err) {
             Alert.alert("Error", err.message);
@@ -140,10 +141,50 @@ export default function DetailAkun({ route, navigation }) {
         {renderField("Nama Lengkap", "nama")}
         {renderField("NIM", "usrNim")}
         {renderField("Username", "username")}
-        {renderField("Role", "role")}
+
+        {/* Role Button */}
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>Role</Text>
+          <View style={styles.genderButtonContainer}>
+            {["Admin", "User"].map((roleOption, index) => {
+              const isActive = form.role === roleOption;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.genderButton,
+                    isActive &&
+                      (roleOption === "Admin"
+                        ? styles.genderButtonPerempuan
+                        : styles.genderButtonLaki),
+                    !editMode && styles.genderButtonDisabled,
+                  ]}
+                  disabled={!editMode}
+                  onPress={() => editMode && handleChange("role", roleOption)}
+                >
+                  <Icon
+                    name="verified-user"
+                    size={18}
+                    color={isActive ? "#fff" : "#555"}
+                  />
+                  <Text
+                    style={[
+                      styles.genderButtonText,
+                      isActive && styles.genderButtonTextActive,
+                    ]}
+                  >
+                    {roleOption}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         {renderField("Status", "usrStatus")}
         {renderField("Email", "email")}
 
+        {/* Tanggal Lahir */}
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>Tanggal Lahir</Text>
           {editMode ? (
@@ -188,6 +229,7 @@ export default function DetailAkun({ route, navigation }) {
         {renderField("Hobi", "hobi")}
         {renderField("Telepon", "telepon")}
 
+        {/* Gender Button */}
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>Jenis Kelamin</Text>
           <View style={styles.genderButtonContainer}>
