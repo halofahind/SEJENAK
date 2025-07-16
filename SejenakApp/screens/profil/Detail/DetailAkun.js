@@ -130,10 +130,16 @@ export default function DetailAkun({ route, navigation }) {
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity
-        style={styles.backButton}
+        style={[
+          styles.backButton,
+          { flexDirection: "row", alignItems: "center" },
+        ]}
         onPress={() => navigation.goBack()}
       >
-        <Icon name="arrow-back-ios" size={24} color="#D6385E" />
+        <Icon name="arrow-back-ios" size={20} color="#D6385E" />
+        <Text style={{ color: "#D6385E", fontSize: 16, fontWeight: "bold" }}>
+          Kembali
+        </Text>
       </TouchableOpacity>
 
       <Text style={styles.title}>Detail Akun</Text>
@@ -216,7 +222,10 @@ export default function DetailAkun({ route, navigation }) {
               setShowDatePicker(false);
               if (selectedDate) {
                 const day = String(selectedDate.getDate()).padStart(2, "0");
-                const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+                const month = String(selectedDate.getMonth() + 1).padStart(
+                  2,
+                  "0"
+                );
                 const year = selectedDate.getFullYear();
                 const formatted = `${day}/${month}/${year}`;
                 handleChange("tanggalLahir", formatted);
@@ -324,7 +333,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
-    paddingTop: 20,
+    paddingTop: 60,
+    paddingBottom: 60,
   },
   backButton: { marginBottom: 10, alignSelf: "flex-start" },
   title: {
@@ -332,7 +342,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#D6385E",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 0,
+    bottom: 35,
   },
   card: {
     backgroundColor: "#f9f9f9",
