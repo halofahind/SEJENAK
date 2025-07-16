@@ -71,9 +71,39 @@ export default function TambahAkun({ navigation }) {
     ];
 
     const emptyFields = requiredFields.filter((key) => !form[key]);
-
     if (emptyFields.length > 0) {
       Alert.alert("Validasi", "Harap lengkapi semua field yang wajib diisi.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      Alert.alert("Validasi", "Format email tidak valid!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi Password
+    if (form.password.length < 6) {
+      Alert.alert("Validasi", "Password minimal 6 karakter!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi NIM (8-12 digit angka)
+    const nimRegex = /^\d{8,12}$/;
+    if (!nimRegex.test(form.usrNim)) {
+      Alert.alert("Validasi", "NIM harus berisi 8-12 digit angka!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi Nomor Telepon (opsional tapi jika diisi harus benar)
+    const phoneRegex = /^\d{10,15}$/;
+    if (form.telepon && !phoneRegex.test(form.telepon)) {
+      Alert.alert("Validasi", "Nomor telepon harus 10-15 digit angka!");
       setIsLoading(false);
       return;
     }
@@ -184,7 +214,7 @@ export default function TambahAkun({ navigation }) {
             </View>
           ))}
 
-          {/* Role Button Group */}
+          {/* Role */}
           <Text style={styles.label}>Role</Text>
           <View style={styles.genderButtonContainer}>
             {["Admin", "User"].map((roleItem, index) => (
@@ -252,7 +282,7 @@ export default function TambahAkun({ navigation }) {
             />
           )}
 
-          {/* Gender Button Group */}
+          {/* Gender */}
           <Text style={styles.label}>Jenis Kelamin</Text>
           <View style={styles.genderButtonContainer}>
             {["Laki-laki", "Perempuan"].map((g, i) => (
@@ -312,8 +342,9 @@ const styles = StyleSheet.create({
   registerTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 30,
+    marginBottom: 10,
     color: "#D6385E",
+    bottom: 35, 
   },
   label: {
     fontSize: 14,
