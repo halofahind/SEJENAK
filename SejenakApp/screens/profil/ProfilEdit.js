@@ -142,6 +142,12 @@ export default function ProfilEdit({ navigation }) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(user.email)) {
+        Alert.alert("Peringatan", "Format email tidak valid!");
+        setIsLoading(false);
+        return;
+      }
       let profilePicUrl = user.profilePic;
       // Handle existing photo (could be string URL or object)
       if (typeof profilePicUrl === "object" && profilePicUrl.uri) {

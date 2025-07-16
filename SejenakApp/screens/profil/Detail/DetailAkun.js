@@ -220,10 +220,7 @@ export default function DetailAkun({ route, navigation }) {
               setShowDatePicker(false);
               if (selectedDate) {
                 const day = String(selectedDate.getDate()).padStart(2, "0");
-                const month = String(selectedDate.getMonth() + 1).padStart(
-                  2,
-                  "0"
-                );
+                const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
                 const year = selectedDate.getFullYear();
                 const formatted = `${day}/${month}/${year}`;
                 handleChange("tanggalLahir", formatted);
