@@ -31,14 +31,16 @@ const sumberEmosi = [
 ];
 
 export default function NextScreen({ route, navigation }) {
-  const { emosi } = route.params;
+  const { mood, emosi } = route.params;
   const [selectedSources, setSelectedSources] = useState([]);
 
   const toggleSource = (item) => {
     if (selectedSources.includes(item)) {
       setSelectedSources(selectedSources.filter((e) => e !== item));
     } else {
-      setSelectedSources([...selectedSources, item]);
+      if (selectedSources.length < 3) {
+        setSelectedSources([...selectedSources, item]);
+      }
     }
   };
 
@@ -72,16 +74,19 @@ export default function NextScreen({ route, navigation }) {
         </View>
       </ScrollView>
 
+      {selectedSources.length === 3 && (
+        <Text style={styles.warning}>Maksimal 3 emosi boleh dipilih</Text>
+      )}
+
       <TouchableOpacity
         style={[
           styles.button,
-          selectedSources.length === 0 && styles.buttonDisabled,
+          selectedSources.length === 0 && { backgroundColor: "#ccc" },
         ]}
         onPress={() => {
           if (selectedSources.length > 0) {
             navigation.navigate("MoodSummary", {
-              date: "Senin, 30 Juni 2025",
-              mood: { emoji: "😐", label: "Netral" }, // ubah sesuai data mood user
+              mood: mood,
               emosi: emosi,
               sumberEmosi: selectedSources,
             });
@@ -115,8 +120,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   chipSelected: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
+    backgroundColor: "#D7385E",
+    borderColor: "#D7385E",
   },
   chipText: {
     color: "#444",
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#D7385E",
     padding: 14,
     borderRadius: 30,
     alignItems: "center",
@@ -135,5 +140,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  warning: {
+    textAlign: "center",
+    color: "red",
+    marginVertical: 8,
+    fontSize: 12,
   },
 });

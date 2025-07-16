@@ -14,6 +14,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../utils/constants";
 import { useTranslation } from "react-i18next";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 const screenWidth = Dimensions.get("window").width;
 
 const topiks = [
@@ -50,17 +52,24 @@ const topiks = [
 ];
 
 const moods = [
-  { emoji: "😢", label: "Sangat Buruk" },
-  { emoji: "😞", label: "Buruk" },
-  { emoji: "😐", label: "Netral" },
-  { emoji: "😊", label: "Baik" },
-  { emoji: "😄", label: "Sangat Baik" },
+  { emoji: "😢", label: "Sangat Buruk", color: "#FF3B30" },
+  { emoji: "😞", label: "Buruk", color: "#FF9500" },
+  { emoji: "😐", label: "Netral", color: "#FFCC00" },
+  { emoji: "😊", label: "Baik", color: "#34C759" },
+  { emoji: "😄", label: "Sangat Baik", color: "#32D74B" },
 ];
+
+const getMoodColor = (label) => {
+  const mood = moods.find((m) => m.label === label);
+  return mood ? mood.color : "#5856D6";
+};
 
 export default function Home({ navigation }) {
   const [motivasiHarian, setMotivasiHarian] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { t } = useTranslation();
+  const [todayCheckin, setTodayCheckin] = useState(null);
+
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -93,6 +102,19 @@ export default function Home({ navigation }) {
 
       if (userData) {
         const parsedData = JSON.parse(userData);
+
+        // Cek apakah sudah check-in hari ini
+        const checkinRes = await axios.get(
+          `${API_BASE_URL}/api/mood/user/${parsedData.id || 1}`
+        );
+        const today = new Date();
+        const todayStr = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+        const todayMood = checkinRes.data.find(
+          (item) => item.checkinDate === todayStr
+        );
+
+        setTodayCheckin(todayMood || null);
 
         // Handle profile picture
         let profilePicSource;
@@ -149,7 +171,8 @@ export default function Home({ navigation }) {
             colors={["#D7385E"]}
             tintColor="#D7385E"
           />
-        }>
+        }
+      >
         {/* === Profil & Notifikasi === */}
         <View style={styles.profileRow}>
           <View style={styles.profileContainer}>
@@ -170,26 +193,87 @@ export default function Home({ navigation }) {
               <Text style={styles.welcomeText}>{t("HomeGreetingText")}</Text>
             </View>
           </View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("NotifikasiScreen")}>
+          {/* <TouchableOpacity
+            onPress={() => navigation.navigate("NotifikasiScreen")}
+          >
             <Icon name="notifications-none" size={28} color="#444" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* === Mood Pilihan === */}
-        <View style={styles.moodOptions}>
-          {moods.map((mood, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.moodItem}
-              onPress={() =>
-                navigation.navigate("MoodTracker", { selectedMood: mood })
-              }>
-              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-              <Text style={styles.moodLabel}>{mood.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+
+        {!todayCheckin && (
+          <View style={styles.moodOptions}>
+            {moods.map((mood, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.moodItem}
+                onPress={() =>
+                  navigation.navigate("MoodTracker", { selectedMood: mood })
+                }
+              >
+                <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                <Text style={styles.moodLabel}>{mood.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {todayCheckin && (
+          <TouchableOpacity
+            style={styles.latestCheckinCard}
+            onPress={() => navigation.navigate("MoodSummary")}
+          >
+            <View style={styles.latestCheckinContent}>
+              <View
+                style={[
+                  styles.moodIndicator,
+                  {
+                    backgroundColor:
+                      getMoodColor(todayCheckin.moodLabel) + "20",
+                  },
+                ]}
+              >
+                <Text style={styles.latestMoodEmoji}>
+                  {moods.find((m) => m.label === todayCheckin.moodLabel)
+                    ?.emoji || "🙂"}
+                </Text>
+              </View>
+
+              <View style={styles.latestCheckinDetails}>
+                <Text style={styles.latestMoodLabel}>
+                  {todayCheckin.moodLabel}
+                </Text>
+
+                <View style={styles.moodTagsCompact}>
+                  {todayCheckin.emosiList.map((item, i) => (
+                    <Text
+                      key={i}
+                      style={[
+                        styles.tagSmall,
+                        item.kategori === "Positif"
+                          ? styles.positiveTag
+                          : styles.negativeTag,
+                        item.kategori === "Positif"
+                          ? styles.positiveTagText
+                          : styles.negativeTagText,
+                      ]}
+                    >
+                      {item.emosi}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color="#C7C7CC"
+                style={styles.chevron}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.divider} />
 
@@ -198,7 +282,8 @@ export default function Home({ navigation }) {
           <Text style={styles.manageQuotes}>{t("HomeQuotesTitle")}</Text>
           {user.role === "admin" && (
             <TouchableOpacity
-              onPress={() => navigation.navigate("MotivasiScreen")}>
+              onPress={() => navigation.navigate("MotivasiScreen")}
+            >
               <Icon name="edit" size={28} color="#444" />
             </TouchableOpacity>
           )}
@@ -208,7 +293,7 @@ export default function Home({ navigation }) {
           <View style={styles.quoteTextContainer}>
             <Text style={styles.quoteText}>
               {motivasiHarian
-                ? `“${motivasiHarian}”`
+                ? `${motivasiHarian}`
                 : "Memuat motivasi hari ini..."}
             </Text>
           </View>
@@ -241,7 +326,8 @@ export default function Home({ navigation }) {
                   navigation.navigate("DaftarJurnal", {
                     jenisjurnal: item,
                   })
-                }>
+                }
+              >
                 <Image source={item.image} style={styles.image} />
                 <Text style={styles.cardTitle}>{item.title}</Text>
               </TouchableOpacity>
@@ -265,7 +351,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   profileContainer: {
     borderRadius: 16,
@@ -326,30 +412,35 @@ const styles = StyleSheet.create({
   },
   quoteBox: {
     flexDirection: "row",
-    backgroundColor: "#FCD6D9",
+    backgroundColor: "#D7385E",
     borderRadius: 10,
     marginBottom: 20,
     padding: 12,
     alignItems: "center",
+    position: "relative", // penting untuk absolute image
   },
 
   quoteTextContainer: {
-    flex: 3, // 75% area
-    paddingRight: 10,
+    flex: 1,
+    paddingRight: 120,
   },
 
   quoteText: {
+    margin: 5,
     fontSize: 14,
-    color: "#444",
+    color: "#fff",
     fontStyle: "italic",
     flexWrap: "wrap",
     textAlign: "left",
   },
 
   quoteImage: {
-    flex: 1, // 25% area
-    height: 80,
-    width: 80,
+    position: "absolute",
+    right: 12,
+    bottom: -25,
+    height: 130,
+    width: 130,
+    resizeMode: "contain", // supaya tidak crop
   },
 
   sectionTitle: {
@@ -388,5 +479,107 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     color: "#fff",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#007AFF",
+  },
+  moodEmoji: {
+    fontSize: 28,
+  },
+  wrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#00BFFF",
+    marginBottom: 8,
+  },
+  chipText: {
+    color: "#00BFFF",
+    fontSize: 13,
+  },
+
+  latestCheckinCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 0,
+    marginVertical: 8,
+
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1C1C1E",
+    marginBottom: 8,
+  },
+  latestCheckinContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  moodIndicator: {
+    width: 48,
+    height: 48,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  latestMoodEmoji: {
+    fontSize: 26,
+  },
+  latestCheckinDetails: {
+    flex: 1,
+  },
+  latestMoodLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 7,
+  },
+  latestCheckinTime: {
+    fontSize: 12,
+    color: "#8E8E93",
+    marginBottom: 6,
+  },
+  moodTagsCompact: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+  },
+  tagSmall: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    fontSize: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  positiveTag: {
+    backgroundColor: "#34C75920",
+    borderColor: "#34C759",
+  },
+  negativeTag: {
+    backgroundColor: "#FF3B3020",
+    borderColor: "#FF3B30",
+  },
+  positiveTagText: {
+    color: "#34C759",
+    fontWeight: "500",
+  },
+  negativeTagText: {
+    color: "#FF3B30",
+    fontWeight: "500",
+  },
+  chevron: {
+    fontSize: 30,
+    color: "#636363ff",
+    alignSelf: "center",
+    marginLeft: "auto",
   },
 });

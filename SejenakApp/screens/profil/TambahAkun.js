@@ -216,7 +216,7 @@ export default function TambahAkun({ navigation }) {
             <DateTimePicker
               value={new Date()}
               mode="date"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
+              display="default"
               maximumDate={new Date()}
               onChange={(e, selectedDate) => {
                 setShowDatePicker(false);

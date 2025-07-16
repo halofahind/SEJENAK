@@ -55,7 +55,7 @@ export default function DaftarJurnal({ route, navigation }) {
             tujuan: item.tujuan,
             kenapa: item.kenapa,
             penutup: item.penutup,
-            image: imageMap[item.foto] ?? imageMap["default.png"],
+            image: imageMap[item.foto] ?? imageMap[`${item.jjlId}.png`],
             pages: `${Math.floor(Math.random() * 10 + 2)} Halaman`,
           }));
 

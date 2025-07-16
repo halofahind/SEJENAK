@@ -54,7 +54,9 @@ export default function MoodTracker({ route, navigation }) {
     if (selectedEmosi.includes(emosi)) {
       setSelectedEmosi(selectedEmosi.filter((e) => e !== emosi));
     } else {
-      setSelectedEmosi([...selectedEmosi, emosi]);
+      if (selectedEmosi.length < 3) {
+        setSelectedEmosi([...selectedEmosi, emosi]);
+      }
     }
   };
 
@@ -112,6 +114,10 @@ export default function MoodTracker({ route, navigation }) {
         </View>
       </ScrollView>
 
+      {selectedEmosi.length === 3 && (
+        <Text style={styles.warning}>Maksimal 3 emosi boleh dipilih</Text>
+      )}
+
       <TouchableOpacity
         style={[
           styles.button,
@@ -134,7 +140,7 @@ export default function MoodTracker({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 20, marginTop: 60, },
+  container: { flex: 1, backgroundColor: "#fff", padding: 20, marginTop: 60 },
   title: { fontSize: 18, fontWeight: "bold", marginBottom: 16 },
   section: { fontSize: 14, fontWeight: "bold", color: "#444", marginTop: 10 },
   wrap: {
@@ -142,7 +148,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 10,
     marginVertical: 10,
-    marginTop:30
+    marginTop: 30,
   },
   chip: {
     paddingHorizontal: 14,
@@ -153,8 +159,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   chipSelected: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
+    backgroundColor: "#D7385E",
+    borderColor: "#D7385E",
   },
   chipText: {
     color: "#444",
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#D7385E",
     padding: 14,
     borderRadius: 30,
     alignItems: "center",
@@ -173,5 +179,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  warning: {
+    textAlign: "center",
+    color: "red",
+    marginVertical: 8,
+    fontSize: 12,
   },
 });
