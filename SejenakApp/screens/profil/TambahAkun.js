@@ -23,8 +23,8 @@ export default function TambahAkun({ navigation }) {
     usrNim: "",
     username: "",
     password: "",
-    role: "",       
-    usrStatus: "Aktif",  
+    role: "",
+    usrStatus: "Aktif",
     tanggalLahir: "",
     gender: "",
     hobi: "",
@@ -60,8 +60,14 @@ export default function TambahAkun({ navigation }) {
     setIsLoading(true);
 
     const requiredFields = [
-      "nama", "usrNim", "username", "password",
-      "role", "tanggalLahir", "gender", "email"
+      "nama",
+      "usrNim",
+      "username",
+      "password",
+      "role",
+      "tanggalLahir",
+      "gender",
+      "email",
     ];
 
     const emptyFields = requiredFields.filter((key) => !form[key]);
@@ -75,7 +81,10 @@ export default function TambahAkun({ navigation }) {
     try {
       const payload = { ...form };
       const [day, month, year] = payload.tanggalLahir.split("/");
-      payload.tanggalLahir = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      payload.tanggalLahir = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
 
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
         method: "POST",
@@ -84,7 +93,8 @@ export default function TambahAkun({ navigation }) {
       });
 
       const data = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(data?.message || "Gagal menyimpan pengguna");
+      if (!response.ok)
+        throw new Error(data?.message || "Gagal menyimpan pengguna");
 
       Alert.alert("Sukses", "Pengguna berhasil ditambahkan");
       navigation.goBack();
@@ -110,7 +120,10 @@ export default function TambahAkun({ navigation }) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.innerContent}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
             <Icon name="arrow-back-ios" size={24} color="#D6385E" />
           </TouchableOpacity>
 
@@ -142,16 +155,6 @@ export default function TambahAkun({ navigation }) {
               secure: true,
             },
             {
-              icon: "verified-user",
-              placeholder: "Role (admin / user)",
-              key: "role",
-            },
-            {
-              icon: "check-circle",
-              placeholder: "Status (Aktif / Tidak Aktif)",
-              key: "usrStatus",
-            },
-            {
               icon: "phone",
               placeholder: "Nomor Telepon",
               key: "telepon",
@@ -181,32 +184,33 @@ export default function TambahAkun({ navigation }) {
             </View>
           ))}
 
-          {/* Role Picker */}
+          {/* Role Button Group */}
+          <Text style={styles.label}>Role</Text>
           <View style={styles.genderButtonContainer}>
-            {["Admin", "User"].map((r, i) => (
+            {["Admin", "User"].map((roleItem, index) => (
               <TouchableOpacity
-                key={i}
+                key={index}
                 style={[
                   styles.genderButton,
-                  form.role === r && {
-                    backgroundColor: "#D6385E",
-                    borderColor: "#D6385E",
-                  },
+                  form.role === roleItem &&
+                    (roleItem === "Admin"
+                      ? styles.genderButtonLaki
+                      : styles.genderButtonPerempuan),
                 ]}
-                onPress={() => handleChange("role", r)}
+                onPress={() => handleChange("role", roleItem)}
               >
                 <Icon
                   name="verified-user"
                   size={18}
-                  color={form.role === r ? "#fff" : "#555"}
+                  color={form.role === roleItem ? "#fff" : "#555"}
                 />
                 <Text
                   style={[
                     styles.genderButtonText,
-                    form.role === r && styles.genderButtonTextActive,
+                    form.role === roleItem && styles.genderButtonTextActive,
                   ]}
                 >
-                  {r}
+                  {roleItem}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -242,14 +246,14 @@ export default function TambahAkun({ navigation }) {
                     "0"
                   );
                   const year = selectedDate.getFullYear();
-                  const formattedDate = `${day}/${month}/${year}`;
-                  handleChange("tanggalLahir", formattedDate);
+                  handleChange("tanggalLahir", `${day}/${month}/${year}`);
                 }
               }}
             />
           )}
 
-          {/* Gender Picker */}
+          {/* Gender Button Group */}
+          <Text style={styles.label}>Jenis Kelamin</Text>
           <View style={styles.genderButtonContainer}>
             {["Laki-laki", "Perempuan"].map((g, i) => (
               <TouchableOpacity
@@ -282,7 +286,10 @@ export default function TambahAkun({ navigation }) {
 
           {/* Tombol Simpan */}
           <TouchableOpacity
-            style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
+            style={[
+              styles.registerButton,
+              isLoading && styles.registerButtonDisabled,
+            ]}
             onPress={handleSubmit}
             disabled={isLoading}
           >
@@ -299,24 +306,21 @@ export default function TambahAkun({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    marginTop: 50,
-  },
-  innerContent: {
-    alignItems: "center",
-    padding: 20,
-  },
-  backButton: {
-    alignSelf: "flex-start",
-    marginBottom: 10,
-  },
+  container: { flex: 1, backgroundColor: "#fff", marginTop: 50 },
+  innerContent: { alignItems: "center", padding: 20 },
+  backButton: { alignSelf: "flex-start", marginBottom: 10 },
   registerTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 30,
     color: "#D6385E",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    marginBottom: 6,
+    color: "#333",
   },
   inputWrapper: {
     flexDirection: "row",
@@ -330,31 +334,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E3E3E3",
   },
-  input: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 15,
-    color: "#333",
-  },
-  registerButton: {
-    backgroundColor: "#D6385E",
-    paddingVertical: 14,
-    paddingHorizontal: 100,
-    borderRadius: 30,
-    marginTop: 16,
-    marginBottom: 20,
-    elevation: 5,
-  },
-  registerButtonDisabled: {
-    backgroundColor: "#999",
-  },
-  registerButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    minWidth: 80,
-    textAlign: "center",
-  },
+  input: { flex: 1, marginLeft: 10, fontSize: 15, color: "#333" },
   genderButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -373,21 +353,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginHorizontal: 4,
   },
-  genderButtonLaki: {
-    backgroundColor: "#2196F3",
-    borderColor: "#2196F3",
-  },
-  genderButtonPerempuan: {
+  genderButtonLaki: { backgroundColor: "#2196F3", borderColor: "#2196F3" },
+  genderButtonPerempuan: { backgroundColor: "#D6385E", borderColor: "#D6385E" },
+  genderButtonText: { marginLeft: 6, fontSize: 14, color: "#555" },
+  genderButtonTextActive: { color: "#fff", fontWeight: "bold" },
+  registerButton: {
     backgroundColor: "#D6385E",
-    borderColor: "#D6385E",
+    paddingVertical: 14,
+    paddingHorizontal: 100,
+    borderRadius: 30,
+    marginTop: 16,
+    marginBottom: 20,
+    elevation: 5,
   },
-  genderButtonText: {
-    marginLeft: 6,
-    fontSize: 14,
-    color: "#555",
-  },
-  genderButtonTextActive: {
+  registerButtonDisabled: { backgroundColor: "#999" },
+  registerButtonText: {
     color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
+    minWidth: 80,
+    textAlign: "center",
   },
 });
