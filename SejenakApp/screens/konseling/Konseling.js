@@ -91,6 +91,8 @@ const Konseling = ({ navigation }) => {
     }
   };
 
+  console.log(userData);
+
   const handleStartCounseling = () => {
     const ongoing = konselings.some(
       (item) => item.status === "Sedang Berjalan"
@@ -130,10 +132,15 @@ const Konseling = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.historyItem}
-        onPress={() => handleHistoryPress(item)}>
+        onPress={() => handleHistoryPress(item)}
+      >
         <Image
           style={styles.avatarImage}
-          source={require("../../assets/User/user-pr.png")}
+          source={
+            userData.gender === "Perempuan"
+              ? require("../../assets/User/user-pr.png")
+              : require("../../assets/User/user-lk.png")
+          }
           resizeMode="cover"
         />
 
@@ -191,7 +198,8 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "admin" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleAddTopik}>
+                onPress={handleAddTopik}
+              >
                 <Text style={styles.primaryButtonText}>
                   {t("CounselingBtnManageTopic")}
                 </Text>
@@ -201,7 +209,8 @@ const Konseling = ({ navigation }) => {
             {userData?.role === "user" && (
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={handleStartCounseling}>
+                onPress={handleStartCounseling}
+              >
                 <Text style={styles.primaryButtonText}>
                   {t("CounselingBtnStartCouns")}
                 </Text>
