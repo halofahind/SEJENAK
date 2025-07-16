@@ -27,6 +27,7 @@ export default function JurnalDetailSelesai({ route, navigation }) {
   const inputRefs = useRef({});
   const [refreshKey, setRefreshKey] = useState(0);
 
+  console.log(jurnal);
   useEffect(() => {
     fetch(`${API_BASE_URL}/transaksiJurnalDetail?id=${jurnal.id}`)
       .then((response) => response.json())
@@ -97,7 +98,19 @@ export default function JurnalDetailSelesai({ route, navigation }) {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "MainTabs",
+                  state: {
+                    routes: [{ name: "Jurnalku" }],
+                  },
+                },
+              ],
+            })
+          }
         >
           <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>

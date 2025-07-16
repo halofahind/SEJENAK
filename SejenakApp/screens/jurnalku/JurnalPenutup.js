@@ -12,7 +12,7 @@ import { BackHandler } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function JurnalPenutup({ route, navigation }) {
-  const { jurnal, transaksi } = route.params;
+  const { jurnal } = route.params;
 
   const [userName, setUserName] = useState("");
 

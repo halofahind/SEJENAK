@@ -92,14 +92,16 @@ export default function TambahAkun({ navigation }) {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json().catch(() => null);
-      if (!response.ok)
-        throw new Error(data?.message || "Gagal menyimpan pengguna");
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Gagal menyimpan profil");
+      }
 
       Alert.alert("Sukses", "Pengguna berhasil ditambahkan");
       navigation.goBack();
     } catch (err) {
-      Alert.alert("Gagal", err.message);
+      Alert.alert("Perhatian", err.message);
     } finally {
       setIsLoading(false);
     }
@@ -187,13 +189,13 @@ export default function TambahAkun({ navigation }) {
           {/* Role Button Group */}
           <Text style={styles.label}>Role</Text>
           <View style={styles.genderButtonContainer}>
-            {["Admin", "User"].map((roleItem, index) => (
+            {["admin", "user"].map((roleItem, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
                   styles.genderButton,
                   form.role === roleItem &&
-                    (roleItem === "Admin"
+                    (roleItem === "admin"
                       ? styles.genderButtonLaki
                       : styles.genderButtonPerempuan),
                 ]}
