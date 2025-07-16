@@ -373,7 +373,7 @@ export default function Profil({ navigation }) {
           onRequestClose={() => setLanguageModalVisible(false)}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Pilih Bahasa</Text>
+              <Text style={styles.modalTitle}>{t("SelectLanguage")}</Text>
 
               {["id", "en"].map((lang) => (
                 <TouchableOpacity
@@ -395,7 +395,7 @@ export default function Profil({ navigation }) {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setLanguageModalVisible(false)}>
-                <Text style={styles.modalCloseText}>Batal</Text>
+                <Text style={styles.modalCloseText}>{t("CancelBtn")}</Text>
               </TouchableOpacity>
             </View>
           </View>

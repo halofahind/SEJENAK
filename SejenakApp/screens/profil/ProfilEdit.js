@@ -177,7 +177,7 @@ export default function ProfilEdit({ navigation }) {
         telepon: user.phone,
         gender: user.gender,
         hobi: user.hobi || null,
-        about: user.about || null,
+        about: user.tentang || null,
         usrFoto: profilePicUrl,
       };
 
@@ -189,9 +189,11 @@ export default function ProfilEdit({ navigation }) {
         body: JSON.stringify(userDataToSend),
       });
 
+      const responseData = await response.json(); // Tambahkan ini untuk membaca respons JSON
+
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText);
+        // Gunakan responseData.message jika ada, atau default message
+        throw new Error(responseData.message || "Gagal menyimpan profil");
       }
 
       // Simpan ke lokal (AsyncStorage)
@@ -206,8 +208,7 @@ export default function ProfilEdit({ navigation }) {
         throw new Error(await response.text());
       }
     } catch (err) {
-      console.error("Gagal simpan profil:", err);
-      Alert.alert("Error", err.message || "Gagal simpan profil");
+      Alert.alert("Info", err.message || "Gagal simpan profil");
     } finally {
       setIsSaving(false);
     }
@@ -501,7 +502,7 @@ export default function ProfilEdit({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t("")}</Text>
+            <Text style={styles.label}>{t("AboutLb")}</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
               value={user.tentang}
@@ -523,7 +524,7 @@ export default function ProfilEdit({ navigation }) {
             {isSaving ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.saveButtonText}>Simpan Perubahan</Text>
+              <Text style={styles.saveButtonText}>{t("SaveBtn")}</Text>
             )}
           </TouchableOpacity>
         </View>

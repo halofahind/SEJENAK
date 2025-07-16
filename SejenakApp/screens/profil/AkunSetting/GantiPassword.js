@@ -12,20 +12,21 @@ import {
 // import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
+import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "../../../utils/constants";
 export default function GantiPassword({ navigation }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const [errors, setErrors] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const { t } = useTranslation();
   const handleSubmit = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert("Error", "Harap isi semua field");
-      return;
-    }
-
+    if (!validateForm()) return;
     if (newPassword !== confirmPassword) {
       Alert.alert("Error", "Password baru tidak cocok");
       return;
@@ -95,87 +96,164 @@ export default function GantiPassword({ navigation }) {
       setIsLoading(false);
     }
   };
+  const validateForm = () => {
+    const newErrors = {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    };
 
+    let isValid = true;
+
+    if (!currentPassword.trim()) {
+      newErrors.currentPassword = t("CurrentPasswordRequiredError");
+      isValid = false;
+    }
+
+    if (!newPassword.trim()) {
+      newErrors.newPassword = t("NewPasswordRequiredError");
+      isValid = false;
+    } else if (newPassword.length < 8) {
+      newErrors.newPassword = t("NewPasswordMinLengthError");
+      isValid = false;
+    }
+
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = t("ConfirmPasswordRequiredError");
+      isValid = false;
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = t("PasswordMismatchError");
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Icon name="arrow-back" size={28} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Ganti Password</Text>
-      </View>
-
-      {/* Form */}
-      <View style={styles.formContainer}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password Saat Ini</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="Masukkan password saat ini"
-              secureTextEntry
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
-              placeholderTextColor="#999"
-            />
-            <Icon name="lock" size={20} color="#888" style={styles.inputIcon} />
-          </View>
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password Baru</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="Masukkan password baru "
-              secureTextEntry
-              value={newPassword}
-              onChangeText={setNewPassword}
-              placeholderTextColor="#999"
-            />
-            <Icon
-              name="lock-outline"
-              size={20}
-              color="#888"
-              style={styles.inputIcon}
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Konfirmasi Password Baru</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="Tulis ulang password baru"
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholderTextColor="#999"
-            />
-            <Icon name="lock" size={20} color="#888" style={styles.inputIcon} />
-          </View>
-        </View>
-
-        <View style={styles.buttonContainer}>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}>
+        {/* Header */}
+        <View style={styles.header}>
           <TouchableOpacity
-            style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Simpan Perubahan</Text>
-            )}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}>
+            <Icon name="arrow-back" size={28} color="#fff" />
           </TouchableOpacity>
+          <Text style={styles.headerTitle}>{t("ProfilChangePwTitle")}</Text>
         </View>
+
+        {/* Form */}
+        <View style={styles.formContainer}>
+          {/* Current Password */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t("ProfilChangePwCurLb")}</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[
+                  styles.input,
+                  errors.currentPassword && styles.inputError,
+                ]}
+                placeholder={t("ProfilChangePwCurPh")}
+                secureTextEntry
+                value={currentPassword}
+                onChangeText={(text) => {
+                  setCurrentPassword(text);
+                  setErrors({ ...errors, currentPassword: "" });
+                }}
+                placeholderTextColor="#999"
+              />
+              <Icon
+                name="lock"
+                size={20}
+                color="#888"
+                style={styles.inputIcon}
+              />
+            </View>
+            {errors.currentPassword ? (
+              <Text style={styles.errorText}>{errors.currentPassword}</Text>
+            ) : null}
+          </View>
+
+          {/* New Password */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t("ProfilChangePwNewLb")}</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[styles.input, errors.newPassword && styles.inputError]}
+                placeholder={t("ProfilChangePwNewPh")}
+                secureTextEntry
+                value={newPassword}
+                onChangeText={(text) => {
+                  setNewPassword(text);
+                  setErrors({ ...errors, newPassword: "" });
+                }}
+                placeholderTextColor="#999"
+              />
+              <Icon
+                name="lock-outline"
+                size={20}
+                color="#888"
+                style={styles.inputIcon}
+              />
+            </View>
+            {errors.newPassword ? (
+              <Text style={styles.errorText}>{errors.newPassword}</Text>
+            ) : (
+              <Text style={styles.hintText}>{t("PasswordMinLengthHint")}</Text>
+            )}
+          </View>
+
+          {/* Confirm Password */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t("ProfilChangePwConLb")}</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[
+                  styles.input,
+                  errors.confirmPassword && styles.inputError,
+                ]}
+                placeholder={t("ProfilChangePwConPh")}
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  setErrors({ ...errors, confirmPassword: "" });
+                }}
+                placeholderTextColor="#999"
+              />
+              <Icon
+                name="lock"
+                size={20}
+                color="#888"
+                style={styles.inputIcon}
+              />
+            </View>
+            {errors.confirmPassword && (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            )}
+          </View>
+
+          {/* Spacer for fixed button */}
+          <View style={{ height: 80 }} />
+        </View>
+      </ScrollView>
+
+      {/* Fixed Button */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.button, isLoading && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={isLoading}>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>{t("SaveBtn")}</Text>
+          )}
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -235,14 +313,21 @@ const styles = StyleSheet.create({
     color: "#D7385E",
   },
   buttonContainer: {
-    marginTop: 30,
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
   },
   button: {
     backgroundColor: "#D7385E",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
-    top: 330,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   buttonDisabled: {
     backgroundColor: "#c0c0c0",
@@ -251,5 +336,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  inputError: {
+    borderColor: "#D7385E",
+    backgroundColor: "#FFF5F5",
+  },
+  errorText: {
+    color: "#D7385E",
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 10,
+  },
+  hintText: {
+    color: "#888",
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 10,
   },
 });

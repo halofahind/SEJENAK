@@ -130,8 +130,7 @@ export default function DetailAkun({ route, navigation }) {
     <ScrollView style={styles.container}>
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
+        onPress={() => navigation.goBack()}>
         <Icon name="arrow-back-ios" size={24} color="#D6385E" />
       </TouchableOpacity>
 
@@ -150,8 +149,7 @@ export default function DetailAkun({ route, navigation }) {
           {editMode ? (
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
-              style={[styles.input, { justifyContent: "center" }]}
-            >
+              style={[styles.input, { justifyContent: "center" }]}>
               <Text style={{ fontSize: 16, color: "#333" }}>
                 {form.tanggalLahir || "Tanggal Lahir (DD/MM/YYYY)"}
               </Text>
@@ -207,8 +205,7 @@ export default function DetailAkun({ route, navigation }) {
                     !editMode && styles.genderButtonDisabled,
                   ]}
                   disabled={!editMode}
-                  onPress={() => editMode && handleChange("gender", g)}
-                >
+                  onPress={() => editMode && handleChange("gender", g)}>
                   <Icon
                     name={g === "Laki-laki" ? "male" : "female"}
                     size={18}
@@ -218,8 +215,7 @@ export default function DetailAkun({ route, navigation }) {
                     style={[
                       styles.genderButtonText,
                       isActive && styles.genderButtonTextActive,
-                    ]}
-                  >
+                    ]}>
                     {g}
                   </Text>
                 </TouchableOpacity>
@@ -238,8 +234,7 @@ export default function DetailAkun({ route, navigation }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.saveBtn, { backgroundColor: "#ccc" }]}
-                onPress={() => setEditMode(false)}
-              >
+                onPress={() => setEditMode(false)}>
                 <Text style={[styles.buttonText, { color: "#000" }]}>
                   Batal
                 </Text>
@@ -249,8 +244,7 @@ export default function DetailAkun({ route, navigation }) {
             <>
               <TouchableOpacity
                 style={styles.editBtn}
-                onPress={() => setEditMode(true)}
-              >
+                onPress={() => setEditMode(true)}>
                 <Text style={styles.buttonText}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -261,14 +255,12 @@ export default function DetailAkun({ route, navigation }) {
                       form.usrStatus === "Aktif" ? "#bbb" : "#3cba54",
                   },
                 ]}
-                onPress={handleToggleStatus}
-              >
+                onPress={handleToggleStatus}>
                 <Text
                   style={[
                     styles.buttonText,
                     { color: form.usrStatus === "Aktif" ? "#000" : "#fff" },
-                  ]}
-                >
+                  ]}>
                   {form.usrStatus === "Aktif" ? "Nonaktifkan" : "Aktifkan"}
                 </Text>
               </TouchableOpacity>
@@ -281,7 +273,12 @@ export default function DetailAkun({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 20, paddingTop: 50 },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+    paddingTop: 20,
+  },
   backButton: { marginBottom: 10, alignSelf: "flex-start" },
   title: {
     fontSize: 24,
@@ -317,6 +314,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 24,
+    paddingBottom: 60,
   },
   editBtn: {
     flex: 0.48,
