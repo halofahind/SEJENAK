@@ -35,7 +35,7 @@ export default function DaftarJurnal({ route, navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progressData, setProgressData] = useState({});
   const flatListRef = useRef(null);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [user, setUser] = useState({ role: "user" });
 
   useFocusEffect(
