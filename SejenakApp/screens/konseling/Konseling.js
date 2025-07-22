@@ -136,11 +136,7 @@ const Konseling = ({ navigation }) => {
       >
         <Image
           style={styles.avatarImage}
-          source={
-            userData.gender === "Perempuan"
-              ? require("../../assets/User/user-pr.png")
-              : require("../../assets/User/user-lk.png")
-          }
+          source={require("../../assets/Profil/Profil.png")}
           resizeMode="cover"
         />
 

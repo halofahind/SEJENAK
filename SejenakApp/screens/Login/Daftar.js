@@ -27,6 +27,7 @@ export default function Daftar({ navigation }) {
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [dob, setDob] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -281,7 +282,8 @@ export default function Daftar({ navigation }) {
               validationType === "success"
                 ? styles.validationBoxSuccess
                 : styles.validationBoxError,
-            ]}>
+            ]}
+          >
             <Icon
               name={validationType === "success" ? "check-circle" : "error"}
               size={20}
@@ -291,18 +293,25 @@ export default function Daftar({ navigation }) {
             <Text style={styles.validationText}>{validationMessage}</Text>
             <TouchableOpacity
               onPress={closeValidationMessage}
-              style={styles.closeButton}>
+              style={styles.closeButton}
+            >
               <Icon name="close" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
       )}
 
+      <Image
+        source={require("../../assets/Home/hug.png")}
+        style={styles.logoImage}
+      />
+
       <View
         style={[
           styles.registerBox,
           { marginBottom: keyboardHeight > 0 ? keyboardHeight - 20 : 0 },
-        ]}>
+        ]}
+      >
         <ScrollView
           ref={scrollViewRef}
           showsVerticalScrollIndicator={false}
@@ -312,13 +321,9 @@ export default function Daftar({ navigation }) {
             minHeight: screenHeight * 0.8,
           }}
           keyboardShouldPersistTaps="handled"
-          bounces={false}>
+          bounces={false}
+        >
           <View style={styles.innerContent}>
-            <Image
-              source={require("../../assets/OnBoarding/o2.png")}
-              style={styles.logoImage}
-            />
-
             <Text style={styles.registerTitle}>Daftar</Text>
 
             {/* Email */}
@@ -416,7 +421,8 @@ export default function Daftar({ navigation }) {
               <TouchableOpacity
                 onPress={() => !isLoading && setShowDatePicker(true)}
                 style={{ flex: 1 }}
-                disabled={isLoading}>
+                disabled={isLoading}
+              >
                 <Text style={[styles.input, !dob && { color: "#999" }]}>
                   {dob ? dob : "Tanggal Lahir (DD/MM/YYYY)"}
                 </Text>
@@ -425,13 +431,14 @@ export default function Daftar({ navigation }) {
 
             {showDatePicker && (
               <DateTimePicker
-                value={new Date()}
+                value={selectedDate} // Gunakan state selectedDate sebagai value
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
-                maximumDate={new Date()} // Tidak bisa pilih tanggal masa depan
+                maximumDate={new Date()}
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
                   if (selectedDate) {
+                    setSelectedDate(selectedDate); // Simpan tanggal yang dipilih ke state
                     const formattedDate =
                       selectedDate.toLocaleDateString("id-ID");
                     setDob(formattedDate);
@@ -448,7 +455,8 @@ export default function Daftar({ navigation }) {
                   gender === "Laki-laki" && styles.genderButtonLaki,
                 ]}
                 onPress={() => !isLoading && setGender("Laki-laki")}
-                disabled={isLoading}>
+                disabled={isLoading}
+              >
                 <Icon
                   name="male"
                   size={18}
@@ -458,7 +466,8 @@ export default function Daftar({ navigation }) {
                   style={[
                     styles.genderButtonText,
                     gender === "Laki-laki" && styles.genderButtonTextActive,
-                  ]}>
+                  ]}
+                >
                   Laki-laki
                 </Text>
               </TouchableOpacity>
@@ -469,7 +478,8 @@ export default function Daftar({ navigation }) {
                   gender === "Perempuan" && styles.genderButtonPerempuan,
                 ]}
                 onPress={() => !isLoading && setGender("Perempuan")}
-                disabled={isLoading}>
+                disabled={isLoading}
+              >
                 <Icon
                   name="female"
                   size={18}
@@ -479,7 +489,8 @@ export default function Daftar({ navigation }) {
                   style={[
                     styles.genderButtonText,
                     gender === "Perempuan" && styles.genderButtonTextActive,
-                  ]}>
+                  ]}
+                >
                   Perempuan
                 </Text>
               </TouchableOpacity>
@@ -508,7 +519,8 @@ export default function Daftar({ navigation }) {
                 isLoading && styles.registerButtonDisabled,
               ]}
               onPress={handleRegister}
-              disabled={isLoading}>
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
@@ -525,7 +537,8 @@ export default function Daftar({ navigation }) {
                   fontWeight: "bold",
                   opacity: isLoading ? 0.5 : 1,
                 }}
-                onPress={() => !isLoading && navigation.navigate("Login")}>
+                onPress={() => !isLoading && navigation.navigate("Login")}
+              >
                 Login
               </Text>
             </Text>
@@ -595,12 +608,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoImage: {
-    width: 100,
-    height: 100,
+    position: "absolute",
+    top: 45,
+    alignSelf: "center",
+    width: 150,
+    height: 150,
     marginBottom: 10,
     resizeMode: "contain",
     borderRadius: 20,
   },
+
   registerTitle: {
     fontSize: 24,
     fontWeight: "bold",
@@ -628,7 +645,7 @@ const styles = StyleSheet.create({
   registerButton: {
     backgroundColor: "#D6385E",
     paddingVertical: 14,
-    paddingHorizontal: 155,
+    paddingHorizontal: 100,
     borderRadius: 30,
     marginTop: 16,
     marginBottom: 20,
@@ -637,6 +654,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 5,
+    width: "100%",
   },
   registerButtonDisabled: {
     backgroundColor: "#999",

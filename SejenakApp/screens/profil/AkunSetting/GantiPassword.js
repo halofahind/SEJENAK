@@ -59,12 +59,14 @@ export default function GantiPassword({ navigation }) {
         gender: parsedData.gender,
         hobi: parsedData.hobi || null,
         tentang: parsedData.tentang || null,
-        profilPic: parsedData.profilePic || null,
+        profilPic: parsedData.profilePic
+          ? parsedData.profilePic.split("/").pop() // ambil nama file saja
+          : null,
       };
 
       // 3. Kirim ke endpoint yang sama dengan edit profil
       const response = await fetch(`${API_BASE_URL}/pengguna`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -133,12 +135,14 @@ export default function GantiPassword({ navigation }) {
     <View style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={styles.backButton}>
+            style={styles.backButton}
+          >
             <Icon name="arrow-back" size={28} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{t("ProfilChangePwTitle")}</Text>
@@ -245,7 +249,8 @@ export default function GantiPassword({ navigation }) {
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
           onPress={handleSubmit}
-          disabled={isLoading}>
+          disabled={isLoading}
+        >
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (

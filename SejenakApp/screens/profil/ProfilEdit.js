@@ -398,6 +398,7 @@ export default function ProfilEdit({ navigation }) {
               value={user.name}
               onChangeText={(text) => setUser({ ...user, name: text })}
               placeholder="Masukkan nama lengkap"
+              maxLength={30}
             />
           </View>
           <View style={styles.inputGroup}>
@@ -445,6 +446,7 @@ export default function ProfilEdit({ navigation }) {
               value={user.username}
               onChangeText={(text) => setUser({ ...user, username: text })}
               placeholder="Masukkan username"
+              maxLength={20}
             />
           </View>
 
@@ -456,6 +458,7 @@ export default function ProfilEdit({ navigation }) {
               onChangeText={(text) => setUser({ ...user, phone: text })}
               placeholder="Masukkan nomor telepon"
               keyboardType="phone-pad"
+              maxLength={13}
             />
           </View>
 
@@ -504,6 +507,7 @@ export default function ProfilEdit({ navigation }) {
               value={user.hobi}
               onChangeText={(text) => setUser({ ...user, hobi: text })}
               placeholder="Masukkan hobi Anda"
+              maxLength={30}
             />
           </View>
 
@@ -516,6 +520,7 @@ export default function ProfilEdit({ navigation }) {
               placeholder="Ceritakan tentang diri Anda"
               multiline
               numberOfLines={4}
+              maxLength={50}
             />
           </View>
         </View>

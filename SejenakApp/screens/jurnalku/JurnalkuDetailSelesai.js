@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
     marginBottom: -10,
   },
   body: {
+    marginBottom: 40,
     paddingBottom: 100,
   },
   content: {
