@@ -230,7 +230,8 @@ const DetailKonseling = ({ navigation, route }) => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
         <View style={{ flex: 1 }}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
@@ -242,7 +243,7 @@ const DetailKonseling = ({ navigation, route }) => {
             <View style={styles.adminInfo}>
               <Image
                 style={styles.avatarImage}
-                source={require("../../assets/User/user-pr.png")}
+                source={require("../../assets/Profil/Profil.png")}
                 resizeMode="cover"
               />
               <View style={styles.adminDetails}>
@@ -266,7 +267,8 @@ const DetailKonseling = ({ navigation, route }) => {
               style={styles.messagesContainer}
               contentContainerStyle={styles.messagesContent}
               keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}>
+              showsVerticalScrollIndicator={false}
+            >
               {[...messages]
                 .sort((a, b) =>
                   dayjs(`${a.date} ${a.time}`, "DD/MM/YY HH:mm").diff(
@@ -283,20 +285,23 @@ const DetailKonseling = ({ navigation, route }) => {
                         isSender
                           ? styles.userMessageWrapper
                           : styles.adminMessageWrapper,
-                      ]}>
+                      ]}
+                    >
                       <View style={styles.messageContainer}>
                         <View
                           style={[
                             styles.messageBubble,
                             isSender ? styles.userMessage : styles.adminMessage,
-                          ]}>
+                          ]}
+                        >
                           <Text
                             style={[
                               styles.messageText,
                               isSender
                                 ? styles.userMessageText
                                 : styles.adminMessageText,
-                            ]}>
+                            ]}
+                          >
                             {msg.text}
                           </Text>
                         </View>
@@ -306,7 +311,8 @@ const DetailKonseling = ({ navigation, route }) => {
                             isSender
                               ? styles.userMessageTime
                               : styles.adminMessageTime,
-                          ]}>
+                          ]}
+                        >
                           {msg.date} {msg.time}
                         </Text>
                       </View>
@@ -336,7 +342,8 @@ const DetailKonseling = ({ navigation, route }) => {
                   !message.trim() && styles.sendButtonDisabled,
                 ]}
                 onPress={sendMessage}
-                disabled={!message.trim()}>
+                disabled={!message.trim()}
+              >
                 <Text style={styles.sendButtonText}>
                   <Icon name="send" size={24} color="black" />
                 </Text>

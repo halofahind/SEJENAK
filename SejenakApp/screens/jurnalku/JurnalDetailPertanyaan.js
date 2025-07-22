@@ -22,6 +22,8 @@ const quoteImages = [
   require("../../assets/Home/1.png"),
 ];
 
+import { useTranslation } from "react-i18next";
+
 export default function JurnalDetailPertanyaan({ route, navigation }) {
   const { jurnal, transaksi, jenisjurnal } = route.params;
   const [currentPage, setCurrentPage] = useState(0);
@@ -29,6 +31,7 @@ export default function JurnalDetailPertanyaan({ route, navigation }) {
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchJurnalData = async () => {
@@ -82,7 +85,23 @@ export default function JurnalDetailPertanyaan({ route, navigation }) {
     } else {
       try {
         await axios.put(`${API_BASE_URL}/selesaikanJurnal?id=${transaksi.id}`);
-        navigation.navigate("JurnalPenutup", { jurnal, transaksi });
+        const formattedData = {
+          id: transaksi.id.toString(),
+          title: jurnal.title,
+          image: require("../../assets/Jurnalku/2.png"),
+          dateObj: new Date(transaksi.date),
+          date: `${t("JournalTextDate")} ${new Date(
+            transaksi.date
+          ).toLocaleString([], {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`,
+        };
+
+        navigation.navigate("JurnalPenutup", { jurnal: formattedData });
       } catch (error) {
         console.error("Gagal menyelesaikan jurnal:", error);
       }

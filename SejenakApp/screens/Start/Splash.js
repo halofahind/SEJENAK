@@ -157,7 +157,7 @@ export default function SplashScreen() {
           />
         </Animated.View>
 
-        {/* Slogan */}
+        {/* Slogan
         <Animated.Text
           style={[
             styles.slogan,
@@ -175,7 +175,7 @@ export default function SplashScreen() {
           ]}
         >
           "Membuat waktu berhenti, walau hanya sejenak."
-        </Animated.Text>
+        </Animated.Text> */}
 
         {/* Loading dots */}
         <Animated.View style={styles.loadingIndicator}>

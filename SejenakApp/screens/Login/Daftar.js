@@ -17,7 +17,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { API_BASE_URL } from "../../utils/constants";
 const { height: screenHeight } = Dimensions.get("window");
-
+import { useTranslation } from "react-i18next";
 export default function Daftar({ navigation }) {
   const [nama, setNama] = useState("");
   const [username, setUsername] = useState("");
@@ -27,11 +27,12 @@ export default function Daftar({ navigation }) {
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [dob, setDob] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { t } = useTranslation();
   // Validation states
   const [validationMessage, setValidationMessage] = useState("");
   const [validationType, setValidationType] = useState("error"); // 'error' atau 'success'
@@ -300,6 +301,11 @@ export default function Daftar({ navigation }) {
         </View>
       )}
 
+      <Image
+        source={require("../../assets/Home/hug.png")}
+        style={styles.logoImage}
+      />
+
       <View
         style={[
           styles.registerBox,
@@ -318,11 +324,6 @@ export default function Daftar({ navigation }) {
           bounces={false}
         >
           <View style={styles.innerContent}>
-            <Image
-              source={require("../../assets/OnBoarding/o2.png")}
-              style={styles.logoImage}
-            />
-
             <Text style={styles.registerTitle}>Daftar</Text>
 
             {/* Email */}
@@ -430,13 +431,14 @@ export default function Daftar({ navigation }) {
 
             {showDatePicker && (
               <DateTimePicker
-                value={new Date()}
+                value={selectedDate} // Gunakan state selectedDate sebagai value
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
-                maximumDate={new Date()} // Tidak bisa pilih tanggal masa depan
+                maximumDate={new Date()}
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
                   if (selectedDate) {
+                    setSelectedDate(selectedDate); // Simpan tanggal yang dipilih ke state
                     const formattedDate =
                       selectedDate.toLocaleDateString("id-ID");
                     setDob(formattedDate);
@@ -528,7 +530,7 @@ export default function Daftar({ navigation }) {
 
             {/* Link ke Login */}
             <Text style={styles.loginText}>
-              Sudah punya akun?{" "}
+              {t("RegLoginLabel")}
               <Text
                 style={{
                   color: "#EF6A6A",
@@ -606,12 +608,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoImage: {
-    width: 100,
-    height: 100,
+    position: "absolute",
+    top: 45,
+    alignSelf: "center",
+    width: 150,
+    height: 150,
     marginBottom: 10,
     resizeMode: "contain",
     borderRadius: 20,
   },
+
   registerTitle: {
     fontSize: 24,
     fontWeight: "bold",
@@ -639,7 +645,7 @@ const styles = StyleSheet.create({
   registerButton: {
     backgroundColor: "#D6385E",
     paddingVertical: 14,
-    paddingHorizontal: 155,
+    paddingHorizontal: 100,
     borderRadius: 30,
     marginTop: 16,
     marginBottom: 20,
@@ -648,6 +654,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 5,
+    width: "100%",
   },
   registerButtonDisabled: {
     backgroundColor: "#999",

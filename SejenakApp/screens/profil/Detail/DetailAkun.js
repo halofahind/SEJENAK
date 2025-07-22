@@ -46,6 +46,7 @@ export default function DetailAkun({ route, navigation }) {
     hobi: data.hobi,
     telepon: data.telepon,
     about: data.about,
+    usrFoto: data.usrFoto,
   });
 
   const handleChange = (field, value) => {
@@ -66,11 +67,15 @@ export default function DetailAkun({ route, navigation }) {
         body: JSON.stringify(updateData),
       });
 
-      if (!response.ok) throw new Error("Gagal update");
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Gagal menyimpan profil");
+      }
       Alert.alert("Sukses", "Data berhasil diperbarui");
       setEditMode(false);
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert("Perhatian", err.message);
     }
   };
 
@@ -82,20 +87,12 @@ export default function DetailAkun({ route, navigation }) {
         text: "Ya",
         onPress: async () => {
           try {
-            const payload = {
-              ...form,
-              usrStatus: newStatus,
-              password: "",
-            };
-            if (payload.tanggalLahir.includes("/")) {
-              payload.tanggalLahir = formatToYYYYMMDD(payload.tanggalLahir);
-            }
-
-            const response = await fetch(`${API_BASE_URL}/pengguna`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
+            const response = await fetch(
+              `${API_BASE_URL}/pengguna?id=${form.id}`,
+              {
+                method: "DELETE",
+              }
+            );
 
             if (!response.ok) throw new Error("Gagal mengubah status");
             Alert.alert("Berhasil", `Status diubah ke "${newStatus}"`);
@@ -137,7 +134,7 @@ export default function DetailAkun({ route, navigation }) {
         onPress={() => navigation.goBack()}
       >
         <Icon name="arrow-back-ios" size={20} color="#D6385E" />
-        <Text style={{ color: "#D6385E", fontSize: 16, fontWeight: "bold" }}>
+        <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
           Kembali
         </Text>
       </TouchableOpacity>
@@ -153,7 +150,7 @@ export default function DetailAkun({ route, navigation }) {
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>Role</Text>
           <View style={styles.genderButtonContainer}>
-            {["Admin", "User"].map((roleOption, index) => {
+            {["admin", "user"].map((roleOption, index) => {
               const isActive = form.role === roleOption;
               return (
                 <TouchableOpacity
@@ -161,7 +158,7 @@ export default function DetailAkun({ route, navigation }) {
                   style={[
                     styles.genderButton,
                     isActive &&
-                      (roleOption === "Admin"
+                      (roleOption === "admin"
                         ? styles.genderButtonPerempuan
                         : styles.genderButtonLaki),
                     !editMode && styles.genderButtonDisabled,

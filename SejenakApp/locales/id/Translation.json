@@ -68,6 +68,14 @@
   "ProfilEditTitle": "Ubah Profil",
   "ProfilEditSaveBtn": "Simpan Perubahan",
 
+  "ProfilChangePwTitle": "Ganti Kata sandi",
+  "ProfilChangePwCurLb": "Kata Sandi Saat Ini",
+  "ProfilChangePwCurPh": "Masukkan Kata Sandi",
+  "ProfilChangePwNewLb": "Kata Sandi Baru",
+  "ProfilChangePwNewPh": "Masukkan Kata Sandi Baru",
+  "ProfilChangePwConLb": "Konfirmasi Kata Sandi Baru",
+  "ProfilChangePwConPh": "Tulis Ulang Kata Sandi Baru",
+
   "CounselingHeadTitle": "Konseling",
   "CounselingHeadDesc": "Pilih salah satu topik dan mulai ceritakan masalahmu dengan aman dan nyaman",
   "CounselingHistoryTitle": "Riwayat Konseling",
@@ -186,5 +194,23 @@
   "ActiveStatus": "Aktif",
   "NonActiveStatus": "Tidak Aktif",
 
-  "SayHi": "Halo"
+  "SayHi": "Halo",
+
+  "SelectLanguage": "Pilih Bahasa",
+
+  "CountTotalUser": "Total Akun",
+
+  "TopicNameRequiredError": "Nama topik tidak boleh kosong",
+  "TopicNameMinLengthError": "Nama topik minimal 3 karakter",
+  "FirstMessageRequiredError": "Pesan pertama tidak boleh kosong",
+  "FirstMessageMinLengthError": "Pesan pertama minimal 10 karakter",
+  "LastMessageRequiredError": "Pesan terakhir tidak boleh kosong",
+  "LastMessageMinLengthError": "Pesan terakhir minimal 10 karakter",
+
+  "CurrentPasswordRequiredError": "Password saat ini harus diisi",
+  "NewPasswordRequiredError": "Password baru harus diisi",
+  "NewPasswordMinLengthError": "Password minimal 8 karakter",
+  "ConfirmPasswordRequiredError": "Konfirmasi password harus diisi",
+  "PasswordMismatchError": "Password tidak cocok",
+  "PasswordMinLengthHint": "Password minimal 8 karakter"
 }
